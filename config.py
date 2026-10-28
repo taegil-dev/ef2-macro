@@ -1,0 +1,2 @@
+GAME_TITLE = "오늘도 환생 2"
+TARGET_CLASS = "CROSVM_1"
