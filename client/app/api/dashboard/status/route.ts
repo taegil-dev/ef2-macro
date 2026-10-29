@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
       .eq('id', process.env.DEVICE_ID!)
       .single(),
     db.from('macro_commands')
-      .select('id,type,status,error,created_at,completed_at')
+      .select('id,type,payload,status,error,created_at,completed_at')
       .eq('device_id', process.env.DEVICE_ID!)
       .order('created_at', { ascending: false })
       .limit(10)

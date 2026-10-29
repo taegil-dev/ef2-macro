@@ -1,5 +1,5 @@
 import { Play } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function MacroTab({ send, busy, online }: { 
     send: (action: string, payload?: any) => void; 
@@ -13,48 +13,25 @@ export default function MacroTab({ send, busy, online }: {
             <div className="macroInputGrid">
                 <label>저장된 매크로</label>
                 <div className="macroList">
-                    <button
-                        className="macroBtn"
-                        disabled={busy || !online}
-                        onClick={() => send("RUN_MACRO", { name: "환생", repeat: repeat })}
-                    >
-                        <Play size={17} />환생
-                    </button>
-                    <button
-                        className="macroBtn"
-                        disabled={busy || !online}
-                        onClick={() => send("RUN_MACRO", { name: "퀘스트 29 레벨업", repeat: repeat })}
-                    >
-                        <Play size={17} />퀘스트 29 레벨업
-                    </button>
-                    <button
-                        className="macroBtn"
-                        disabled={busy || !online}
-                        onClick={() => send("RUN_MACRO", { name: "퀘스트 30 오픈", repeat: repeat })}
-                    >
-                        <Play size={17} />퀘스트 30 오픈
-                    </button>
-                    <button
-                        className="macroBtn"
-                        disabled={busy || !online}
-                        onClick={() => send("RUN_MACRO", { name: "퀘스트 30 레벨업", repeat: repeat })}
-                    >
-                        <Play size={17} />퀘스트 30 레벨업
-                    </button>
-                    <button
-                        className="macroBtn"
-                        disabled={busy || !online}
-                        onClick={() => send("RUN_MACRO", { name: "영입", repeat: repeat })}
-                    >
-                        <Play size={17} />영입
-                    </button>
-                    <button
-                        className="macroBtn"
-                        disabled={busy || !online}
-                        onClick={() => send("RUN_MACRO", { name: "테스트", repeat: repeat })}
-                    >
-                        <Play size={17} />테스트
-                    </button>
+                    {[
+                        "자동 환생", 
+                        "영입", 
+                        "퀘스트 29 레벨업", 
+                        "퀘스트 30 오픈", 
+                        "퀘스트 30 레벨업", 
+                        "웨이브 8000",
+                        "웨이브 9000",
+                        "테스트"
+                    ].map((macro) => (
+                        <button
+                            key={macro}
+                            className="macroBtn"
+                            disabled={busy || !online}
+                            onClick={() => send("RUN_MACRO", { name: macro, repeat: repeat })}
+                        >
+                            <Play size={17} />{macro}
+                        </button>
+                    ))}
                 </div>
             </div>
             <div className="actionRow">

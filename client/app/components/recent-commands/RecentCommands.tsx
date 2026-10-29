@@ -1,8 +1,9 @@
-import { Send, CircleHelp, Pause, ArrowDownRight, MousePointerClick } from "lucide-react";
+import { Send, CircleHelp, Pause, ArrowDownRight, Play } from "lucide-react";
 
 type Command = {
   id: string;
   type: string;
+  payload: any;
   status: string;
   error: string;
   created_at: string;
@@ -33,7 +34,7 @@ export default function RecentCommands({ commands, device }: { commands: Command
                                     ) : c.type === "SWIPE" ? (
                                         <ArrowDownRight size={17} />
                                     ) : (
-                                        <MousePointerClick size={17} />
+                                        <Play size={17} />
                                     )}
                                 </div>
                                 <div className="historyText">
@@ -41,9 +42,9 @@ export default function RecentCommands({ commands, device }: { commands: Command
                                         {(
                                             {
                                                 CLICK: "1회 클릭",
-                                                START_REPEAT: "반복 클릭 시작",
                                                 STOP: "매크로 정지",
                                                 SWIPE: "스와이프",
+                                                RUN_MACRO: c.payload?.name ? ` ${c.payload.name}` : "",
                                             } as Record<string, string>
                                         )[c.type] || c.type}
                                     </strong>
