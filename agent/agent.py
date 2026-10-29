@@ -75,11 +75,12 @@ def run_sequence(sequence: list[dict[str, Any]]):
                 pos[5], 
                 pos[6]
             )
+        threading.Event().wait(0.2)
 
 def run_macro(macro: list[dict[str, Any]], is_repeat: bool):
     global state, last_error
     try:
-        while is_repeat and not shutdown.is_set() and not macro_stop.is_set():
+        while not shutdown.is_set() and not macro_stop.is_set():
             for sequence in macro:
                 if shutdown.is_set() or macro_stop.is_set():
                     break
@@ -94,11 +95,14 @@ def run_macro(macro: list[dict[str, Any]], is_repeat: bool):
                         if goal:
                             run_sequence(sequence)
                         break
-                    elif condition == "test":
-                        run_sequence(sequence)
+                    elif condition == "empty":
+                        run_sequence(sequence.get('sequence'))
                         break
 
-                    threading.Event().wait(0.1)
+                    threading.Event().wait(0.2)
+
+            if not is_repeat:
+                break
     except Exception as e:
         last_error = str(e)
         log.exception('macro failed')
@@ -130,21 +134,6 @@ def execute(command: dict[str, Any]):
             int(p.get('steps', 30))
         )
 
-    elif kind == 'START_REPEAT':
-        stop_macro()
-        rx, ry = float(p['x']), float(p['y'])
-        if not 0 <= rx <= 1 or not 0 <= ry <= 1:
-            raise ValueError('x and y must be in [0,1]')
-        interval = max(.1, min(3600, float(p.get('interval', 1))))
-        duration = max(.01, min(.5, float(p.get('duration', .05))))
-        macro_stop.clear()
-        last_error = ''
-        state = 'running'
-        t = threading.Thread(target=repeat_worker, args=(rx, ry, interval, duration), daemon=True)
-        with macro_lock:
-            macro_thread = t
-        t.start()
-
     elif kind == 'RUN_MACRO':
         stop_macro()
         macro_name = p.get('name')
@@ -157,34 +146,13 @@ def execute(command: dict[str, Any]):
             raise ValueError(f'Unknown macro: {macro_name}')
         
         log.info('Executing RUN_MACRO command: %s with repeat: %s', macro_name, is_repeat)
+        macro_stop.clear()
+        last_error = ''
         state = 'running'
         t = threading.Thread(target=run_macro, args=(macro, is_repeat), daemon=True)
-        try:
-            for sequence in macro:
-                if shutdown.is_set() or macro_stop.is_set():
-                    break
-
-                # if 'match' in step and 'value' in step:
-                #     from image_match.ocr_worker import NumberReader, find_game_child, capture_jpeg
-                #     region = tuple(float(v.strip()) for v in os.getenv('OCR_REGION', '0.70,0.05,0.90,0.12').split(','))
-                #     if len(region) != 4:
-                #         raise ValueError('OCR_REGION requires 4 numbers')
-                #     reader = NumberReader(region, float(os.getenv('OCR_MIN_CONFIDENCE', '0.5')))
-                #     hwnd = find_game_child(os.getenv('GAME_TITLE', '오늘도 환생 2'), os.getenv('TARGET_CLASS', 'CROSVM_1'))
-                #     frame = capture_jpeg(hwnd, quality=90, max_width=1920)
-                #     result = reader.read(frame)
-                #     if result.value != step['value']:
-                #         log.info('Skipping step due to OCR mismatch: expected %s, got %s', step['value'], result.value)
-                #         continue
-                # if 'sequence' in step:
-                #     for substep in step['sequence']:
-                #         if shutdown.is_set() or macro_stop.is_set():
-                #             break
-                #         mc.click(float(substep['x']), float(substep['y']), float(substep.get('duration', .05)))
-                #         time.sleep(float(substep.get('wait', 0)))
-        except Exception as e:
-            last_error = str(e)
-            log.exception('Macro execution failed')
+        with macro_lock:
+            macro_thread = t
+        t.start()
     else:
         raise ValueError(f'Unsupported command: {kind}')
 

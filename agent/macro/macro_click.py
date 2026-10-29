@@ -131,10 +131,14 @@ def swipe(
         con.MK_LBUTTON, 
         api.MAKELONG(x1, y1)
     )
+    if show_marker:
+        click_marker.show_click_marker(hwnd, x1, y1)
+
     try:
         for i in range(1, steps + 1):
             if shutdown.is_set() or macro_stop.is_set():
                 break
+            threading.Event().wait(duration / steps)
 
             progress = i / steps
             x, y = int(x1 + (x2 - x1) * progress), int(y1 + (y2 - y1) * progress)
@@ -149,8 +153,6 @@ def swipe(
             if show_marker:
                 click_marker.show_click_marker(hwnd, x, y)
 
-            if macro_stop.wait(duration / steps):
-                break
     finally:
         gui.PostMessage(
             hwnd, 

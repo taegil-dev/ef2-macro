@@ -23,9 +23,30 @@ export default function MacroTab({ send, busy, online }: {
                     <button
                         className="macroBtn"
                         disabled={busy || !online}
-                        onClick={() => send("RUN_MACRO", { name: "영휴", repeat: repeat })}
+                        onClick={() => send("RUN_MACRO", { name: "퀘스트 29 레벨업", repeat: repeat })}
                     >
-                        <Play size={17} />영휴
+                        <Play size={17} />퀘스트 29 레벨업
+                    </button>
+                    <button
+                        className="macroBtn"
+                        disabled={busy || !online}
+                        onClick={() => send("RUN_MACRO", { name: "퀘스트 30 오픈", repeat: repeat })}
+                    >
+                        <Play size={17} />퀘스트 30 오픈
+                    </button>
+                    <button
+                        className="macroBtn"
+                        disabled={busy || !online}
+                        onClick={() => send("RUN_MACRO", { name: "퀘스트 30 레벨업", repeat: repeat })}
+                    >
+                        <Play size={17} />퀘스트 30 레벨업
+                    </button>
+                    <button
+                        className="macroBtn"
+                        disabled={busy || !online}
+                        onClick={() => send("RUN_MACRO", { name: "영입", repeat: repeat })}
+                    >
+                        <Play size={17} />영입
                     </button>
                     <button
                         className="macroBtn"
