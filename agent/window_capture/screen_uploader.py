@@ -20,9 +20,9 @@ def screen_loop(stop: threading.Event):
     base = os.environ['API_BASE_URL'].rstrip('/')
     device_id = os.environ['DEVICE_ID']
     token = os.environ['DEVICE_TOKEN']
-    title = os.environ.get('GAME_TITLE', '오늘도 환생 2')
-    target_class = os.environ.get('TARGET_CLASS', 'CROSVM_1')
-    interval = float(os.environ.get('SCREEN_INTERVAL_SECONDS', '1'))
+    title = os.environ.get('GAME_TITLE')
+    target_class = os.environ.get('TARGET_CLASS')
+    interval = float(os.environ.get('SCREEN_INTERVAL_SECONDS'))
     last_error = None
     with httpx.Client(timeout=15) as client:
         while not stop.is_set():

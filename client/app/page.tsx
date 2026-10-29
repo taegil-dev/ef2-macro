@@ -84,7 +84,11 @@ export default function Page() {
       setCommands([]);
       return;
     }
-  }, [session]);
+
+    void refresh();
+    const timer = setInterval(refresh, 10000);
+    return () => clearInterval(timer);
+  }, [session, refresh]);
 
   const send = async (type: string, payload: Record<string, number> = {}) => {
     setBusy(true);
@@ -125,7 +129,7 @@ export default function Page() {
           </button>
         </header>
         <div className="content">
-          <GameScreen supabase={supabase} deviceId={device?.id || ""} online={online} />
+          {/* <GameScreen supabase={supabase} deviceId={device?.id || ""} online={online} /> */}
           <div className="columns">
             <section className="panel">
               <div className="panelHead">

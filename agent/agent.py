@@ -18,7 +18,7 @@ import macro.saved_macro as sm
 from window_capture.screen_uploader import start_screen_thread
 from image_match.ocr_worker import start_ocr_thread
 
-ocr_stop, ocr_thread = start_ocr_thread()
+# ocr_stop, ocr_thread = start_ocr_thread()
 
 BASE_DIR = Path(__file__).resolve().parent
 ENV_PATH = BASE_DIR / ".env"
@@ -75,20 +75,39 @@ def repeat_worker(rx: float, ry: float, interval: float, duration: float):
 def run_macro(macro: list[dict[str, Any]], is_repeat: bool):
     global state, last_error
     try:
-        for sequence in macro:
-            if shutdown.is_set() or macro_stop.is_set() or state == 'idle':
-                break
-
-            condition = sequence.get('condition')
-            goal = sequence.get('goal')
-            while True:
-                if condition == "wave":
+        while is_repeat and not shutdown.is_set() and not macro_stop.is_set():
+            for sequence in macro:
+                if shutdown.is_set() or macro_stop.is_set():
                     break
 
-                threading.Event().wait(0.1)
+                condition = sequence.get('condition')
+                goal = sequence.get('goal')
+                while True:
+                    if shutdown.is_set() or macro_stop.is_set():
+                        break
+
+                    if condition == "wave":
+                        if goal:
+                            for pos in sequence:
+                                if pos[0] == "click":
+                                    mc.click(
+                                        pos[1], 
+                                        pos[2]
+                                    )
+                                elif pos[0] == "swipe":
+                                    mc.swipe(
+                                        pos[1], 
+                                        pos[2], 
+                                        pos[3], 
+                                        pos[4], 
+                                        pos[5], 
+                                        pos[6]
+                                    )
+                        break
+                    threading.Event().wait(0.1)
     except Exception as e:
         last_error = str(e)
-        log.exception('Repeating click failed')
+        log.exception('macro failed')
     finally:
         state = 'idle'
 

@@ -27,6 +27,13 @@ export default function MacroTab({ send, busy, online }: {
                     >
                         <Play size={17} />영휴
                     </button>
+                    <button
+                        className="macroBtn"
+                        disabled={busy || !online}
+                        onClick={() => send("RUN_MACRO", { name: "테스트", repeat: repeat })}
+                    >
+                        <Play size={17} />테스트
+                    </button>
                 </div>
             </div>
             <div className="actionRow">
