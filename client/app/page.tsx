@@ -1,4 +1,3 @@
-"use client";
 import { useCallback, useEffect, useState } from "react";
 import { createClient, Session } from "@supabase/supabase-js";
 import {
@@ -21,16 +20,19 @@ import {
   Wifi,
   WifiOff,
 } from "lucide-react";
+
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
 );
+
 type Device = {
   id: string;
   status: string;
   last_seen_at: string | null;
   last_error: string;
 };
+
 type Command = {
   id: string;
   type: string;
@@ -38,7 +40,9 @@ type Command = {
   error: string;
   created_at: string;
 };
+
 const clamp = (v: number) => Math.min(100, Math.max(0, v));
+
 export default function Page() {
   const [session, setSession] = useState<Session | null>(null);
   const [email, setEmail] = useState("");
@@ -58,6 +62,7 @@ export default function Page() {
   const [swipeDuration, setSwipeDuration] = useState(0.5);
   const [busy, setBusy] = useState(false);
   const [tab, setTab] = useState<"click" | "swipe">("click");
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session));
     const {
@@ -65,6 +70,7 @@ export default function Page() {
     } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
     return () => subscription.unsubscribe();
   }, []);
+
   const api = useCallback(
     async (path: string, options?: RequestInit) => {
       const token = session?.access_token;
@@ -85,6 +91,7 @@ export default function Page() {
     },
     [session],
   );
+
   const refresh = useCallback(async () => {
     if (!session) return;
     try {
@@ -95,6 +102,7 @@ export default function Page() {
       setMessage((e as Error).message);
     }
   }, [api, session]);
+
   useEffect(() => {
     if (!session) {
       setDevice(null);
@@ -105,6 +113,7 @@ export default function Page() {
     const timer = setInterval(refresh, 4000);
     return () => clearInterval(timer);
   }, [session, refresh]);
+
   const send = async (type: string, payload: Record<string, number> = {}) => {
     setBusy(true);
     setMessage("");
@@ -121,7 +130,8 @@ export default function Page() {
       setBusy(false);
     }
   };
-  const login = async (e: React.FormEvent) => {
+
+  const login = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setAuthBusy(true);
     setMessage("");
@@ -137,9 +147,11 @@ export default function Page() {
       setAuthBusy(false);
     }
   };
+
   const online =
     !!device?.last_seen_at &&
     Date.now() - new Date(device.last_seen_at).getTime() < 45000;
+
   if (!session)
     return (
       <main className="loginWrap">
@@ -191,6 +203,7 @@ export default function Page() {
         </div>
       </main>
     );
+
   return (
     <div className="appShell">
       <aside className="sidebar">
@@ -199,7 +212,7 @@ export default function Page() {
             <Gamepad2 size={20} />
           </div>
           <span>
-            Macro<span className="accent">Deck.</span>
+            Remote<span className="accent">Control.</span>
           </span>
         </div>
         <div className="sideLabel">WORKSPACE</div>
@@ -228,7 +241,7 @@ export default function Page() {
           <div>
             <span className="eyebrow">CONTROL CENTER</span>
             <h1>대시보드</h1>
-            <p className="muted">PC 게임 매크로를 원격으로 관리하세요.</p>
+            <p className="muted">PC 게임을 원격으로 관리하세요.</p>
           </div>
           <button className="outline refresh" onClick={refresh}>
             <RefreshCw size={16} /> 새로고침
@@ -285,7 +298,7 @@ export default function Page() {
             <section className="panel">
               <div className="panelHead">
                 <div>
-                  <h2>매크로 제어</h2>
+                  <h2>원격 제어</h2>
                   <p>좌표는 게임 화면 크기에 대한 비율입니다.</p>
                 </div>
                 <MousePointerClick size={20} />

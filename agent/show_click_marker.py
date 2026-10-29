@@ -1,6 +1,6 @@
-import win32gui
 import tkinter as tk
 import threading
+import win32gui # type: ignore
 
 def show_click_marker(hwnd, x, y):
     # 대상 창의 클라이언트 좌표를 화면 좌표로 변환

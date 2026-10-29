@@ -1,13 +1,10 @@
 import "./globals.css";
 export const metadata = {
-  title: "MacroDeck — Remote Control",
+  title: "ef2 — Remote Control",
   description: "Private remote game macro controller",
 };
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+
+export default function RootLayout({ children, }: { children: React.ReactNode; }) {
   return (
     <html lang="ko">
       <body>{children}</body>
