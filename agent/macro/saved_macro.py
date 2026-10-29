@@ -107,6 +107,6 @@ macros = {
         {"condition": "wave", "goal": 5000, "sequence": _sequence["퀘스트 레벨 확장 시퀀스"]},
     ],
     "테스트": [
-
+        {"condition": "test", "goal": 0, "sequence": _sequence["영입 시퀀스"]},
     ] 
 }

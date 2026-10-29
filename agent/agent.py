@@ -59,18 +59,22 @@ def stop_macro():
     state = 'idle'
 
 
-def repeat_worker(rx: float, ry: float, interval: float, duration: float):
-    global state, last_error
-    try:
-        while not shutdown.is_set() and not macro_stop.is_set():
-            mc.click(rx, ry, duration)
-            if macro_stop.wait(interval):
-                break
-    except Exception as e:
-        last_error = str(e)
-        log.exception('Repeating click failed')
-    finally:
-        state = 'idle'
+def run_sequence(sequence: list[dict[str, Any]]):
+    for pos in sequence:
+        if pos[0] == "click":
+            mc.click(
+                pos[1], 
+                pos[2]
+            )
+        elif pos[0] == "swipe":
+            mc.swipe(
+                pos[1], 
+                pos[2], 
+                pos[3], 
+                pos[4], 
+                pos[5], 
+                pos[6]
+            )
 
 def run_macro(macro: list[dict[str, Any]], is_repeat: bool):
     global state, last_error
@@ -88,22 +92,12 @@ def run_macro(macro: list[dict[str, Any]], is_repeat: bool):
 
                     if condition == "wave":
                         if goal:
-                            for pos in sequence:
-                                if pos[0] == "click":
-                                    mc.click(
-                                        pos[1], 
-                                        pos[2]
-                                    )
-                                elif pos[0] == "swipe":
-                                    mc.swipe(
-                                        pos[1], 
-                                        pos[2], 
-                                        pos[3], 
-                                        pos[4], 
-                                        pos[5], 
-                                        pos[6]
-                                    )
+                            run_sequence(sequence)
                         break
+                    elif condition == "test":
+                        run_sequence(sequence)
+                        break
+
                     threading.Event().wait(0.1)
     except Exception as e:
         last_error = str(e)
