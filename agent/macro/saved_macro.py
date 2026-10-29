@@ -50,8 +50,11 @@ _pos = {
     "영입 및 구매 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.04, 0.6),
     "영입 새로고침 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.12, 0.6),
     "영입 새로고침 실패 시 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.12, 0.47),
+}
 
-    "딜레이": ("click", _LEFT_WINDOW_X, 0.5),
+_delay = {
+    "짧은 딜레이": ("delay", 0.5),
+    "긴 딜레이": ("delay", 1),
 }
 
 _sequence = {
@@ -68,20 +71,23 @@ _sequence = {
         _pos["등반 유물 프리셋 버튼"],
         _pos["등반 펫 버튼"],
         _pos["프리셋 변경 저장 버튼"],
-        _pos["딜레이"],
+        
+        _delay["짧은 딜레이"],
     ],
     "퀘스트 확장 프리셋 시퀀스": [
         _pos["프리셋 변경 버튼"],
         _pos["퀘스트 확장 펫 버튼"],
         _pos["프리셋 변경 저장 버튼"],
-        _pos["딜레이"],
+
+        _delay["짧은 딜레이"],
     ],
     "퀘스트 오픈 프리셋 시퀀스": [
         _pos["프리셋 변경 버튼"],
         _pos["퀘스트 오픈 유물 프리셋 버튼"],
         _pos["퀘스트 오픈 펫 버튼"],
         _pos["프리셋 변경 저장 버튼"],
-        _pos["딜레이"],
+
+        _delay["짧은 딜레이"],
     ],
     "퀘스트 스와이프 시퀀스": [
         _pos["퀘스트 탭"],
@@ -113,7 +119,9 @@ _sequence = {
         _pos["스와이프"],
         _pos["스와이프"],
         _pos["역스와이프"],
-        _pos["딜레이"],
+
+        _delay["짧은 딜레이"],
+
         _pos["정스와이프"],
         _pos["영웅 나가 배치 버튼"],
         _pos["영웅 나가 배치 버튼"],
@@ -171,7 +179,7 @@ macros = {
         {"condition": "empty", "goal": 0, "sequence": _sequence["영입 시퀀스"]},
     ],
     "테스트": [
-        # {"condition": "empty", "goal": 0, "sequence": _sequence["테스트 시퀀스"]},
+        {"condition": "empty", "goal": 0, "sequence": _sequence["8000 영웅 프리셋 변경 시퀀스"]},
         # {"condition": "empty", "goal": 0, "sequence": _sequence["영웅 스와이프 시퀀스"]},
     ] 
 }

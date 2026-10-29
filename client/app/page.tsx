@@ -129,7 +129,7 @@ export default function Page() {
           </button>
         </header>
         <div className="content">
-          {/* <GameScreen supabase={supabase} deviceId={device?.id || ""} online={online} /> */}
+          <GameScreen supabase={supabase} deviceId={device?.id || ""} online={online} />
           <div className="columns">
             <section className="panel">
               <div className="panelHead">

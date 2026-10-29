@@ -75,6 +75,9 @@ def run_sequence(sequence: list[dict[str, Any]]):
                 pos[5], 
                 pos[6]
             )
+        elif pos[0] == "delay":
+            threading.Event().wait(pos[1])
+            
         threading.Event().wait(0.2)
 
 def run_macro(macro: list[dict[str, Any]], is_repeat: bool):

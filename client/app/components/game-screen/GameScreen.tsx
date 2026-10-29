@@ -8,6 +8,11 @@ export default function GameScreen({ supabase, deviceId, online }: { supabase: a
   const [status, setStatus] = useState('연결 중...');
 
   useEffect(() => {
+    if (!online) {
+      setStatus('장치가 오프라인입니다');
+      return;
+    }
+    
     let active = true;
     const poll = async () => {
       try {
@@ -15,10 +20,6 @@ export default function GameScreen({ supabase, deviceId, online }: { supabase: a
         if (!session) 
           throw new Error('로그인이 필요합니다');
         
-        if (!online) {
-          setStatus('장치가 오프라인입니다');
-          return;
-        }
 
         const res = await fetch(`/api/screen?deviceId=${encodeURIComponent(deviceId)}`, {
           headers: { Authorization: `Bearer ${session.access_token}` }, cache: 'no-store',
