@@ -1,8 +1,16 @@
 import os
+from pathlib import Path
 import threading
 import logging
 import time
-import show_click_marker as click_marker
+import macro.show_click_marker as click_marker
+from dotenv import load_dotenv # type: ignore
+
+current_file = Path(__file__).resolve()
+parent_directory = current_file.parent.parent
+env_path = parent_directory / '.env'
+
+load_dotenv(dotenv_path=env_path)
 
 log = logging.getLogger('macro-agent')
 shutdown = threading.Event()

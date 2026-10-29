@@ -13,7 +13,12 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 
 from dotenv import load_dotenv # type: ignore
 
-import macro_click as mc
+import macro.macro_click as mc
+import macro.saved_macro as sm
+from window_capture.screen_uploader import start_screen_thread
+from image_match.ocr_worker import start_ocr_thread
+
+ocr_stop, ocr_thread = start_ocr_thread()
 
 BASE_DIR = Path(__file__).resolve().parent
 ENV_PATH = BASE_DIR / ".env"
@@ -67,6 +72,26 @@ def repeat_worker(rx: float, ry: float, interval: float, duration: float):
     finally:
         state = 'idle'
 
+def run_macro(macro: list[dict[str, Any]], is_repeat: bool):
+    global state, last_error
+    try:
+        for sequence in macro:
+            if shutdown.is_set() or macro_stop.is_set() or state == 'idle':
+                break
+
+            condition = sequence.get('condition')
+            goal = sequence.get('goal')
+            while True:
+                if condition == "wave":
+                    break
+
+                threading.Event().wait(0.1)
+    except Exception as e:
+        last_error = str(e)
+        log.exception('Repeating click failed')
+    finally:
+        state = 'idle'
+
 
 def execute(command: dict[str, Any]):
     global macro_thread, state, last_error
@@ -106,6 +131,47 @@ def execute(command: dict[str, Any]):
         with macro_lock:
             macro_thread = t
         t.start()
+
+    elif kind == 'RUN_MACRO':
+        stop_macro()
+        macro_name = p.get('name')
+        is_repeat = p.get('repeat')
+        if not macro_name:
+            raise ValueError('Missing macro name')
+        
+        macro = sm.macros.get(macro_name)
+        if not macro:
+            raise ValueError(f'Unknown macro: {macro_name}')
+        
+        log.info('Executing RUN_MACRO command: %s with repeat: %s', macro_name, is_repeat)
+        state = 'running'
+        t = threading.Thread(target=run_macro, args=(macro, is_repeat), daemon=True)
+        try:
+            for sequence in macro:
+                if shutdown.is_set() or macro_stop.is_set():
+                    break
+
+                # if 'match' in step and 'value' in step:
+                #     from image_match.ocr_worker import NumberReader, find_game_child, capture_jpeg
+                #     region = tuple(float(v.strip()) for v in os.getenv('OCR_REGION', '0.70,0.05,0.90,0.12').split(','))
+                #     if len(region) != 4:
+                #         raise ValueError('OCR_REGION requires 4 numbers')
+                #     reader = NumberReader(region, float(os.getenv('OCR_MIN_CONFIDENCE', '0.5')))
+                #     hwnd = find_game_child(os.getenv('GAME_TITLE', '오늘도 환생 2'), os.getenv('TARGET_CLASS', 'CROSVM_1'))
+                #     frame = capture_jpeg(hwnd, quality=90, max_width=1920)
+                #     result = reader.read(frame)
+                #     if result.value != step['value']:
+                #         log.info('Skipping step due to OCR mismatch: expected %s, got %s', step['value'], result.value)
+                #         continue
+                # if 'sequence' in step:
+                #     for substep in step['sequence']:
+                #         if shutdown.is_set() or macro_stop.is_set():
+                #             break
+                #         mc.click(float(substep['x']), float(substep['y']), float(substep.get('duration', .05)))
+                #         time.sleep(float(substep.get('wait', 0)))
+        except Exception as e:
+            last_error = str(e)
+            log.exception('Macro execution failed')
     else:
         raise ValueError(f'Unsupported command: {kind}')
 
