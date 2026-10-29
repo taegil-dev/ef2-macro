@@ -1,13 +1,5 @@
 import { Send, CircleHelp, Pause, ArrowDownRight, Play } from "lucide-react";
-
-type Command = {
-  id: string;
-  type: string;
-  payload: any;
-  status: string;
-  error: string;
-  created_at: string;
-};
+import { Command } from "../../page";
 
 export default function RecentCommands({ commands, device }: { commands: Command[], device: any }) {
     return (

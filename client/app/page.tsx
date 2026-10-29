@@ -22,9 +22,10 @@ type Device = {
   last_error: string;
 };
 
-type Command = {
+export type Command = {
   id: string;
   type: string;
+  payload: any;
   status: string;
   error: string;
   created_at: string;
