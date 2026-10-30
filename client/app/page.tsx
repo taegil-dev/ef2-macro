@@ -86,8 +86,15 @@ export default function Page() {
       return;
     }
 
-    void refresh();
-    const timer = setInterval(refresh, 10000);
+    if(online) {
+      void refresh();
+    }
+    const timer = setInterval(() => {
+      if(online) {
+        void refresh();
+      }
+    }, 10000);
+    
     return () => clearInterval(timer);
   }, [session, refresh]);
 
