@@ -33,8 +33,8 @@ export async function GET(req: NextRequest) {
 
   // IMPORTANT: Adapt 'device_id' and 'owner_user_id' to your actual macro_devices schema.
   const { data: device, error: deviceError } = await admin.from('macro_devices')
-    .select('device_id')
-    .eq('device_id', deviceId)
+    .select('id')
+    .eq('id', deviceId)
     .eq('owner_user_id', auth.user.id)
     .maybeSingle();
 
