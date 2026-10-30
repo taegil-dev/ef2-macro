@@ -9,7 +9,7 @@ user32.PrintWindow.argtypes = [wintypes.HWND, wintypes.HDC, wintypes.UINT]
 user32.PrintWindow.restype = wintypes.BOOL
 
 
-def find_game_child(game_title: str, target_class: str = 'CROSVM_1') -> int:
+def find_game_child(game_title: str = "오늘도 환생 2", target_class: str = 'CROSVM_1') -> int:
     matches = []
     def on_window(hwnd, _):
         if not win32gui.IsWindowVisible(hwnd) or game_title.lower() not in win32gui.GetWindowText(hwnd).lower():

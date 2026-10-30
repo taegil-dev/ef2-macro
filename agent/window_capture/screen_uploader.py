@@ -1,18 +1,20 @@
 import logging
 import os
+import sys
 import threading
 import time
 
-from Lib.pathlib import Path
+from pathlib import Path
 import httpx # type: ignore
 from window_capture.screen_capture import capture_jpeg, find_game_child
 from dotenv import load_dotenv # type: ignore
 
-current_file = Path(__file__).resolve()
-parent_directory = current_file.parent.parent
-env_path = parent_directory / '.env'
+if getattr(sys, "frozen", False):
+    base_dir = Path(sys.executable).resolve().parent
+else:
+    base_dir = Path(__file__).resolve().parent.parent
 
-load_dotenv(dotenv_path=env_path)
+load_dotenv(base_dir / ".env")
 
 log = logging.getLogger('screen_uploader')
 

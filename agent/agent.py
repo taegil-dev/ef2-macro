@@ -1,8 +1,10 @@
 """Windows game macro agent. Polls an authenticated command API; never exposes a port."""
 from __future__ import annotations
+import importlib
 import logging
 import os
 import signal
+import sys
 import threading
 import time
 from typing import Any
@@ -14,9 +16,8 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 from dotenv import load_dotenv # type: ignore
 
 import macro.macro_click as mc
-import macro.saved_macro as sm
 from window_capture.screen_uploader import start_screen_thread
-from image_match.ocr_worker import start_ocr_thread
+import image_match.image_match as im
 
 # ocr_stop, ocr_thread = start_ocr_thread()
 
@@ -43,7 +44,6 @@ macro_lock = threading.Lock()
 state = 'idle'
 last_error = ''
 
-
 def win32():
     import win32api, win32con, win32gui # type: ignore
     return win32api, win32con, win32gui
@@ -58,6 +58,36 @@ def stop_macro():
         thread.join(timeout=2)
     state = 'idle'
 
+def ignore_condition(
+        ignore: dict[str, Any], 
+        WAVE_POS: tuple[float, float, float, float], 
+        GOLD_POS: tuple[float, float, float, float]
+    ) -> bool:
+    if not ignore:
+        return False
+    
+    if ignore['condition'] == 'wave':
+        floor = im.check_floor(WAVE_POS)
+        if floor is None:
+            return False
+        
+        if(ignore['type'] == 'lower' and floor < ignore['goal']):
+            return True
+        elif (ignore['type'] == 'higher' and floor > ignore['goal']):
+            return True
+        
+    elif ignore['condition'] == 'gold':
+        gold_info = im.check_gold(GOLD_POS)
+        if not gold_info:
+            return False
+        
+        gold, suffix = gold_info
+        if(ignore['type'] == 'lower' and im.compare_gold(f"{gold}{suffix}", ignore['goal']) < 0):
+            return True
+        elif (ignore['type'] == 'higher' and im.compare_gold(f"{gold}{suffix}", ignore['goal']) > 0):
+            return True
+        
+    return False
 
 def run_sequence(sequence: list[dict[str, Any]]):
     for pos in sequence:
@@ -85,7 +115,13 @@ def run_sequence(sequence: list[dict[str, Any]]):
 
         threading.Event().wait(0.2)
 
-def run_macro(macro: list[dict[str, Any]], is_repeat: bool):
+def run_macro(
+        macro: list[dict[str, Any]], 
+        is_repeat: bool, 
+        GOLD_POS: tuple[float, float, float, float], 
+        WAVE_POS: tuple[float, float, float, float], 
+        REBIRTH_POS: tuple[float, float, float, float]
+    ):
     global state, last_error
     try:
         while not shutdown.is_set() and not macro_stop.is_set():
@@ -100,10 +136,43 @@ def run_macro(macro: list[dict[str, Any]], is_repeat: bool):
                         break
 
                     if condition == "wave":
-                        if goal:
-                            run_sequence(sequence)
-                        break
+                        floor = im.check_floor(WAVE_POS)
+                        if floor is None:
+                            threading.Event().wait(5)
+                            continue
+
+                        log.info('Current floor: %s, goal: %s', floor, goal)
+                        if floor >= goal:
+                            if ignore_condition(sequence.get('ignore'), WAVE_POS, GOLD_POS):
+                                threading.Event().wait(5)
+                                continue
+
+                            run_sequence(sequence.get('sequence'))
+                            break
+
+                        threading.Event().wait(5)
+                    elif condition == "gold":
+                        gold_info = im.check_gold(GOLD_POS)
+                        if not gold_info:
+                            threading.Event().wait(5)
+                            continue
+
+                        gold, suffix = gold_info
+                        log.info('Current gold: %s%s, goal: %s', gold, suffix, goal)
+                        if im.compare_gold(f"{gold}{suffix}", goal) >= 0:
+                            if ignore_condition(sequence.get('ignore'), WAVE_POS, GOLD_POS):
+                                threading.Event().wait(5)
+                                continue
+
+                            run_sequence(sequence.get('sequence'))
+                            break
+
+                        threading.Event().wait(5)
                     elif condition == "empty":
+                        if ignore_condition(sequence.get('ignore'), WAVE_POS, GOLD_POS):
+                            threading.Event().wait(5)
+                            continue
+
                         run_sequence(sequence.get('sequence'))
                         break
 
@@ -116,6 +185,38 @@ def run_macro(macro: list[dict[str, Any]], is_repeat: bool):
         log.exception('macro failed')
     finally:
         state = 'idle'
+
+
+def get_base_dir() -> Path:
+    if getattr(sys, "frozen", False):
+        # EXE 실행 시: agent.exe가 있는 폴더
+        return Path(sys.executable).resolve().parent
+
+    # Python 실행 시: agent.py가 있는 폴더
+    return Path(__file__).resolve().parent
+
+
+BASE_DIR = get_base_dir()
+
+
+def load_macros():
+    path = BASE_DIR / "macro" / "macro.py"
+
+    if not path.is_file():
+        raise FileNotFoundError(f"매크로 파일을 찾을 수 없습니다: {path}")
+
+    spec = importlib.util.spec_from_file_location(
+        "external_macros",
+        path
+    )
+
+    if spec is None or spec.loader is None:
+        raise RuntimeError("매크로 파일을 로드할 수 없습니다.")
+
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    return module.macros, module.GOLD_POS, module.WAVE_POS, module.REBIRTH_POS
 
 
 def execute(command: dict[str, Any]):
@@ -155,14 +256,16 @@ def execute(command: dict[str, Any]):
         if not macro_name:
             raise ValueError('Missing macro name')
         
-        macro = sm.macros.get(macro_name)
+        macros, GOLD_POS, WAVE_POS, REBIRTH_POS = load_macros()
+
+        macro = macros.get(macro_name)
         if not macro:
             raise ValueError(f'Unknown macro: {macro_name}')
         
         macro_stop.clear()
         last_error = ''
         state = 'running'
-        t = threading.Thread(target=run_macro, args=(macro, is_repeat), daemon=True)
+        t = threading.Thread(target=run_macro, args=(macro, is_repeat, GOLD_POS, WAVE_POS, REBIRTH_POS), daemon=True)
         with macro_lock:
             macro_thread = t
         t.start()
@@ -178,6 +281,8 @@ def main():
     headers = {'Authorization': f'Bearer {TOKEN}', 'X-Device-ID': DEVICE}
     log.info('Agent started for %s', DEVICE)
     last_beat = 0.
+
+    screen_stop, screen_thread = start_screen_thread()
 
     with httpx.Client(base_url=API+'/', headers=headers, timeout=10) as client:
         while not shutdown.is_set():

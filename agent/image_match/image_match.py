@@ -1,0 +1,117 @@
+import re
+import cv2
+import numpy as np
+from image_match.number_ocr import OCRService
+from window_capture.screen_capture import capture_jpeg, find_game_child
+
+ocr = OCRService()
+
+def parse_gold_value(text: str):
+    match = re.fullmatch(r"(\d+)([a-zA-Z]+)", text.strip())
+
+    if not match:
+        return None
+
+    return {
+        "value": int(match.group(1)),
+        "suffix": match.group(2).lower()
+    }
+
+def compare_gold(gold1: str, gold2: str) -> int:
+    num1, unit1 = parse_gold_value(gold1)
+    num2, unit2 = parse_gold_value(gold2)
+
+    # 단위 길이 비교
+    if len(unit1) != len(unit2):
+        return 1 if len(unit1) > len(unit2) else -1
+
+    # 단위 알파벳 순서 비교
+    if unit1 != unit2:
+        return 1 if unit1 > unit2 else -1
+
+    # 같은 단위일 경우 숫자 비교
+    return (num1 > num2) - (num1 < num2)
+
+def check_gold(GOLD_POS):
+    # 현재 게임 화면 캡처 (JPEG bytes 반환)
+    jpeg = capture_jpeg(find_game_child(), region=GOLD_POS)
+    with open("screenshot.jpg", "wb") as f:
+        f.write(jpeg)
+    # OCR 분석
+    text = ocr.recognize_jpeg(jpeg)
+
+    parse_result = parse_gold_value(text)
+
+    if not parse_result:
+        return False
+
+    gold = parse_result["value"]
+    suffix = parse_result["suffix"]
+
+    return gold, suffix
+
+def check_floor(WAVE_POS):
+    # 현재 게임 화면 캡처 (JPEG bytes 반환)
+    jpeg = capture_jpeg(find_game_child(), region=WAVE_POS)
+
+    # OCR 분석
+    text = ocr.recognize_jpeg(jpeg)
+
+    # 숫자 추출
+    match = re.search(r"\d+", text)
+
+    if not match:
+        return False
+
+    floor = int(match.group())
+
+    return floor
+
+
+class ImageMatcher:
+    def __init__(self):
+        self.templates = {}
+
+    def load_template(self, name: str, path: str):
+        template = cv2.imread(path, cv2.IMREAD_COLOR)
+
+        if template is None:
+            raise FileNotFoundError(path)
+
+        self.templates[name] = template
+
+    def match(self, jpeg: bytes, name: str, threshold=0.85):
+        if name not in self.templates:
+            raise ValueError(f"템플릿 없음: {name}")
+
+        image_array = np.frombuffer(jpeg, dtype=np.uint8)
+        screenshot = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
+
+        if screenshot is None:
+            raise ValueError("이미지 디코딩 실패")
+
+        template = self.templates[name]
+
+        th, tw = template.shape[:2]
+        sh, sw = screenshot.shape[:2]
+
+        if tw > sw or th > sh:
+            return {
+                "matched": False,
+                "confidence": 0.0,
+                "position": None
+            }
+
+        result = cv2.matchTemplate(
+            screenshot,
+            template,
+            cv2.TM_CCOEFF_NORMED
+        )
+
+        _, max_val, _, max_loc = cv2.minMaxLoc(result)
+
+        return {
+            "matched": max_val >= threshold,
+            "confidence": float(max_val),
+            "position": max_loc
+        }
