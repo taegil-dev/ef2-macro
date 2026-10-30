@@ -20,7 +20,6 @@ export default function GameScreen({ supabase, deviceId, online }: { supabase: a
         if (!session) 
           throw new Error('로그인이 필요합니다');
         
-
         const res = await fetch(`/api/screen?deviceId=${encodeURIComponent(deviceId)}`, {
           headers: { Authorization: `Bearer ${session.access_token}` }, cache: 'no-store',
         });
