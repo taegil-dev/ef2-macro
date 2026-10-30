@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
   const db = admin();
   const [device, commands] = await Promise.all([
     db.from('macro_devices')
-      .select('id,status,last_seen_at,last_error')
+      .select('id,owner_id,status,last_seen_at,last_error')
       .eq('id', process.env.DEVICE_ID!)
       .single(),
     db.from('macro_commands')
@@ -20,6 +20,13 @@ export async function GET(req: NextRequest) {
 
   if (device.error || commands.error) 
     return error('Database error', 500);
+
+  await db.from("macro_devices")
+    .update({
+      screen_viewed_at: new Date().toISOString()
+    })
+    .eq("id", device.data.id)
+    .eq("owner_id", device.data.owner_id);
 
   return NextResponse.json({ device: device.data, commands: commands.data }, { headers: noStore });
 }

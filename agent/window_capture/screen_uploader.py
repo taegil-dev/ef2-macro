@@ -18,7 +18,7 @@ load_dotenv(base_dir / ".env")
 
 log = logging.getLogger('screen_uploader')
 
-def screen_loop(stop: threading.Event):
+def screen_loop(stop: threading.Event, screen_watching: threading.Event):
     base = os.environ['API_BASE_URL'].rstrip('/')
     device_id = os.environ['DEVICE_ID']
     token = os.environ['DEVICE_TOKEN']
@@ -39,10 +39,18 @@ def screen_loop(stop: threading.Event):
     
     with httpx.Client(timeout=15) as client:
         while not stop.is_set():
+            if not screen_watching.is_set():
+                stop.wait(1)
+                continue
+
             started = time.monotonic()
             try:
                 hwnd = find_game_child(title, target_class)
                 jpeg = capture_jpeg(hwnd, region=region)
+
+                if not screen_watching.is_set():
+                    continue
+
                 response = client.post(
                     f'{base}/screenshot',
                     headers={'x-device-id': device_id, 'x-device-token': token, 'content-type': 'image/jpeg'},
@@ -59,7 +67,8 @@ def screen_loop(stop: threading.Event):
 
 def start_screen_thread():
     stop = threading.Event()
-    thread = threading.Thread(target=screen_loop, args=(stop,), name='screen-uploader', daemon=True)
+    watching = threading.Event()
+    thread = threading.Thread(target=screen_loop, args=(stop, watching), name='screen-uploader', daemon=True)
     thread.start()
     
-    return stop, thread
+    return stop, thread, watching

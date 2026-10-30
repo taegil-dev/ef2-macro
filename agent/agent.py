@@ -282,13 +282,21 @@ def main():
     log.info('Agent started for %s', DEVICE)
     last_beat = 0.
 
-    screen_stop, screen_thread = start_screen_thread()
+    screen_stop, screen_thread, screen_watching = start_screen_thread()
 
     with httpx.Client(base_url=API+'/', headers=headers, timeout=10) as client:
         while not shutdown.is_set():
             try:
                 if time.monotonic() - last_beat >= HEARTBEAT:
                     r = client.post('heartbeat', json={'status': state, 'last_error': last_error})
+                    log.info('Heartbeat sent: %s', r.status_code)
+                    data = r.json()
+
+                    if data.get("screen_watching", False):
+                        screen_watching.set()
+                    else:
+                        screen_watching.clear()
+
                     r.raise_for_status()
                     last_beat = time.monotonic()
 
@@ -313,6 +321,9 @@ def main():
 
             except (httpx.HTTPError, ValueError, KeyError) as e:
                 log.warning('Connection/protocol error: %s', e)
+            finally:
+                screen_stop.set()
+                screen_thread.join(timeout=2)
 
             shutdown.wait(POLL)
     stop_macro()
