@@ -19,6 +19,7 @@ _pos = {
     "퀘스트 오픈 유물 프리셋 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.15, 0.4),
     "병사 레벨업 감소 유물 프리셋 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.1, 0.4),
     "프리셋 변경 저장 버튼": ("click", _LEFT_WINDOW_X + 0.12, 0.85),
+    "프리셋 변경 취소 버튼": ("click", _LEFT_WINDOW_X + 0.2, 0.85),
     
     "2배 환생 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.12, 0.47),
     "이어하기 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.09, 0.47),
@@ -87,6 +88,12 @@ _sequence = {
         _pos["등반 유물 프리셋 버튼"],
         _pos["등반 펫 버튼"],
         _pos["프리셋 변경 저장 버튼"],
+
+        _delay["짧은 딜레이"],
+    ],
+    "등반 영웅 프리셋 시퀀스": [
+        _pos["두번째 영웅 프리셋 버튼"],
+        _pos["영웅 프리셋 확인 버튼"],
 
         _delay["짧은 딜레이"],
     ],
@@ -201,86 +208,97 @@ _sequence = {
 
 macros = {
     "자동 환생": [
-        {"condition": "empty", "goal": 0, "sequence": _sequence["등반 프리셋 시퀀스"], 
-            "ignore": {"condition": "wave", "type": "lower", "goal": 8000}
-        },
+        {"name": "퀘스트 29 레벨업", "condition": "empty", "goal": "6ao", "sequence": _sequence["등반 영웅 프리셋 시퀀스"]},
 
         # 퀘스트 29 레벨업
-        {"condition": "gold", "goal": "6ao", "sequence": _sequence["퀘스트 확장 프리셋 시퀀스"]},
-        {"condition": "empty", "goal": 0, "sequence": _sequence["퀘스트 스와이프 시퀀스"]},
-        {"condition": "empty", "goal": 0, "sequence": _sequence["29 퀘스트 오픈 및 레벨업 시퀀스"]},
-        {"condition": "empty", "goal": 0, "sequence": _sequence["등반 프리셋 시퀀스"]},
+        {"name": "퀘스트 29 레벨업", "condition": "gold", "goal": "6ao", "sequence": _sequence["퀘스트 확장 프리셋 시퀀스"]},
+        {"name": "퀘스트 29 스와이프", "condition": "empty", "goal": 0, "sequence": _sequence["퀘스트 스와이프 시퀀스"]},
+        {"name": "퀘스트 29 오픈 및 레벨업", "condition": "empty", "goal": 0, "sequence": _sequence["29 퀘스트 오픈 및 레벨업 시퀀스"]},
+        {"name": "등반 프리셋", "condition": "empty", "goal": 0, "sequence": _sequence["등반 프리셋 시퀀스"]},
 
         # 퀘스트 30 오픈
-        {"condition": "gold", "goal": "130ao", "sequence": _sequence["퀘스트 오픈 프리셋 시퀀스"], 
+        {"name": "퀘스트 30 오픈", "condition": "gold", "goal": "130ao", "sequence": _sequence["퀘스트 오픈 프리셋 시퀀스"], 
             "ignore": {"condition": "gold", "type": "higher", "goal": "1ap"}
         },
-        {"condition": "empty", "goal": 0, "sequence": _sequence["퀘스트 스와이프 시퀀스"], 
+        {"name": "퀘스트 30 스와이프", "condition": "empty", "goal": 0, "sequence": _sequence["퀘스트 스와이프 시퀀스"], 
             "ignore": {"condition": "gold", "type": "higher", "goal": "1ap"}
         },
-        {"condition": "empty", "goal": 0, "sequence": _sequence["30 퀘스트 오픈 및 레벨업 시퀀스"], 
+        {"name": "퀘스트 30 오픈 및 레벨업", "condition": "empty", "goal": 0, "sequence": _sequence["30 퀘스트 오픈 및 레벨업 시퀀스"], 
             "ignore": {"condition": "gold", "type": "higher", "goal": "1ap"}
         },
-        {"condition": "empty", "goal": 0, "sequence": _sequence["등반 프리셋 시퀀스"], 
+        {"name": "등반 프리셋", "condition": "empty", "goal": 0, "sequence": _sequence["등반 프리셋 시퀀스"], 
             "ignore": {"condition": "gold", "type": "higher", "goal": "1ap"}
         },
 
         # 퀘스트 30 레벨업
-        {"condition": "gold", "goal": "700au", "sequence": _sequence["퀘스트 확장 프리셋 시퀀스"]},
-        {"condition": "empty", "goal": 0, "sequence": _sequence["퀘스트 스와이프 시퀀스"]},
-        {"condition": "empty", "goal": 0, "sequence": _sequence["30 퀘스트 오픈 및 레벨업 시퀀스"]},
-        {"condition": "empty", "goal": 0, "sequence": _sequence["등반 프리셋 시퀀스"]},
+        {"name": "퀘스트 30 레벨업", "condition": "gold", "goal": "700au", "sequence": _sequence["퀘스트 확장 프리셋 시퀀스"]},
+        {"name": "퀘스트 30 스와이프", "condition": "empty", "goal": 0, "sequence": _sequence["퀘스트 스와이프 시퀀스"]},
+        {"name": "퀘스트 30 오픈 및 레벨업", "condition": "empty", "goal": 0, "sequence": _sequence["30 퀘스트 오픈 및 레벨업 시퀀스"]},
+        {"name": "등반 프리셋", "condition": "empty", "goal": 0, "sequence": _sequence["등반 프리셋 시퀀스"]},
 
         # 웨이브 8000
-        {"condition": "wave", "goal": 8000, "sequence": _sequence["8000 영웅 프리셋 변경 시퀀스"], 
+        {"name": "웨이브 8000", "condition": "wave", "goal": 8000, "sequence": _sequence["8000 영웅 프리셋 변경 시퀀스"], 
             "ignore": {"condition": "wave", "type": "higher", "goal": 8950}
         },
 
         # 웨이브 9000
-        {"condition": "wave", "goal": 8950, "sequence": _sequence["병사 레벨업 감소 프리셋 시퀀스"]},
-        {"condition": "empty", "goal": 0, "sequence": _sequence["9000 영웅 프리셋 변경 시퀀스"]},
-        {"condition": "empty", "goal": 0, "sequence": _sequence["등반 프리셋 시퀀스"]},
-        {"condition": "empty", "goal": 0, "sequence": _sequence["영웅 나가 배치 시퀀스"]},
+        {"name": "웨이브 9000", "condition": "wave", "goal": 8950, "sequence": _sequence["병사 레벨업 감소 프리셋 시퀀스"]},
+        {"name": "9000 영웅 프리셋 변경", "condition": "empty", "goal": 0, "sequence": _sequence["9000 영웅 프리셋 변경 시퀀스"]},
+        {"name": "등반 프리셋", "condition": "empty", "goal": 0, "sequence": _sequence["등반 프리셋 시퀀스"]},
+        {"name": "영웅 나가 배치", "condition": "empty", "goal": 0, "sequence": _sequence["영웅 나가 배치 시퀀스"]},
 
         # 환생
     ],
     "영휴": [
     ],
     "영입": [
-        {"condition": "empty", "goal": 0, "sequence": _sequence["영입 시퀀스"]},
+        {"name": "영입", "condition": "empty", "goal": 0, "sequence": _sequence["영입 시퀀스"]},
     ],
     "퀘스트 29 레벨업": [
-        {"condition": "empty", "goal": 0, "sequence": _sequence["퀘스트 확장 프리셋 시퀀스"]},
-        {"condition": "empty", "goal": 0, "sequence": _sequence["퀘스트 스와이프 시퀀스"]},
-        {"condition": "empty", "goal": 0, "sequence": _sequence["29 퀘스트 오픈 및 레벨업 시퀀스"]},
-        {"condition": "empty", "goal": 0, "sequence": _sequence["등반 프리셋 시퀀스"]},
+        {"name": "퀘스트 29 레벨업", "condition": "empty", "goal": 0, "sequence": _sequence["퀘스트 확장 프리셋 시퀀스"]},
+        {"name": "퀘스트 29 스와이프", "condition": "empty", "goal": 0, "sequence": _sequence["퀘스트 스와이프 시퀀스"]},
+        {"name": "퀘스트 29 오픈 및 레벨업", "condition": "empty", "goal": 0, "sequence": _sequence["29 퀘스트 오픈 및 레벨업 시퀀스"]},
+        {"name": "등반 프리셋", "condition": "empty", "goal": 0, "sequence": _sequence["등반 프리셋 시퀀스"]},
     ],
     "퀘스트 30 오픈": [
-        {"condition": "empty", "goal": 0, "sequence": _sequence["퀘스트 오픈 프리셋 시퀀스"]},
-        {"condition": "empty", "goal": 0, "sequence": _sequence["퀘스트 스와이프 시퀀스"]},
-        {"condition": "empty", "goal": 0, "sequence": _sequence["30 퀘스트 오픈 및 레벨업 시퀀스"]},
-        {"condition": "empty", "goal": 0, "sequence": _sequence["등반 프리셋 시퀀스"]},
+        {"name": "퀘스트 30 오픈", "condition": "empty", "goal": 0, "sequence": _sequence["퀘스트 오픈 프리셋 시퀀스"]},
+        {"name": "퀘스트 30 스와이프", "condition": "empty", "goal": 0, "sequence": _sequence["퀘스트 스와이프 시퀀스"]},
+        {"name": "퀘스트 30 오픈 및 레벨업", "condition": "empty", "goal": 0, "sequence": _sequence["30 퀘스트 오픈 및 레벨업 시퀀스"]},
+        {"name": "등반 프리셋", "condition": "empty", "goal": 0, "sequence": _sequence["등반 프리셋 시퀀스"]},
     ],
     "퀘스트 30 레벨업": [
-        {"condition": "empty", "goal": 0, "sequence": _sequence["퀘스트 확장 프리셋 시퀀스"]},
-        {"condition": "empty", "goal": 0, "sequence": _sequence["퀘스트 스와이프 시퀀스"]},
-        {"condition": "empty", "goal": 0, "sequence": _sequence["30 퀘스트 오픈 및 레벨업 시퀀스"]},
-        {"condition": "empty", "goal": 0, "sequence": _sequence["등반 프리셋 시퀀스"]},
+        {"name": "퀘스트 30 레벨업", "condition": "empty", "goal": 0, "sequence": _sequence["퀘스트 확장 프리셋 시퀀스"]},
+        {"name": "퀘스트 30 스와이프", "condition": "empty", "goal": 0, "sequence": _sequence["퀘스트 스와이프 시퀀스"]},
+        {"name": "퀘스트 30 오픈 및 레벨업", "condition": "empty", "goal": 0, "sequence": _sequence["30 퀘스트 오픈 및 레벨업 시퀀스"]},
+        {"name": "등반 프리셋", "condition": "empty", "goal": 0, "sequence": _sequence["등반 프리셋 시퀀스"]},
     ],
     "웨이브 8000": [
-        {"condition": "empty", "goal": 0, "sequence": _sequence["8000 영웅 프리셋 변경 시퀀스"]},
+        {"name": "8000 웨이브", "condition": "empty", "goal": 0, "sequence": _sequence["8000 영웅 프리셋 변경 시퀀스"]},
     ],
     "웨이브 9000": [
-        {"condition": "empty", "goal": 0, "sequence": _sequence["병사 레벨업 감소 프리셋 시퀀스"]},
-        {"condition": "empty", "goal": 0, "sequence": _sequence["9000 영웅 프리셋 변경 시퀀스"]},
-        {"condition": "empty", "goal": 0, "sequence": _sequence["등반 프리셋 시퀀스"]},
-        {"condition": "empty", "goal": 0, "sequence": _sequence["영웅 나가 배치 시퀀스"]},
+        {"name": "9000 웨이브", "condition": "empty", "goal": 0, "sequence": _sequence["병사 레벨업 감소 프리셋 시퀀스"]},
+        {"name": "9000 영웅 프리셋 변경", "condition": "empty", "goal": 0, "sequence": _sequence["9000 영웅 프리셋 변경 시퀀스"]},
+        {"name": "등반 프리셋", "condition": "empty", "goal": 0, "sequence": _sequence["등반 프리셋 시퀀스"]},
+        {"name": "영웅 나가 배치", "condition": "empty", "goal": 0, "sequence": _sequence["영웅 나가 배치 시퀀스"]},
     ],
     "테스트": [
-        # {"condition": "gold", "goal": "100ao", "sequence": _sequence["테스트 시퀀스"]},
-        # {"condition": "empty", "goal": 0, "sequence": _sequence["9000 영웅 프리셋 변경 시퀀스"]},
-        {"condition": "empty", "goal": 0, "sequence": _sequence["등반 프리셋 시퀀스"], 
-            "ignore": {"condition": "wave", "type": "lower", "goal": 8000}
+        {"name": "퀘스트 30 오픈", "condition": "gold", "goal": "130ao", "sequence": _sequence["퀘스트 오픈 프리셋 시퀀스"], 
+            "ignore": {"condition": "gold", "type": "higher", "goal": "1ap"}
+        },
+        {"name": "퀘스트 30 스와이프", "condition": "empty", "goal": 0, "sequence": _sequence["퀘스트 스와이프 시퀀스"], 
+            "ignore": {"condition": "gold", "type": "higher", "goal": "1ap"}
+        },
+        {"name": "퀘스트 30 오픈 및 레벨업", "condition": "empty", "goal": 0, "sequence": _sequence["30 퀘스트 오픈 및 레벨업 시퀀스"], 
+            "ignore": {"condition": "gold", "type": "higher", "goal": "1ap"}
+        },
+        {"name": "등반 프리셋", "condition": "empty", "goal": 0, "sequence": _sequence["등반 프리셋 시퀀스"], 
+            "ignore": {"condition": "gold", "type": "higher", "goal": "1ap"}
         },
     ] 
+}
+
+multi_macros = {
+    "자동 환생": {"name": "자동 환생", "data": [
+        # {"macro": _sequence["자동 환생 시퀀스"], "ignore": {"condition": "wave", "type": "higher", "goal": 8950}},
+    ]},
 }

@@ -7,48 +7,47 @@ from window_capture.screen_capture import capture_jpeg, find_game_child
 ocr = OCRService()
 
 def parse_gold_value(text: str):
-    match = re.fullmatch(r"(\d+)([a-zA-Z]+)", text.strip())
+    match = re.fullmatch(r"(\d+(?:\.\d+)?)([a-z]+)", text.strip())
 
     if not match:
         return None
 
     return {
-        "value": int(match.group(1)),
-        "suffix": match.group(2).lower()
+        "value": float(match.group(1)),
+        "unit": match.group(2).lower()
     }
 
 def compare_gold(gold1: str, gold2: str) -> int:
-    num1, unit1 = parse_gold_value(gold1)
-    num2, unit2 = parse_gold_value(gold2)
+    num1 = parse_gold_value(gold1)
+    num2 = parse_gold_value(gold2)
 
+    if num1 is None or num2 is None:
+        raise ValueError("Invalid gold format")
+    
     # 단위 길이 비교
-    if len(unit1) != len(unit2):
-        return 1 if len(unit1) > len(unit2) else -1
+    if len(num1["unit"]) != len(num2["unit"]):
+        return 1 if len(num1["unit"]) > len(num2["unit"]) else -1
 
     # 단위 알파벳 순서 비교
-    if unit1 != unit2:
-        return 1 if unit1 > unit2 else -1
+    if num1["unit"] != num2["unit"]:
+        return 1 if num1["unit"] > num2["unit"] else -1
 
     # 같은 단위일 경우 숫자 비교
-    return (num1 > num2) - (num1 < num2)
+    return (num1["value"] > num2["value"]) - (num1["value"] < num2["value"])
 
 def check_gold(GOLD_POS):
     # 현재 게임 화면 캡처 (JPEG bytes 반환)
     jpeg = capture_jpeg(find_game_child(), region=GOLD_POS)
-    with open("screenshot.jpg", "wb") as f:
-        f.write(jpeg)
+
     # OCR 분석
     text = ocr.recognize_jpeg(jpeg)
 
-    parse_result = parse_gold_value(text)
+    gold = parse_gold_value(text)
 
-    if not parse_result:
-        return False
+    if gold is None:
+        raise ValueError(f"Invalid gold format: {text}")
 
-    gold = parse_result["value"]
-    suffix = parse_result["suffix"]
-
-    return gold, suffix
+    return gold.get("value"), gold.get("unit")
 
 def check_floor(WAVE_POS):
     # 현재 게임 화면 캡처 (JPEG bytes 반환)

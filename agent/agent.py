@@ -141,12 +141,14 @@ def run_macro(
                             threading.Event().wait(5)
                             continue
 
-                        log.info('Current floor: %s, goal: %s', floor, goal)
+                        print(f'현재 층 : {floor}', f'목표 : {goal}')
                         if floor >= goal:
                             if ignore_condition(sequence.get('ignore'), WAVE_POS, GOLD_POS):
+                                print(f'무시 조건 충족; 시퀀스 실행 건너뜀 : {sequence.get("name")}')
                                 threading.Event().wait(5)
-                                continue
+                                break
 
+                            print(f'시퀀스 실행 : {sequence.get("name")}')
                             run_sequence(sequence.get('sequence'))
                             break
 
@@ -158,21 +160,25 @@ def run_macro(
                             continue
 
                         gold, suffix = gold_info
-                        log.info('Current gold: %s%s, goal: %s', gold, suffix, goal)
+                        print(f'현재 골드 : {gold}{suffix}, 목표 : {goal}')
                         if im.compare_gold(f"{gold}{suffix}", goal) >= 0:
                             if ignore_condition(sequence.get('ignore'), WAVE_POS, GOLD_POS):
+                                print(f'무시 조건 충족; 시퀀스 실행 건너뜀 : {sequence.get("name")}')
                                 threading.Event().wait(5)
-                                continue
+                                break
 
+                            print(f'시퀀스 실행 : {sequence.get("name")}')
                             run_sequence(sequence.get('sequence'))
                             break
 
                         threading.Event().wait(5)
                     elif condition == "empty":
                         if ignore_condition(sequence.get('ignore'), WAVE_POS, GOLD_POS):
+                            print(f'무시 조건 충족; 시퀀스 실행 건너뜀 : {sequence.get("name")}')
                             threading.Event().wait(5)
-                            continue
+                            break
 
+                        print(f'시퀀스 실행 : {sequence.get("name")}')
                         run_sequence(sequence.get('sequence'))
                         break
 
@@ -226,17 +232,17 @@ def execute(command: dict[str, Any]):
     p = command.get('payload') or {}
     if kind == 'STOP':
         stop_macro()
-        log.info('Executing STOP command: %s', p)
+        print('Executing STOP command: %s', p)
         
     elif kind == 'CLICK':
         stop_macro()
-        log.info('Executing CLICK command: %s', p)
+        print('Executing CLICK command: %s', p)
 
         mc.click(float(p['x']), float(p['y']), float(p.get('duration', .05)))
 
     elif kind == 'SWIPE':
         stop_macro()
-        log.info('Executing SWIPE command: %s', p)
+        print('Executing SWIPE command: %s', p)
 
         mc.swipe(
             float(p['start_x']), 
@@ -251,12 +257,13 @@ def execute(command: dict[str, Any]):
         stop_macro()
         macro_name = p.get('name')
         is_repeat = p.get('repeat')
-        log.info('Executing RUN_MACRO command: %s with repeat: %s', macro_name, is_repeat)
+        print('Executing RUN_MACRO command: %s with repeat: %s', macro_name, is_repeat)
 
         if not macro_name:
             raise ValueError('Missing macro name')
         
         macros, GOLD_POS, WAVE_POS, REBIRTH_POS = load_macros()
+
 
         macro = macros.get(macro_name)
         if not macro:
@@ -279,7 +286,7 @@ def main():
     
     win32()
     headers = {'Authorization': f'Bearer {TOKEN}', 'X-Device-ID': DEVICE}
-    log.info('Agent started for %s', DEVICE)
+    print('Agent started for %s', DEVICE)
     last_beat = 0.
 
     screen_stop, screen_thread, screen_watching = start_screen_thread()

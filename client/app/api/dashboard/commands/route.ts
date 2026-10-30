@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
 
   const type = body.type, p = body.payload ?? {};
 
-  if (!['CLICK','RUN_MACRO','STOP','SWIPE'].includes(type)) 
+  if (!['CLICK','RUN_MACRO', 'RUN_MULTI_MACRO', 'STOP','SWIPE'].includes(type)) 
     return error('Unsupported command');
 
   if (type === 'CLICK') {

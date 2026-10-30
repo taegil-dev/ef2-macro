@@ -12,7 +12,7 @@ export default function MacroTab({ send, busy, online }: {
         <>
             <div className="macroInputGrid">
                 <div>
-                    <label>저장된 매크로</label>
+                    <label>저장된 다중 매크로</label>
                     <div className="macroList">
                         {[
                             "자동 환생", 
@@ -21,7 +21,7 @@ export default function MacroTab({ send, busy, online }: {
                                 key={macro}
                                 className="macroBtn"
                                 disabled={busy || !online}
-                                onClick={() => send("RUN_MACRO", { name: macro, repeat: repeat })}
+                                onClick={() => send("RUN_MULTI_MACRO", { name: macro, repeat: repeat })}
                             >
                                 <Play size={17} />{macro}
                             </button>
@@ -29,7 +29,7 @@ export default function MacroTab({ send, busy, online }: {
                     </div>
                 </div>
                 <div>
-                    <label>저장된 시퀀스</label>
+                    <label>저장된 매크로</label>
                     <div className="macroList">
                         {[
                             "영입", 
