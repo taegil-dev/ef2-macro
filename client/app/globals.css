@@ -202,6 +202,7 @@ button:disabled {
 .columns {
   display: flex;
   flex-direction: column;
+  width: 100%;
   gap: 18px;
   margin-top: 20px;
   flex: 1;
@@ -316,15 +317,16 @@ button:disabled {
 }
 .macroInputGrid {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   gap: 16px;
   margin: 21px 0;
 }
-.macroInputGrid label {
+.macroInputGrid > div {
   display: flex;
   flex-direction: column;
+  width: 46%;
   gap: 8px;
-  font-size: 12px;
+  font-size: 14px;
   color: #a8b5c9;
   font-weight: 600;
 }
@@ -530,6 +532,7 @@ footer span {
   margin-top: 14px;
 }
 .game-screen {
+  width: 100%;
   max-width: 500px;
   max-height: 800px;
   margin-top: 20px;
@@ -538,90 +541,4 @@ footer span {
   border: 1px solid #273143;
   border-radius: 14px;
 }
-@media (max-width: 1400px) {
-  .brandMark {
-    display: none;
-  }
-  .sidebar {
-    width: 200px;
-  }
-  .topbar {
-    padding: 28px;
-  }
-  .content {
-    flex-direction: column;
-    padding: 24px;
-  }
-  .columns {
-    flex-direction: row;
-  }
-  .panel {
-    flex: 1;
-  }
-}
-@media (max-width: 650px) {
-  .sidebar {
-    width: auto;
-    height: auto;
-    position: static;
-    padding: 12px 17px;
-    border-right: 0;
-    border-bottom: 1px solid #273143;
-  }
-  .appShell {
-    display: block;
-  }
-  .sideLabel,
-  .navActive,
-  .sideBottom {
-    display: none;
-  }
-  .topbar {
-    padding: 24px 18px 19px;
-  }
-  .topbar h1 {
-    font-size: 25px;
-  }
-  .topbar .refresh {
-    font-size: 0;
-    padding: 12px;
-  }
-  .content {
-    padding: 18px 13px;
-  }
-  .statusGrid {
-    gap: 8px;
-  }
-  .statCard {
-    padding: 14px 11px;
-  }
-  .statCard strong,
-  .dateStat {
-    font-size: 15px !important;
-  }
-  .statTop {
-    font-size: 10px;
-  }
-  .statCard small {
-    font-size: 9px;
-  }
-  .columns {
-    gap: 13px;
-    margin-top: 13px;
-  }
-  .panel {
-    padding: 18px;
-  }
-  .preview {
-    height: 170px;
-  }
-  .inputGrid {
-    gap: 12px;
-  }
-  footer {
-    padding: 0 4px;
-  }
-  .loginCard {
-    padding: 28px;
-  }
-}
+

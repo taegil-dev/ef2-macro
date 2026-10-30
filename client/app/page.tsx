@@ -4,6 +4,7 @@ import { createClient, Session } from "@supabase/supabase-js";
 import {
   MousePointerClick,
   Pause,
+  Play,
   RefreshCw,
 } from "lucide-react";
 import LoginPage from "./login";
@@ -174,13 +175,6 @@ export default function Page() {
               ) : (
                 <MacroTab send={send} busy={busy} online={online} />
               )}
-              <button
-                className="stopBtn"
-                disabled={busy || !online}
-                onClick={() => send("STOP")}
-              >
-                <Pause size={18} /> 매크로 정지
-              </button>
               {message && <p className="notice">{message}</p>}
             </section>
             <RecentCommands commands={commands} device={device} />

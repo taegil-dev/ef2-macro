@@ -61,7 +61,17 @@ export default function GameScreen({ supabase, deviceId, online }: { supabase: a
             objectFit: 'contain',
             background: '#111' 
             }} /> 
-            : <div>화면 대기 중</div>}
+            : <div style={{ 
+                color: "#74829a",
+                fontWeight: 700,
+                width: "100%",
+                height: "100%",
+                alignContent: 'center',
+                textAlign: 'center', 
+              }}>
+                <p>화면 대기 중</p>
+                <p>{status}</p>
+              </div>}
     </section>
   );
 }

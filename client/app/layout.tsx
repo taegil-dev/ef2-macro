@@ -1,4 +1,6 @@
 import "./globals.css";
+import "./responsive.css";
+
 export const metadata = {
   title: "ef2 — Remote Control",
   description: "Private remote game macro controller",

@@ -32,7 +32,7 @@ export default function LoginPage({ supabase, message, setMessage }: { supabase:
                 </div>
                 <div className="eyebrow">REMOTE CONTROL SYSTEM</div>
                 <h1>
-                    Macro<span>Deck.</span>
+                    Remote<span>Control.</span>
                 </h1>
                 <p className="muted">
                     언제 어디서나, 내 PC의 게임 매크로를 제어하세요.
@@ -69,7 +69,7 @@ export default function LoginPage({ supabase, message, setMessage }: { supabase:
                 </div>
                 <p className="hint">
                     첫 계정은 Supabase Authentication에서 생성하고, SQL의 기기 소유자로
-                    등록하세요.
+                    등록하세요. 계정 생성은 제작자에게 문의하세요.
                 </p>
             </div>
         </main>

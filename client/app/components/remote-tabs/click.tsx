@@ -1,4 +1,4 @@
-import { Play, MousePointerClick } from "lucide-react";
+import { Play, MousePointerClick, Pause } from "lucide-react";
 import { useState } from "react";
 
 const clamp = (v: number) => Math.min(100, Math.max(0, v));
@@ -76,6 +76,14 @@ export default function ClickTab({ send, busy, online }: {
                     }
                 >
                     <Play size={17} /> 클릭
+                </button>
+                <button
+                  className="primary"
+                  style={{ color: "#ff9ea9", backgroundColor: "#40232e", borderColor: "#6c3444" }}
+                  disabled={busy || !online}
+                  onClick={() => send("STOP")}
+                >
+                  <Pause size={18} /> 매크로 정지
                 </button>
             </div>
         </>
