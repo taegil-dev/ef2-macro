@@ -44,13 +44,12 @@ export default function GameScreen({ supabase, deviceId, online }: { supabase: a
         void poll();
       }
     }, delay);
-    
+
     return () => { active = false; window.clearInterval(timer); };
-  }, [deviceId]);
+  }, [deviceId, online]);
 
   return (
     <section className="game-screen">
-      <h2>게임 화면</h2>
       {src ? 
         <img 
           src={src} 
@@ -58,11 +57,11 @@ export default function GameScreen({ supabase, deviceId, online }: { supabase: a
           style={{ 
             display: 'block', 
             width: '100%', 
-            height: 'auto', 
+            height: '100%', 
+            objectFit: 'contain',
             background: '#111' 
             }} /> 
             : <div>화면 대기 중</div>}
-      <p aria-live="polite">{status}</p>
     </section>
   );
 }

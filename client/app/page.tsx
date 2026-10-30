@@ -79,6 +79,10 @@ export default function Page() {
     }
   }, [api, session]);
 
+  const online =
+    !!device?.last_seen_at &&
+    Date.now() - new Date(device.last_seen_at).getTime() < 45000;
+
   useEffect(() => {
     if (!session) {
       setDevice(null);
@@ -94,9 +98,9 @@ export default function Page() {
         void refresh();
       }
     }, 10000);
-    
+
     return () => clearInterval(timer);
-  }, [session, refresh]);
+  }, [session, refresh, online]);
 
   const send = async (type: string, payload: Record<string, number> = {}) => {
     setBusy(true);
@@ -114,10 +118,6 @@ export default function Page() {
       setBusy(false);
     }
   };
-
-  const online =
-    !!device?.last_seen_at &&
-    Date.now() - new Date(device.last_seen_at).getTime() < 45000;
 
   if (!session)
     return <LoginPage supabase={supabase} message={message} setMessage={setMessage} />;

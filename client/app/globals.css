@@ -156,6 +156,7 @@ button:disabled {
 }
 .content {
   display: flex;
+  max-width: 1500px;
   padding: 10px 48px;
   gap: 20px;
 }
@@ -529,13 +530,13 @@ footer span {
   margin-top: 14px;
 }
 .game-screen {
-  max-width: 960px;
+  max-width: 500px;
+  max-height: 800px;
   margin-top: 20px;
   padding: 25px;
   background: #141b28;
   border: 1px solid #273143;
   border-radius: 14px;
-  flex: 3;
 }
 @media (max-width: 1400px) {
   .brandMark {
