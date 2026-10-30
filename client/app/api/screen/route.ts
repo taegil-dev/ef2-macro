@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
   const { data: device, error: deviceError } = await admin.from('macro_devices')
     .select('id')
     .eq('id', deviceId)
-    .eq('owner_user_id', auth.user.id)
+    .eq('owner_id', auth.user.id)
     .maybeSingle();
 
   if (deviceError) {

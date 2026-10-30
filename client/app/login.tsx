@@ -13,8 +13,8 @@ export default function LoginPage({ supabase, message, setMessage }: { supabase:
 
         try {
             const { error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
+                email,
+                password,
             });
             if (error) throw error;
         } catch (e) {
