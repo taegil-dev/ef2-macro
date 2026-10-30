@@ -13,8 +13,6 @@ env_path = parent_directory / '.env'
 load_dotenv(dotenv_path=env_path)
 
 log = logging.getLogger('macro-agent')
-shutdown = threading.Event()
-macro_stop = threading.Event()
 
 def win32():
     import win32api, win32con, win32gui # type: ignore
@@ -101,6 +99,8 @@ def click(rx: float, ry: float, duration: float = .05, show_marker: bool = True)
         )
 
 def swipe(
+        shutdown: threading.Event,
+        macro_stop: threading.Event,
         sx: float, 
         sy: float, 
         ex: float, 

@@ -2,6 +2,7 @@
 import logging
 import os
 from pathlib import Path
+import re
 import threading
 import time
 from image_match.number_ocr import NumberReader
@@ -15,6 +16,17 @@ env_path = parent_directory / '.env'
 load_dotenv(dotenv_path=env_path)
 
 log = logging.getLogger('number_ocr')
+
+def parse_game_value(text: str):
+    match = re.fullmatch(r"(\d+)([a-zA-Z]+)", text.strip())
+
+    if not match:
+        return None
+
+    return {
+        "value": int(match.group(1)),
+        "suffix": match.group(2).lower()
+    }
 
 def run_ocr_loop(stop: threading.Event):
     region = tuple(float(v.strip()) for v in os.getenv('OCR_REGION', '0.70,0.05,0.90,0.12').split(','))
@@ -54,3 +66,5 @@ def start_ocr_thread():
     thread.start()
 
     return stop, thread
+
+# run_ocr_loop(threading.Event())

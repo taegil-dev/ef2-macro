@@ -157,7 +157,6 @@ button:disabled {
 .content {
   display: flex;
   padding: 10px 48px;
-  max-width: 1460px;
   gap: 20px;
 }
 .statusGrid {
@@ -342,6 +341,7 @@ button:disabled {
   display: flex;
   align-items: center;
   gap: 9px;
+  text-wrap: nowrap;
 }
 .actionRow {
   display: flex;
@@ -537,7 +537,7 @@ footer span {
   border-radius: 14px;
   flex: 3;
 }
-@media (max-width: 1000px) {
+@media (max-width: 1400px) {
   .brandMark {
     display: none;
   }

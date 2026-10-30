@@ -24,12 +24,23 @@ def screen_loop(stop: threading.Event):
     target_class = os.environ.get('TARGET_CLASS')
     interval = float(os.environ.get('SCREEN_INTERVAL_SECONDS'))
     last_error = None
+
+    region_text = os.environ.get("SCREEN_REGION").strip()
+
+    region = (
+        tuple(float(v.strip()) for v in region_text.split(","))
+        if region_text else None
+    )
+
+    if region is not None and len(region) != 4:
+        raise ValueError("SCREEN_REGION must contain 4 numbers")
+    
     with httpx.Client(timeout=15) as client:
         while not stop.is_set():
             started = time.monotonic()
             try:
                 hwnd = find_game_child(title, target_class)
-                jpeg = capture_jpeg(hwnd)
+                jpeg = capture_jpeg(hwnd, region=region)
                 response = client.post(
                     f'{base}/screenshot',
                     headers={'x-device-id': device_id, 'x-device-token': token, 'content-type': 'image/jpeg'},
@@ -48,4 +59,5 @@ def start_screen_thread():
     stop = threading.Event()
     thread = threading.Thread(target=screen_loop, args=(stop,), name='screen-uploader', daemon=True)
     thread.start()
+    
     return stop, thread

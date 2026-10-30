@@ -61,6 +61,9 @@ def stop_macro():
 
 def run_sequence(sequence: list[dict[str, Any]]):
     for pos in sequence:
+        if shutdown.is_set() or macro_stop.is_set():
+            break
+
         if pos[0] == "click":
             mc.click(
                 pos[1], 
@@ -68,6 +71,8 @@ def run_sequence(sequence: list[dict[str, Any]]):
             )
         elif pos[0] == "swipe":
             mc.swipe(
+                shutdown,
+                macro_stop,
                 pos[1], 
                 pos[2], 
                 pos[3], 
@@ -77,7 +82,7 @@ def run_sequence(sequence: list[dict[str, Any]]):
             )
         elif pos[0] == "delay":
             threading.Event().wait(pos[1])
-            
+
         threading.Event().wait(0.2)
 
 def run_macro(macro: list[dict[str, Any]], is_repeat: bool):
@@ -120,14 +125,18 @@ def execute(command: dict[str, Any]):
     p = command.get('payload') or {}
     if kind == 'STOP':
         stop_macro()
-
+        log.info('Executing STOP command: %s', p)
+        
     elif kind == 'CLICK':
-        log.info('Executing CLICK command: %s', p)
         stop_macro()
+        log.info('Executing CLICK command: %s', p)
+
         mc.click(float(p['x']), float(p['y']), float(p.get('duration', .05)))
 
     elif kind == 'SWIPE':
         stop_macro()
+        log.info('Executing SWIPE command: %s', p)
+
         mc.swipe(
             float(p['start_x']), 
             float(p['start_y']), 
@@ -141,6 +150,8 @@ def execute(command: dict[str, Any]):
         stop_macro()
         macro_name = p.get('name')
         is_repeat = p.get('repeat')
+        log.info('Executing RUN_MACRO command: %s with repeat: %s', macro_name, is_repeat)
+
         if not macro_name:
             raise ValueError('Missing macro name')
         
@@ -148,7 +159,6 @@ def execute(command: dict[str, Any]):
         if not macro:
             raise ValueError(f'Unknown macro: {macro_name}')
         
-        log.info('Executing RUN_MACRO command: %s with repeat: %s', macro_name, is_repeat)
         macro_stop.clear()
         last_error = ''
         state = 'running'

@@ -24,7 +24,12 @@ def find_game_child(game_title: str, target_class: str = 'CROSVM_1') -> int:
     return matches[0]
 
 
-def capture_jpeg(hwnd: int, quality: int = 65, max_width: int = 1280) -> bytes:
+def capture_jpeg(
+        hwnd: int, 
+        quality: int = 65, 
+        max_width: int = 1280,
+        region: tuple[float, float, float, float] | None = None
+    ) -> bytes:
     if win32gui.IsIconic(win32gui.GetAncestor(hwnd, win32con.GA_ROOT)):
         raise RuntimeError('Game is minimized; background capture not supported')
     
@@ -52,6 +57,19 @@ def capture_jpeg(hwnd: int, quality: int = 65, max_width: int = 1280) -> bytes:
         info = bmp.GetInfo()
         data = bmp.GetBitmapBits(True)
         image = Image.frombuffer('RGB', (info['bmWidth'], info['bmHeight']), data, 'raw', 'BGRX', 0, 1).copy()
+
+        if region is not None:
+            x1, y1, x2, y2 = region
+
+            if not (0 <= x1 < x2 <= 1 and 0 <= y1 < y2 <= 1):
+                raise ValueError("Invalid SCREEN_REGION")
+
+            image = image.crop((
+                int(image.width * x1),
+                int(image.height * y1),
+                int(image.width * x2),
+                int(image.height * y2),
+            ))
     finally:
         win32gui.DeleteObject(bmp.GetHandle())
         mem.DeleteDC()
@@ -70,3 +88,9 @@ def capture_jpeg(hwnd: int, quality: int = 65, max_width: int = 1280) -> bytes:
     image.save(out, 'JPEG', quality=quality, optimize=True)
     
     return out.getvalue()
+
+# test code
+# jpeg = capture_jpeg(find_game_child("오늘도 환생 2"), region=(0.5, 0.01, 0.525, 0.027))
+
+# with open("screenshot.jpg", "wb") as f:
+#     f.write(jpeg)
