@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 
-const delay = 1000 * 10;
+const delay = 1000;
 
 export default function GameScreen({ supabase, deviceId, online }: { supabase: any; deviceId: string; online: boolean }) {
   const [src, setSrc] = useState<string | null>(null);

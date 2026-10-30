@@ -40,7 +40,7 @@ def screen_loop(stop: threading.Event, screen_watching: threading.Event):
     with httpx.Client(timeout=15) as client:
         while not stop.is_set():
             if not screen_watching.is_set():
-                stop.wait(1)
+                threading.Event().wait(1)
                 continue
 
             started = time.monotonic()

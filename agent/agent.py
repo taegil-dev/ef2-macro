@@ -289,7 +289,6 @@ def main():
             try:
                 if time.monotonic() - last_beat >= HEARTBEAT:
                     r = client.post('heartbeat', json={'status': state, 'last_error': last_error})
-                    log.info('Heartbeat sent: %s', r.status_code)
                     data = r.json()
 
                     if data.get("screen_watching", False):
