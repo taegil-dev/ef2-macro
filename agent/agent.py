@@ -291,7 +291,7 @@ def main():
                     r = client.post('heartbeat', json={'status': state, 'last_error': last_error})
                     data = r.json()
 
-                    if data.get("screen_watching", False):
+                    if data.get("screen_watching"):
                         screen_watching.set()
                     else:
                         screen_watching.clear()
@@ -320,11 +320,11 @@ def main():
 
             except (httpx.HTTPError, ValueError, KeyError) as e:
                 log.warning('Connection/protocol error: %s', e)
-            finally:
-                screen_stop.set()
-                screen_thread.join(timeout=2)
 
             shutdown.wait(POLL)
+
+    screen_stop.set()
+    screen_thread.join(timeout=2)
     stop_macro()
 
 

@@ -50,7 +50,7 @@ export default function GameScreen({ supabase, deviceId, online }: { supabase: a
 
   return (
     <section className="game-screen">
-      {src ? 
+      {online && src ? 
         <img 
           src={src} 
           alt="원격 게임 화면" 

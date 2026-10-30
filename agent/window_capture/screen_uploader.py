@@ -47,7 +47,7 @@ def screen_loop(stop: threading.Event, screen_watching: threading.Event):
             try:
                 hwnd = find_game_child(title, target_class)
                 jpeg = capture_jpeg(hwnd, region=region)
-
+                
                 if not screen_watching.is_set():
                     continue
 
@@ -63,6 +63,7 @@ def screen_loop(stop: threading.Event, screen_watching: threading.Event):
                 if message != last_error:
                     log.warning('Screen upload unavailable: %s', message)
                     last_error = message
+
             stop.wait(max(0, interval - (time.monotonic() - started)))
 
 def start_screen_thread():

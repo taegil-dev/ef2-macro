@@ -84,30 +84,24 @@ export default function Page() {
     !!device?.last_seen_at &&
     Date.now() - new Date(device.last_seen_at).getTime() < 45000;
 
-useEffect(() => {
-  if (!session) {
-    setDevice(null);
-    setCommands([]);
-    return;
-  }
+  useEffect(() => {
+    if (!session) {
+      setDevice(null);
+      setCommands([]);
+      return;
+    }
 
-  const refreshIfVisible = () => {
-    if (document.visibilityState === "visible") {
+    if(online) {
       void refresh();
     }
-  };
+    const timer = setInterval(() => {
+      if(online) {
+        void refresh();
+      }
+    }, 10000);
 
-  refreshIfVisible();
-
-  const timer = window.setInterval(refreshIfVisible, 10000);
-
-  document.addEventListener("visibilitychange", refreshIfVisible);
-
-  return () => {
-    window.clearInterval(timer);
-    document.removeEventListener("visibilitychange", refreshIfVisible);
-  };
-}, [session, refresh]);
+    return () => clearInterval(timer);
+  }, [session, refresh, online]);
 
   const send = async (type: string, payload: Record<string, number> = {}) => {
     setBusy(true);
