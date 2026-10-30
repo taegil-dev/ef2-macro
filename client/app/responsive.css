@@ -1,0 +1,93 @@
+@media (max-width: 1400px) {
+  .brandMark {
+    display: none;
+  }
+  .sidebar {
+    width: 200px;
+  }
+  .topbar {
+    padding: 28px;
+  }
+  .content {
+    padding: 24px;
+  }
+}
+@media (max-width: 1250px) {
+    .content {
+        flex-direction: column;
+        align-items: center;
+    }
+    .columns {
+        align-items: center;
+    }
+    .panel {
+        width: 100%;
+        max-width: 700px;
+    }
+}
+@media (max-width: 750px) {
+  .sidebar {
+    width: auto;
+    height: auto;
+    position: static;
+    padding: 12px 17px;
+    border-right: 0;
+    border-bottom: 1px solid #273143;
+  }
+  .appShell {
+    display: block;
+  }
+  .sideLabel,
+  .navActive,
+  .sideBottom {
+    display: none;
+  }
+  .topbar {
+    padding: 24px 18px 19px;
+  }
+  .topbar h1 {
+    font-size: 25px;
+  }
+  .topbar .refresh {
+    font-size: 0;
+    padding: 12px;
+  }
+  .content {
+    padding: 18px 13px;
+  }
+  .statusGrid {
+    gap: 8px;
+  }
+  .statCard {
+    padding: 14px 11px;
+  }
+  .statCard strong,
+  .dateStat {
+    font-size: 15px !important;
+  }
+  .statTop {
+    font-size: 10px;
+  }
+  .statCard small {
+    font-size: 9px;
+  }
+  .columns {
+    gap: 13px;
+    margin-top: 13px;
+  }
+  .panel {
+    padding: 18px;
+  }
+  .preview {
+    height: 170px;
+  }
+  .inputGrid {
+    gap: 12px;
+  }
+  footer {
+    padding: 0 4px;
+  }
+  .loginCard {
+    padding: 28px;
+  }
+}
