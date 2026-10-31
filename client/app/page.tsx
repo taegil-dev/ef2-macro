@@ -3,9 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { createClient, Session } from "@supabase/supabase-js";
 import {
   MousePointerClick,
-  Pause,
-  Play,
-  RefreshCw,
+  Plug,
 } from "lucide-react";
 import LoginPage from "./login";
 import { ClickTab, SwipeTab, MacroTab, GameScreen, Footer, RecentCommands } from "./components";
@@ -134,7 +132,7 @@ export default function Page() {
             <p className="muted">PC 게임을 원격으로 관리하세요.</p>
           </div>
           <button className="outline refresh" onClick={refresh}>
-            <RefreshCw size={16} /> 새로고침
+            <Plug size={16} /> 연결
           </button>
         </header>
         <div className="content">
