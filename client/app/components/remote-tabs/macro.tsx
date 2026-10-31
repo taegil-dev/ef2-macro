@@ -56,15 +56,16 @@ export default function MacroTab({ send, busy, online }: {
             <div className="actionRow">
                 <button
                     className="primary"
+                    style={{
+                        color: repeat ? "#4caf50" : "#ff9ea9",
+                        backgroundColor: repeat ? "#2a4b31" : "#40232e",
+                        borderColor: repeat ? "#2e5a2f" : "#6c3444",
+                    }}
                     disabled={busy || !online} 
                     onClick={() => setRepeat(!repeat)}
                 >
                     <Play size={17} /> 반복 실행
-                    <span style={{ 
-                        color: repeat ? "#4caf50" : "#ff9ea9",
-                        backgroundColor: repeat ? "#2a4b31" : "#40232e",
-                        borderColor: repeat ? "#2e5a2f" : "#6c3444",
-                    }}>{repeat ? " ON" : " OFF"}</span>
+                    <span>{repeat ? " ON" : " OFF"}</span>
                 </button>
                 <button
                   className="primary"

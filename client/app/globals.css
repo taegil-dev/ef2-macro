@@ -430,6 +430,12 @@ button:disabled {
   font-size: 11px;
   overflow-wrap: anywhere;
 }
+.historyText small p {
+  color: #e9ecf6;
+  font-size: 13px;
+  margin: 0;
+  margin-top: 5px;
+}
 .pill {
   font-size: 10px;
   border-radius: 6px;
