@@ -22,7 +22,8 @@ def compare_gold(gold1: str, gold2: str) -> int:
     num2 = parse_gold_value(gold2)
 
     if num1 is None or num2 is None:
-        raise ValueError("Invalid gold format")
+        print("Invalid gold format")
+        return 0
     
     # 단위 길이 비교
     if len(num1["unit"]) != len(num2["unit"]):
@@ -45,13 +46,17 @@ def check_gold(GOLD_POS):
     gold = parse_gold_value(text)
 
     if gold is None:
-        raise ValueError(f"Invalid gold format: {text}")
+        print(f"Invalid gold format: {text}")
+        return 0, ""
 
-    return gold.get("value"), gold.get("unit")
+    return gold["value"], gold["unit"]
 
 def check_floor(WAVE_POS):
     # 현재 게임 화면 캡처 (JPEG bytes 반환)
     jpeg = capture_jpeg(find_game_child(), region=WAVE_POS)
+
+    # with open("screenshot.jpg", "wb") as f:
+    #     f.write(jpeg)
 
     # OCR 분석
     text = ocr.recognize_jpeg(jpeg)
@@ -65,6 +70,25 @@ def check_floor(WAVE_POS):
     floor = int(match.group())
 
     return floor
+
+def check_rebirth(image_matcher, REBIRTH_POS):
+    # 현재 게임 화면 캡처 (JPEG bytes 반환)
+    jpeg = capture_jpeg(find_game_child(), region=REBIRTH_POS)
+
+    # 이미지 매칭
+    match_result = image_matcher.match(jpeg, "rebirth", threshold=0.85)
+
+    return match_result["matched"], match_result["confidence"], match_result["position"]
+
+
+def check_continue(image_matcher, CONTINUE_POS):
+    # 현재 게임 화면 캡처 (JPEG bytes 반환)
+    jpeg = capture_jpeg(find_game_child(), region=CONTINUE_POS)
+
+    # 이미지 매칭
+    match_result = image_matcher.match(jpeg, "continue", threshold=0.85)
+
+    return match_result["matched"], match_result["confidence"], match_result["position"]
 
 
 class ImageMatcher:

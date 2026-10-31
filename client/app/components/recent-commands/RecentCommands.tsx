@@ -37,19 +37,20 @@ export default function RecentCommands({ commands, device }: { commands: Command
                                                 STOP: "매크로 정지",
                                                 SWIPE: "스와이프",
                                                 RUN_MACRO: c.payload?.name ? ` ${c.payload.name}` : "",
+                                                RUN_MULTI_MACRO: c.payload?.name ? ` ${c.payload.name}` : "",
                                             } as Record<string, string>
                                         )[c.type] || c.type}
                                     </strong>
                                     <small>
+                                        {c.error ? <p>{c.error}</p> : ""}
                                         {new Date(c.created_at).toLocaleString("ko-KR")}
-                                        {c.error ? ` · ${c.error}` : ""}
                                     </small>
                                 </div>
                                 <span className={`pill ${c.status}`}>
                                 {(
                                     {
                                         pending: "대기",
-                                        claimed: "전달됨",
+                                        claimed: "실행중",
                                         done: "처리됨",
                                         failed: "실패",
                                         expired: "만료",
