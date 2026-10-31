@@ -433,8 +433,8 @@ button:disabled {
 .historyText small p {
   color: #e9ecf6;
   font-size: 13px;
-  margin: 0;
-  margin-top: 5px;
+  margin: 0 0 5px 0;
+  font-weight: bolder;
 }
 .pill {
   font-size: 10px;
