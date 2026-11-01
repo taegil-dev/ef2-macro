@@ -16,6 +16,7 @@ export default function MacroTab({ send, busy, online }: {
                     <div className="macroList">
                         {[
                             "자동 환생", 
+                            "양궁",
                             "테스트" 
                         ].map((macro) => (
                             <button

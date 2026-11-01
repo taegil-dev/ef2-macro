@@ -1,11 +1,11 @@
-__all__ = ["macros", "GOLD_POS", "WAVE_POS", "REBIRTH_POS"]
-
 _LEFT_WINDOW_X = 0.335
 _RIGHT_WINDOW_X = 0.658
 _WIDTH = _RIGHT_WINDOW_X - _LEFT_WINDOW_X
 
 GOLD_POS = 0.606, 0.55, 0.64, 0.58
-WAVE_POS = 0.5, 0.01, 0.526, 0.027
+DIAMOND_POS = 0.47, 0.55, 0.53, 0.58
+MEDAL_POS = 0.53, 0.55, 0.58, 0.58
+WAVE_POS = 0.46, 0.01, 0.526, 0.027
 REBIRTH_POS = 0.358, 0.13, 0.64, 0.875
 CONTINUE_POS = 0.57, 0.43, 0.63, 0.49
 
@@ -35,6 +35,8 @@ _pos = {
 
     "성 탭": ("click", _LEFT_WINDOW_X + 0.14, 0.97),
     "성 자동 강화 버튼": ("click", _LEFT_WINDOW_X + 0.03, 0.62),
+    "성채 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.09, 0.6),
+    "비서 버튼": ("click", _LEFT_WINDOW_X + 0.28, 0.65),
 
     "영웅 탭": ("click", _LEFT_WINDOW_X + 0.09, 0.97),
     "첫번째 영웅 프리셋 버튼": ("click", _LEFT_WINDOW_X + 0.04, 0.65),
@@ -52,7 +54,7 @@ _pos = {
     "영웅 10 강화 버튼": ("click", _LEFT_WINDOW_X + 0.20, 0.9),
     "영웅 1 강화 버튼": ("click", _LEFT_WINDOW_X + 0.26, 0.9),
 
-    "마지막 영웅 클릭": ("click", _LEFT_WINDOW_X + 0.09, 0.92),
+    "마지막 영웅 클릭": ("click", _LEFT_WINDOW_X + 0.09, 0.91),
     "영웅 상세 버튼": ("click", _LEFT_WINDOW_X + 0.03, 0.3),
     "영웅 해제 버튼": ("click", _LEFT_WINDOW_X + 0.2, 0.97),
     "영웅 닫기 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.01, 0.15),
@@ -62,8 +64,9 @@ _pos = {
     "엘프 종족 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.15, 0.6),
     "언데드 종족 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.12, 0.6),
     "오크 종족 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.1, 0.6),
+    "나가 배치 스와이프": ("swipe", _LEFT_WINDOW_X + 0.03, 0.8, _LEFT_WINDOW_X + 0.03, 0.65, 0.5, 3),
     "나가 배치 역스와이프": ("swipe", _LEFT_WINDOW_X + 0.03, 0.68, _LEFT_WINDOW_X + 0.03, 0.73, 0.5, 2),
-    "영웅 나가 배치 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.02, 0.72),
+    "영웅 나가 배치 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.02, 0.75),
 
     "영입 및 구매 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.04, 0.6),
     "영입 새로고침 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.12, 0.6),
@@ -94,13 +97,18 @@ _pos = {
 }
 
 _delay = {
+    "매우 짧은 딜레이": ("delay", 0.2),
     "짧은 딜레이": ("delay", 1),
-    "긴 딜레이": ("delay", 1),
+    "긴 딜레이": ("delay", 5),
 }
 
 _sequence = {
     "환생 시퀀스": [
         _pos["2배 환생 버튼"],
+
+        _delay["긴 딜레이"],
+
+        _pos["영웅 탭"],
 
         _delay["짧은 딜레이"],
     ],
@@ -108,6 +116,8 @@ _sequence = {
         _pos["이어하기 버튼"],
         _pos["중앙 성"], _pos["중앙 성"], _pos["중앙 성"], _pos["중앙 성"], _pos["중앙 성"],
         _pos["중앙 성"], _pos["중앙 성"], _pos["중앙 성"], _pos["중앙 성"], _pos["중앙 성"],
+        _pos["중앙 성"], _pos["중앙 성"], _pos["중앙 성"], _pos["중앙 성"], _pos["중앙 성"],
+        _pos["중앙 성"], _pos["중앙 성"], _pos["중앙 성"],
 
         _delay["짧은 딜레이"],
     ],
@@ -121,13 +131,20 @@ _sequence = {
 
         _delay["짧은 딜레이"],
     ],
+    "비서 시퀀스": [
+        _pos["성 탭"],
+        _pos["성채 버튼"],
+        _pos["비서 버튼"],
+    ],
     "영웅 및 성 강화 시퀀스": [
         _pos["성 탭"],
         _pos["성 자동 강화 버튼"],
+        _delay["짧은 딜레이"],
         _pos["성 자동 강화 버튼"],
 
         _pos["영웅 탭"],
         _pos["영웅 자동 강화 버튼"],
+        _delay["짧은 딜레이"],
         _pos["영웅 자동 강화 버튼"],
 
         _delay["짧은 딜레이"],
@@ -214,6 +231,7 @@ _sequence = {
         _pos["영웅 프리셋 확인 버튼"],
 
         _pos["영웅 자동 강화 버튼"],
+        _delay["짧은 딜레이"],
         _pos["영웅 자동 강화 버튼"],
 
         _pos["스와이프"],
@@ -253,6 +271,7 @@ _sequence = {
         _pos["영웅 탭"],
 
         _pos["영웅 자동 강화 버튼"],
+        _delay["짧은 딜레이"],
         _pos["영웅 자동 강화 버튼"],
 
         _delay["짧은 딜레이"],
@@ -273,7 +292,18 @@ _sequence = {
         _delay["짧은 딜레이"],
     ],
     "테스트 시퀀스": [
-        _pos["중앙 성"],
+        _pos["영웅 탭"],
+        _pos["병영 버튼"],
+        _pos["인간 종족 버튼"],
+        _pos["엘프 종족 버튼"],
+        _pos["언데드 종족 버튼"],
+
+        _pos["나가 배치 역스와이프"],
+        _delay["짧은 딜레이"],
+        _pos["나가 배치 스와이프"],
+        _delay["매우 짧은 딜레이"],
+        _pos["영웅 나가 배치 버튼"],
+
 
     ]
 }
@@ -286,6 +316,10 @@ macros = {
     "이어하기": {"name": "이어하기", "data": [
         {"name": "이어하기",
          "sequence": _sequence["이어하기 시퀀스"]},
+    ]},
+    "양궁": {"name": "양궁", "data": [
+        {"name": "양궁",
+         "sequence": []},
     ]},
     "영입": {"name": "영입", "data": [
         {"name": "영입", 
@@ -426,9 +460,18 @@ multi_macros = {
           "sequence": None,
           "ignore": None},
     ]},
+    "양궁": {"name": "양궁", "data": [
+        {"name": "양궁 시작",
+         "sequence": macros["양궁"]["data"]},
+
+         {"name": "양궁",
+          "condition": "custom",
+          "goal": 0,
+          "sequence": ""}
+    ]},
     "테스트": {"name": "테스트", "data": [
         {"name": "테스트", 
-         "condition": "empty",
+         "condition": "wave",
          "goal": 0,
          "sequence": macros["테스트"]["data"],
          "ignore": None}

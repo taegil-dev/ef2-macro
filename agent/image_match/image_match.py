@@ -46,20 +46,49 @@ def check_gold(GOLD_POS):
     gold = parse_gold_value(text)
 
     if gold is None:
-        print(f"Invalid gold format: {text}")
         return 0, ""
 
     return gold["value"], gold["unit"]
+
+def check_diamond(DIAMOND_POS):
+    # 현재 게임 화면 캡처 (JPEG bytes 반환)
+    jpeg = capture_jpeg(find_game_child(), region=DIAMOND_POS)
+
+    # OCR 분석
+    text = ocr.recognize_jpeg(jpeg)
+
+    match = re.search(r"\d+", text)
+    
+    if not match:
+        return False
+
+    diamond = int(match.group())
+
+    return diamond
+
+def check_medal(MEDAL_POS):
+    # 현재 게임 화면 캡처 (JPEG bytes 반환)
+    jpeg = capture_jpeg(find_game_child(), region=MEDAL_POS)
+
+    # OCR 분석
+    text = ocr.recognize_jpeg(jpeg)
+
+    medal = parse_gold_value(text)
+
+    if medal is None:
+        print(f"Invalid gold format: {text}")
+        return 0, ""
+
+    return medal["value"], medal["unit"]
 
 def check_floor(WAVE_POS):
     # 현재 게임 화면 캡처 (JPEG bytes 반환)
     jpeg = capture_jpeg(find_game_child(), region=WAVE_POS)
 
-    # with open("screenshot.jpg", "wb") as f:
-    #     f.write(jpeg)
-
     # OCR 분석
     text = ocr.recognize_jpeg(jpeg)
+
+    text = text.split(",")[0]
 
     # 숫자 추출
     match = re.search(r"\d+", text)
@@ -86,7 +115,7 @@ def check_continue(image_matcher, CONTINUE_POS):
     jpeg = capture_jpeg(find_game_child(), region=CONTINUE_POS)
 
     # 이미지 매칭
-    match_result = image_matcher.match(jpeg, "continue", threshold=0.85)
+    match_result = image_matcher.match(jpeg, "continue", threshold=0.9)
 
     return match_result["matched"], match_result["confidence"], match_result["position"]
 

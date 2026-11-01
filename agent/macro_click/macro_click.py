@@ -1,31 +1,25 @@
 import threading
 import time
 import macro_click.show_click_marker as click_marker
-
-
-def win32():
-    import win32api, win32con, win32gui # type: ignore
-    return win32api, win32con, win32gui
+import win32api, win32con, win32gui # type: ignore
 
 __all__ = ["click", "swipe"]
 
 
 def find_target(game_title: str = "오늘도 환생 2", target_class: str = 'CROSVM_1') -> int:
-    _, _, gui = win32()
-
     matches = []
     def top(hwnd, _):
-        if gui.IsWindowVisible(hwnd) and game_title.lower() in gui.GetWindowText(hwnd).lower():
+        if win32gui.IsWindowVisible(hwnd) and game_title.lower() in win32gui.GetWindowText(hwnd).lower():
 
             children = []
             def child(ch, _):
-                if gui.GetClassName(ch) == target_class:
+                if win32gui.GetClassName(ch) == target_class:
                     children.append(ch)
 
-            gui.EnumChildWindows(hwnd, child, None)
+            win32gui.EnumChildWindows(hwnd, child, None)
             matches.extend(children)
 
-    gui.EnumWindows(top, None)
+    win32gui.EnumWindows(top, None)
 
     if not matches:
         raise RuntimeError(f'Game child window {target_class!r} not found (title contains {game_title!r})')
@@ -36,8 +30,7 @@ def coords(hwnd: int, rx: float, ry: float) -> tuple[int, int]:
     if not (0 <= rx <= 1 and 0 <= ry <= 1):
         raise ValueError('Coordinate ratios must be between 0 and 1')
     
-    _, _, gui = win32()
-    left, top, right, bottom = gui.GetClientRect(hwnd)
+    left, top, right, bottom = win32gui.GetClientRect(hwnd)
 
     width = right - left
     height = bottom - top
@@ -50,26 +43,25 @@ def coords(hwnd: int, rx: float, ry: float) -> tuple[int, int]:
     return x, y
 
 def click(rx: float, ry: float, duration: float = .05, show_marker: bool = True):
-    api, con, gui = win32()
     hwnd = find_target()
 
-    if gui.IsIconic(gui.GetAncestor(hwnd, con.GA_ROOT)):
+    if win32gui.IsIconic(win32gui.GetAncestor(hwnd, win32con.GA_ROOT)):
         raise RuntimeError('Game is minimized')
 
     x, y = coords(hwnd, rx, ry)
 
-    gui.PostMessage(
+    win32gui.PostMessage(
         hwnd, 
-        con.WM_MOUSEMOVE, 
+        win32con.WM_MOUSEMOVE, 
         0, 
-        api.MAKELONG(x, y)
+        win32api.MAKELONG(x, y)
     )
 
-    gui.PostMessage(
+    win32gui.PostMessage(
         hwnd, 
-        con.WM_LBUTTONDOWN, 
-        con.MK_LBUTTON, 
-        api.MAKELONG(x, y)
+        win32con.WM_LBUTTONDOWN, 
+        win32con.MK_LBUTTON, 
+        win32api.MAKELONG(x, y)
     )
 
     if show_marker:
@@ -78,11 +70,11 @@ def click(rx: float, ry: float, duration: float = .05, show_marker: bool = True)
     try:
         time.sleep(duration)
     finally:
-        gui.PostMessage(
+        win32gui.PostMessage(
             hwnd, 
-            con.WM_LBUTTONUP, 
+            win32con.WM_LBUTTONUP, 
             0, 
-            api.MAKELONG(x, y)
+            win32api.MAKELONG(x, y)
         )
 
 def swipe(
@@ -96,27 +88,26 @@ def swipe(
         steps: int = 30, 
         show_marker: bool = True
     ):
-    api, con, gui = win32()
     hwnd = find_target()
 
-    if gui.IsIconic(gui.GetAncestor(hwnd, con.GA_ROOT)):
+    if win32gui.IsIconic(win32gui.GetAncestor(hwnd, win32con.GA_ROOT)):
         raise RuntimeError('Game is minimized')
     
     x1, y1 = coords(hwnd, sx, sy)
     x2, y2 = coords(hwnd, ex, ey)
 
-    gui.PostMessage(
+    win32gui.PostMessage(
         hwnd, 
-        con.WM_MOUSEMOVE, 
+        win32con.WM_MOUSEMOVE, 
         0, 
-        api.MAKELONG(x1, y1)
+        win32api.MAKELONG(x1, y1)
     )
 
-    gui.PostMessage(
+    win32gui.PostMessage(
         hwnd, 
-        con.WM_LBUTTONDOWN, 
-        con.MK_LBUTTON, 
-        api.MAKELONG(x1, y1)
+        win32con.WM_LBUTTONDOWN, 
+        win32con.MK_LBUTTON, 
+        win32api.MAKELONG(x1, y1)
     )
     if show_marker:
         click_marker.show_click_marker(hwnd, x1, y1)
@@ -130,20 +121,20 @@ def swipe(
             progress = i / steps
             x, y = int(x1 + (x2 - x1) * progress), int(y1 + (y2 - y1) * progress)
 
-            gui.PostMessage(
+            win32gui.PostMessage(
                 hwnd, 
-                con.WM_MOUSEMOVE, 
-                con.MK_LBUTTON, 
-                api.MAKELONG(x, y)
+                win32con.WM_MOUSEMOVE, 
+                win32con.MK_LBUTTON, 
+                win32api.MAKELONG(x, y)
             )
 
             if show_marker:
                 click_marker.show_click_marker(hwnd, x, y)
 
     finally:
-        gui.PostMessage(
+        win32gui.PostMessage(
             hwnd, 
-            con.WM_LBUTTONUP, 
+            win32con.WM_LBUTTONUP, 
             0, 
-            api.MAKELONG(x2, y2)
+            win32api.MAKELONG(x2, y2)
         )
