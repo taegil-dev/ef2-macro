@@ -508,7 +508,7 @@ multi_macros = {
          "condition": "empty",
          "goal": 0,
          "sequence": macros["영웅 및 성 강화"]["data"],
-         "ignore": {"condition": "gold", "type": "higher", "goal": "1ao"}},
+         "ignore": {"condition": "gold", "type": "higher", "goal": "50ao"}},
 
         {"name": "퀘스트 30 오픈", 
          "condition": "gold",
@@ -548,7 +548,7 @@ multi_macros = {
 
         {"name": "웨이브 9000",
          "condition": "wave",
-         "goal": 9200,
+         "goal": 9000,
          "sequence": macros["웨이브 9000"]["data"],
          "ignore": {"condition": "wave", "type": "higher", "goal": 9700}},
 
