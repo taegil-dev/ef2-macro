@@ -6,24 +6,44 @@ GOLD_POS = 0.606, 0.55, 0.64, 0.58
 DIAMOND_POS = 0.47, 0.55, 0.53, 0.58
 MEDAL_POS = 0.53, 0.55, 0.58, 0.58
 WAVE_POS = 0.46, 0.01, 0.526, 0.027
-REBIRTH_POS = 0.358, 0.13, 0.64, 0.875
-CONTINUE_POS = 0.57, 0.43, 0.63, 0.49
+WAVE_POS2 = 0.45, 0.285, 0.55, 0.35
+REBIRTH_POS = 0.357, 0.129, 0.641, 0.321
+CONTINUE_POS = 0.569, 0.429, 0.631, 0.491
 
 _pos = {
     "프리셋 변경 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.1, 0.49),
-    "등반 펫 버튼": ("click", _LEFT_WINDOW_X + 0.1, 0.66),
-    "퀘스트 오픈 펫 버튼": ("click", _LEFT_WINDOW_X + 0.14, 0.66),
-    "퀘스트 확장 펫 버튼": ("click", _LEFT_WINDOW_X + 0.18, 0.66),
+    "첫번째 펫 버튼": ("click", _LEFT_WINDOW_X + 0.1, 0.66),
+    "두번째 펫 버튼": ("click", _LEFT_WINDOW_X + 0.14, 0.66),
+    "세번째 펫 버튼": ("click", _LEFT_WINDOW_X + 0.18, 0.66),
+    "네번째 펫 버튼": ("click", _LEFT_WINDOW_X + 0.22, 0.66),
+    "다섯번째 펫 버튼": ("click", _LEFT_WINDOW_X + 0.26, 0.66),
+    "여섯번째 펫 버튼": ("click", _LEFT_WINDOW_X + 0.30, 0.66),
+    "일곱번째 펫 버튼": ("click", _LEFT_WINDOW_X + 0.1, 0.7),
     "병사 레벨업 감소 펫 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.04, 0.66),
 
-    "등반 유물 프리셋 버튼": ("click", _LEFT_WINDOW_X + 0.09, 0.4),
-    "퀘스트 오픈 유물 프리셋 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.15, 0.4),
-    "병사 레벨업 감소 유물 프리셋 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.1, 0.4),
+    "첫번째 유물 버튼": ("click", _LEFT_WINDOW_X + 0.06, 0.4),
+    "두번째 유물 버튼": ("click", _LEFT_WINDOW_X + 0.11, 0.4),
+    "세번째 유물 버튼": ("click", _LEFT_WINDOW_X + 0.16, 0.4),
+    "네번째 유물 버튼": ("click", _LEFT_WINDOW_X + 0.21, 0.4),
+    "다섯번째 유물 버튼": ("click", _LEFT_WINDOW_X + 0.26, 0.4),
+
+    "첫번째 영웅 버튼": ("click", _LEFT_WINDOW_X + 0.06, 0.18),
+    "두번째 영웅 버튼": ("click", _LEFT_WINDOW_X + 0.11, 0.18),
+    "세번째 영웅 버튼": ("click", _LEFT_WINDOW_X + 0.16, 0.18),
+    "네번째 영웅 버튼": ("click", _LEFT_WINDOW_X + 0.21, 0.18),
+    "다섯번째 영웅 버튼": ("click", _LEFT_WINDOW_X + 0.26, 0.18),
     "프리셋 변경 저장 버튼": ("click", _LEFT_WINDOW_X + 0.12, 0.85),
     "프리셋 변경 취소 버튼": ("click", _LEFT_WINDOW_X + 0.2, 0.85),
     
     "2배 환생 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.12, 0.47),
     "이어하기 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.05, 0.45),
+
+    "길드 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.05, 0.15),
+    "건물 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.01, 0.97),
+    "놀이터 버튼": ("click", _LEFT_WINDOW_X + 0.15, 0.49),
+    "양궁 시작 버튼": ("click", _LEFT_WINDOW_X + 0.16, 0.65),
+    "양궁 닫기 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.01, 0.13),
+    "길드 닫기 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.01, 0.2),
 
     "퀘스트 탭": ("click", _LEFT_WINDOW_X + 0.03, 0.97),
     "스와이프": ("swipe", _LEFT_WINDOW_X + 0.03, 0.9, _LEFT_WINDOW_X + 0.03, 0.68, 0.1, 2),
@@ -37,6 +57,8 @@ _pos = {
     "성 자동 강화 버튼": ("click", _LEFT_WINDOW_X + 0.03, 0.62),
     "성채 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.09, 0.6),
     "비서 버튼": ("click", _LEFT_WINDOW_X + 0.28, 0.65),
+    "비서 확인 버튼": ("click", 0.49, 0.35),
+    "비서 완료 버튼": ("click", _LEFT_WINDOW_X + 0.15, 0.82),
 
     "영웅 탭": ("click", _LEFT_WINDOW_X + 0.09, 0.97),
     "첫번째 영웅 프리셋 버튼": ("click", _LEFT_WINDOW_X + 0.04, 0.65),
@@ -66,7 +88,7 @@ _pos = {
     "오크 종족 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.1, 0.6),
     "나가 배치 스와이프": ("swipe", _LEFT_WINDOW_X + 0.03, 0.8, _LEFT_WINDOW_X + 0.03, 0.65, 0.5, 3),
     "나가 배치 역스와이프": ("swipe", _LEFT_WINDOW_X + 0.03, 0.68, _LEFT_WINDOW_X + 0.03, 0.73, 0.5, 2),
-    "영웅 나가 배치 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.02, 0.75),
+    "영웅 나가 배치 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.02, 0.73),
 
     "영입 및 구매 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.04, 0.6),
     "영입 새로고침 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.12, 0.6),
@@ -91,9 +113,13 @@ _pos = {
     "오른쪽 대각 아래 영웅 to 중앙": ("swipe", 0.54, 0.3, 0.5, 0.26, 0.5, 1),
     "오른쪽 아래 영웅 to 중앙": ("swipe", 0.51, 0.32, 0.5, 0.26, 0.5, 1),
 
-    "왼쪽 대각 위 영웅 뒤집기": ("swipe", 0.46, 0.2, 0.46, 0.3, 0.5, 1),
-    "오른쪽 대각 위 영웅 뒤집기": ("swipe", 0.54, 0.2, 0.54, 0.3, 0.5, 1),
-    "오른쪽 위 영웅 뒤집기": ("swipe", 0.51, 0.18, 0.51, 0.32, 0.5, 1),
+    "오른쪽 대각 위 영웅 to 왼쪽": ("swipe", 0.54, 0.2, 0.47, 0.29, 0.5, 1),
+    "오른쪽 위 영웅 to 왼쪽 대각 아래": ("swipe", 0.51, 0.18, 0.5, 0.35, 0.5, 1),
+    "오른쪽 대각 위 영웅 to 오른쪽 아래": ("swipe", 0.54, 0.2, 0.52, 0.35, 0.5, 1),
+
+    "왼쪽 대각 위 영웅 뒤집기": ("swipe", 0.46, 0.2, 0.46, 0.35, 0.5, 1),
+    "오른쪽 대각 위 영웅 뒤집기": ("swipe", 0.54, 0.2, 0.54, 0.35, 0.5, 1),
+    "오른쪽 위 영웅 뒤집기": ("swipe", 0.51, 0.18, 0.51, 0.38, 0.5, 1),
 }
 
 _delay = {
@@ -135,6 +161,26 @@ _sequence = {
         _pos["성 탭"],
         _pos["성채 버튼"],
         _pos["비서 버튼"],
+
+        _delay["긴 딜레이"],
+        _pos["비서 확인 버튼"],
+        _pos["비서 완료 버튼"],
+
+        _delay["긴 딜레이"],
+        _pos["비서 완료 버튼"],
+        _pos["성 탭"],
+
+        _delay["짧은 딜레이"],
+    ],
+    "양궁 시퀀스": [
+        _pos["길드 버튼"],
+        _pos["건물 버튼"],
+        _pos["놀이터 버튼"],
+        _pos["양궁 시작 버튼"],
+    ],
+    "양궁 닫기 시퀀스": [
+        _pos["양궁 닫기 버튼"],
+        _pos["길드 닫기 버튼"],
     ],
     "영웅 및 성 강화 시퀀스": [
         _pos["성 탭"],
@@ -150,40 +196,69 @@ _sequence = {
         _delay["짧은 딜레이"],
     ],
     "등반 프리셋 시퀀스": [
+        _pos["성 탭"],
         _pos["프리셋 변경 버튼"],
-        _pos["등반 유물 프리셋 버튼"],
-        _pos["등반 펫 버튼"],
+        _pos["두번째 유물 버튼"],
+        _pos["두번째 펫 버튼"],
         _pos["프리셋 변경 저장 버튼"],
-
-        _delay["짧은 딜레이"],
-    ],
-    "등반 영웅 프리셋 시퀀스": [
-        _pos["영웅 탭"],
-        _pos["두번째 영웅 프리셋 버튼"],
-        _pos["영웅 프리셋 확인 버튼"],
+        _pos["프리셋 변경 취소 버튼"],
 
         _delay["짧은 딜레이"],
     ],
     "퀘스트 확장 프리셋 시퀀스": [
+        _pos["성 탭"],
         _pos["프리셋 변경 버튼"],
-        _pos["퀘스트 확장 펫 버튼"],
+        _pos["네번째 펫 버튼"],
         _pos["프리셋 변경 저장 버튼"],
+        _pos["프리셋 변경 취소 버튼"],
 
         _delay["짧은 딜레이"],
     ],
     "퀘스트 오픈 프리셋 시퀀스": [
+        _pos["성 탭"],
         _pos["프리셋 변경 버튼"],
-        _pos["퀘스트 오픈 유물 프리셋 버튼"],
-        _pos["퀘스트 오픈 펫 버튼"],
+        _pos["네번째 유물 버튼"],
+        _pos["세번째 펫 버튼"],
         _pos["프리셋 변경 저장 버튼"],
+        _pos["프리셋 변경 취소 버튼"],
 
         _delay["짧은 딜레이"],
     ],
-    "병사 레벨업 감소 프리셋 시퀀스": [
+    "병사 최대 레벨 증가 프리셋 시퀀스": [
+        _pos["성 탭"],
         _pos["프리셋 변경 버튼"],
-        _pos["병사 레벨업 감소 유물 프리셋 버튼"],
-        _pos["병사 레벨업 감소 펫 버튼"],
+        _pos["첫번째 펫 버튼"],
         _pos["프리셋 변경 저장 버튼"],
+        _pos["프리셋 변경 취소 버튼"],
+        
+        _delay["짧은 딜레이"],
+    ],
+    "병사 레벨 증가 프리셋 시퀀스": [
+        _pos["성 탭"],
+        _pos["프리셋 변경 버튼"],
+        _pos["여섯번째 펫 버튼"],
+        _pos["프리셋 변경 저장 버튼"],
+        _pos["프리셋 변경 취소 버튼"],
+        
+        _delay["짧은 딜레이"],
+    ],
+    "병사 레벨업 감소 프리셋 시퀀스": [
+        _pos["성 탭"],
+        _pos["프리셋 변경 버튼"],
+        _pos["다섯번째 유물 버튼"],
+        _pos["일곱번째 펫 버튼"],
+        _pos["프리셋 변경 저장 버튼"],
+        _pos["프리셋 변경 취소 버튼"],
+        
+        _delay["짧은 딜레이"],
+    ],
+    "등반 영웅 프리셋 시퀀스": [
+        _pos["성 탭"],
+        _pos["프리셋 변경 버튼"],
+        _pos["첫번째 영웅 버튼"],
+        _pos["두번째 펫 버튼"],
+        _pos["프리셋 변경 저장 버튼"],
+        _pos["프리셋 변경 취소 버튼"],
 
         _delay["짧은 딜레이"],
     ],
@@ -201,7 +276,6 @@ _sequence = {
         _pos["29 퀘스트 오픈 및 강화 버튼"],
         _pos["29 퀘스트 오픈 및 강화 버튼"],
         _pos["29 퀘스트 레벨업 맥스 버튼"],
-        _pos["퀘스트 탭"],
 
         _delay["짧은 딜레이"],
     ],
@@ -211,100 +285,81 @@ _sequence = {
         _pos["30 퀘스트 오픈 및 강화 버튼"],
         _pos["30 퀘스트 오픈 및 강화 버튼"],
         _pos["30 퀘스트 레벨업 맥스 버튼"],
-        _pos["퀘스트 탭"],
 
         _delay["짧은 딜레이"],
     ],
     "8000 영웅 프리셋 변경 시퀀스": [
-        _pos["영웅 탭"],
-        _pos["세번째 영웅 프리셋 버튼"],
-        _pos["영웅 프리셋 확인 버튼"],
+        _pos["성 탭"],
+        _pos["프리셋 변경 버튼"],
+        _pos["두번째 영웅 버튼"],
+        _pos["프리셋 변경 저장 버튼"],
+        _pos["프리셋 변경 취소 버튼"],
 
+        _pos["영웅 탭"],
+        _pos["영웅 자동 강화 버튼"],
+        _pos["영웅 자동 강화 버튼"],
+
+        _delay["짧은 딜레이"],
+    ],
+    "8500 영웅 프리셋 변경 시퀀스": [
+        _pos["성 탭"],
+        _pos["프리셋 변경 버튼"],
+        _pos["세번째 영웅 버튼"],
+        _pos["프리셋 변경 저장 버튼"],
+        _pos["프리셋 변경 취소 버튼"],
+
+        _pos["영웅 탭"],
         _pos["영웅 자동 강화 버튼"],
         _pos["영웅 자동 강화 버튼"],
 
         _delay["짧은 딜레이"],
     ],
     "9000 영웅 프리셋 변경 시퀀스": [
+        _pos["성 탭"],
+        _pos["프리셋 변경 버튼"],
+        _pos["네번째 영웅 버튼"],
+        _pos["프리셋 변경 저장 버튼"],
+        _pos["프리셋 변경 취소 버튼"],
+
         _pos["영웅 탭"],
-        _pos["네번째 영웅 프리셋 버튼"],
-        _pos["영웅 프리셋 확인 버튼"],
-
         _pos["영웅 자동 강화 버튼"],
-        _delay["짧은 딜레이"],
-        _pos["영웅 자동 강화 버튼"],
-
-        _pos["스와이프"],
-        _pos["마지막 영웅 클릭"],
-        _pos["영웅 상세 버튼"],
-        _pos["영웅 해제 버튼"],
-
-        _pos["마지막 영웅 클릭"],
-        _pos["영웅 상세 버튼"],
-        _pos["영웅 해제 버튼"],
-
-        _pos["마지막 영웅 클릭"],
-        _pos["영웅 상세 버튼"],
-        _pos["영웅 해제 버튼"],
-
-        _pos["마지막 영웅 클릭"],
-        _pos["영웅 상세 버튼"],
-        _pos["영웅 해제 버튼"],
-
-        _delay["짧은 딜레이"],
-    ],
-    "영웅 나가 배치 시퀀스": [
-        _pos["영웅 탭"],
-        _pos["병영 버튼"],
-        _pos["인간 종족 버튼"],
-        _pos["엘프 종족 버튼"],
-        _pos["언데드 종족 버튼"],
-
-        _pos["스와이프"],
-        _pos["나가 배치 역스와이프"],
-        _pos["정스와이프"],
-
-        _pos["영웅 나가 배치 버튼"],
-        _pos["영웅 나가 배치 버튼"],
-        _pos["영웅 나가 배치 버튼"],
-        _pos["영웅 나가 배치 버튼"],
-        _pos["영웅 탭"],
-
-        _pos["영웅 자동 강화 버튼"],
-        _delay["짧은 딜레이"],
+        _delay["긴 딜레이"],
         _pos["영웅 자동 강화 버튼"],
 
         _delay["짧은 딜레이"],
     ],
     "9000 영웅 지정 시퀀스": [
         _pos["중앙 성"],
-        _pos["왼쪽 대각 아래 영웅 to 중앙"],
-        _pos["왼쪽 아래 영웅 to 중앙"],
         _pos["오른쪽 대각 아래 영웅 to 중앙"],
         _pos["오른쪽 아래 영웅 to 중앙"],
+        _pos["오른쪽 대각 위 영웅 to 오른쪽 아래"],
+        _pos["영웅 배치 확인 버튼"],
 
-        _pos["왼쪽 대각 위 영웅 뒤집기"],
-        _pos["오른쪽 대각 위 영웅 뒤집기"],
-        _pos["오른쪽 위 영웅 뒤집기"],
+        _delay["짧은 딜레이"],
+    ],
+    "9700 영웅 프리셋 변경 시퀀스": [
+        _pos["성 탭"],
+        _pos["프리셋 변경 버튼"],
+        _pos["다섯번째 영웅 버튼"],
+        _pos["프리셋 변경 저장 버튼"],
+        _pos["프리셋 변경 취소 버튼"],
 
+        _delay["짧은 딜레이"],
+    ],
+    "9700 영웅 지정 시퀀스": [
+        _pos["중앙 성"],
+        _pos["오른쪽 대각 아래 영웅 to 중앙"],
+        _pos["오른쪽 아래 영웅 to 중앙"],
+        _pos["오른쪽 대각 위 영웅 to 왼쪽"],
+        _pos["오른쪽 위 영웅 to 왼쪽 대각 아래"],
         _pos["영웅 배치 확인 버튼"],
 
         _delay["짧은 딜레이"],
     ],
     "테스트 시퀀스": [
-        _pos["영웅 탭"],
-        _pos["병영 버튼"],
-        _pos["인간 종족 버튼"],
-        _pos["엘프 종족 버튼"],
-        _pos["언데드 종족 버튼"],
-
-        _pos["나가 배치 역스와이프"],
-        _delay["짧은 딜레이"],
-        _pos["나가 배치 스와이프"],
-        _delay["매우 짧은 딜레이"],
-        _pos["영웅 나가 배치 버튼"],
-
-
+        _pos["중앙 성"],
+        _pos["오른쪽 대각 위 영웅 to 왼쪽"],
+        _pos["오른쪽 위 영웅 to 왼쪽 대각 아래"],
     ]
 }
 
@@ -317,13 +372,21 @@ macros = {
         {"name": "이어하기",
          "sequence": _sequence["이어하기 시퀀스"]},
     ]},
-    "양궁": {"name": "양궁", "data": [
-        {"name": "양궁",
-         "sequence": []},
+    "양궁 시작": {"name": "양궁 시작", "data": [
+        {"name": "양궁 시작",
+         "sequence": _sequence["양궁 시퀀스"]},
+    ]},
+    "양궁 끝": {"name": "양궁 끝", "data": [
+        {"name": "양궁 끝",
+         "sequence": _sequence["양궁 닫기 시퀀스"]},
     ]},
     "영입": {"name": "영입", "data": [
         {"name": "영입", 
          "sequence": _sequence["영입 시퀀스"]},
+    ]},
+    "비서": {"name": "비서", "data": [
+        {"name": "비서",
+         "sequence": _sequence["비서 시퀀스"]},
     ]},
     "등반 영웅 프리셋": {"name": "등반 영웅 프리셋", "data": [
         {"name": "등반 영웅 프리셋", 
@@ -376,6 +439,10 @@ macros = {
         {"name": "8000 영웅 프리셋 변경", 
          "sequence": _sequence["8000 영웅 프리셋 변경 시퀀스"]},
     ]},
+    "웨이브 8500": {"name": "8500 웨이브", "data": [
+        {"name": "8500 영웅 프리셋 변경", 
+         "sequence": _sequence["8500 영웅 프리셋 변경 시퀀스"]},
+    ]},
     "웨이브 9000": {"name": "9000 웨이브", "data": [
         {"name": "병사 레벨업 감소 프리셋", 
          "sequence": _sequence["병사 레벨업 감소 프리셋 시퀀스"]},
@@ -386,11 +453,18 @@ macros = {
         {"name": "등반 프리셋", 
          "sequence": _sequence["등반 프리셋 시퀀스"]},
 
-        {"name": "영웅 나가 배치", 
-         "sequence": _sequence["영웅 나가 배치 시퀀스"]},
+        {"name": "병사 레벨 증가 프리셋", 
+         "sequence": _sequence["병사 레벨 증가 프리셋 시퀀스"]},
 
         {"name": "9000 영웅 지정", 
          "sequence": _sequence["9000 영웅 지정 시퀀스"]},
+    ]},
+    "웨이브 9700": {"name": "9700 웨이브", "data": [
+        {"name": "9700 영웅 프리셋 변경", 
+         "sequence": _sequence["9700 영웅 프리셋 변경 시퀀스"]},
+
+        {"name": "9700 영웅 지정", 
+         "sequence": _sequence["9700 영웅 지정 시퀀스"]},
     ]},
     "테스트": {"name": "테스트", "data": [
         {"name": "테스트", 
@@ -406,23 +480,35 @@ multi_macros = {
          "sequence": macros["등반 영웅 프리셋"]["data"],
          "ignore": {"condition": "wave", "type": "higher", "goal": 7950}},
 
-         {"name": "영입", 
+        {"name": "영입", 
          "condition": "empty",
          "goal": 0,
          "sequence": macros["영입"]["data"],
          "ignore": None},
 
-         {"name": "영웅 및 성 강화", 
-         "condition": "gold",
-         "goal": "10an",
+        {"name": "비서", 
+         "condition": "empty",
+         "goal": 0,
+         "sequence": macros["비서"]["data"],
+         "ignore": None},
+
+        {"name": "영웅 및 성 강화", 
+         "condition": "wave",
+         "goal": 5100,
          "sequence": macros["영웅 및 성 강화"]["data"],
-         "ignore": {"condition": "gold", "type": "higher", "goal": "10ao"}},
+         "ignore": {"condition": "wave", "type": "higher", "goal": 8000}},
 
         {"name": "퀘스트 29 레벨업", 
          "condition": "gold",
          "goal": "6ao",
          "sequence": macros["퀘스트 29 레벨업"]["data"],
          "ignore": {"condition": "gold", "type": "higher", "goal": "1ap"}},
+
+        {"name": "영웅 및 성 강화", 
+         "condition": "empty",
+         "goal": 0,
+         "sequence": macros["영웅 및 성 강화"]["data"],
+         "ignore": {"condition": "gold", "type": "higher", "goal": "1ao"}},
 
         {"name": "퀘스트 30 오픈", 
          "condition": "gold",
@@ -432,7 +518,7 @@ multi_macros = {
 
         {"name": "퀘스트 30 레벨업",
          "condition": "gold",
-         "goal": "700au",
+         "goal": "600au",
          "sequence": macros["퀘스트 30 레벨업"]["data"],
          "ignore": None},
 
@@ -448,13 +534,31 @@ multi_macros = {
          "sequence": macros["웨이브 8000"]["data"],
          "ignore": {"condition": "wave", "type": "higher", "goal": 8500}},
 
-        {"name": "웨이브 9000",
+        {"name": "웨이브 8500",
          "condition": "wave",
-         "goal": 8950,
-         "sequence": macros["웨이브 9000"]["data"],
+         "goal": 8500,
+         "sequence": macros["웨이브 8500"]["data"],
+         "ignore": {"condition": "wave", "type": "higher", "goal": 9200}},
+
+        {"name": "영입", 
+         "condition": "empty",
+         "goal": 0,
+         "sequence": macros["영입"]["data"],
          "ignore": None},
 
-         {"name": "환생",
+        {"name": "웨이브 9000",
+         "condition": "wave",
+         "goal": 9200,
+         "sequence": macros["웨이브 9000"]["data"],
+         "ignore": {"condition": "wave", "type": "higher", "goal": 9700}},
+
+        {"name": "웨이브 9700",
+         "condition": "wave",
+         "goal": 9700,
+         "sequence": macros["웨이브 9700"]["data"],
+         "ignore": None},
+
+        {"name": "환생",
           "condition": "rebirth",
           "goal": 0,
           "sequence": None,
@@ -462,14 +566,24 @@ multi_macros = {
     ]},
     "양궁": {"name": "양궁", "data": [
         {"name": "양궁 시작",
-         "sequence": macros["양궁"]["data"]},
+         "condition": "empty",
+         "goal": 0,
+         "sequence": macros["양궁 시작"]["data"],
+         "ignore": None},
 
-         {"name": "양궁",
-          "condition": "custom",
-          "goal": 0,
-          "sequence": ""}
+        {"name": "양궁",
+         "condition": "custom",
+         "goal": 0,
+         "sequence": "",
+         "ignore": None},
+
+        {"name": "양궁 끝",
+         "condition": "empty",
+         "goal": 0,
+         "sequence": macros["양궁 끝"]["data"],
+         "ignore": None},
     ]},
-    "테스트": {"name": "테스트", "data": [
+    "테스트": {"name": "테스트", "rebirth": macros["환생"]["data"], "continue": macros["이어하기"]["data"], "data": [
         {"name": "테스트", 
          "condition": "wave",
          "goal": 0,

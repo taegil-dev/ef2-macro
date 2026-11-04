@@ -81,33 +81,42 @@ def check_medal(MEDAL_POS):
 
     return medal["value"], medal["unit"]
 
-def check_floor(WAVE_POS):
+def check_floor(WAVE_POS, WAVE_POS2, compare=True):
     # 현재 게임 화면 캡처 (JPEG bytes 반환)
     jpeg = capture_jpeg(find_game_child(), region=WAVE_POS)
+    jpeg2 = capture_jpeg(find_game_child(), region=WAVE_POS2)
 
     # OCR 분석
     text = ocr.recognize_jpeg(jpeg)
+    text2 = ocr.recognize_jpeg(jpeg2)
 
     text = text.split(",")[0]
 
     # 숫자 추출
     match = re.search(r"\d+", text)
+    match2 = re.search(r"\d+", text2)
 
     if not match:
         return False
 
     floor = int(match.group())
 
+    if compare and match2:
+        floor2 = int(match2.group())
+
+        if floor2 < floor:
+            return False
+
     return floor
 
 def check_rebirth(image_matcher, REBIRTH_POS):
     # 현재 게임 화면 캡처 (JPEG bytes 반환)
     jpeg = capture_jpeg(find_game_child(), region=REBIRTH_POS)
-
+    
     # 이미지 매칭
-    match_result = image_matcher.match(jpeg, "rebirth", threshold=0.85)
+    match_result = image_matcher.match(jpeg, "rebirth", threshold=0.8)
 
-    return match_result["matched"], match_result["confidence"], match_result["position"]
+    return match_result["matched"]
 
 
 def check_continue(image_matcher, CONTINUE_POS):
@@ -117,7 +126,7 @@ def check_continue(image_matcher, CONTINUE_POS):
     # 이미지 매칭
     match_result = image_matcher.match(jpeg, "continue", threshold=0.9)
 
-    return match_result["matched"], match_result["confidence"], match_result["position"]
+    return match_result["matched"]
 
 
 class ImageMatcher:

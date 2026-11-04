@@ -45,6 +45,7 @@ def capture_jpeg(
     dc = win32ui.CreateDCFromHandle(src_dc)
     mem = dc.CreateCompatibleDC()
     bmp = win32ui.CreateBitmap()
+
     try:
         bmp.CreateCompatibleBitmap(dc, width, height)
         mem.SelectObject(bmp)
@@ -56,7 +57,7 @@ def capture_jpeg(
         
         info = bmp.GetInfo()
         data = bmp.GetBitmapBits(True)
-        image = Image.frombuffer('RGB', (info['bmWidth'], info['bmHeight']), data, 'raw', 'BGRX', 0, 1).copy()
+        image = Image.frombytes('RGB', (info['bmWidth'], info['bmHeight']), data, 'raw', 'BGRX', 0, 1)
 
         if region is not None:
             x1, y1, x2, y2 = region
@@ -90,8 +91,8 @@ def capture_jpeg(
     return out.getvalue()
 
 # test code
-jpeg = capture_jpeg(find_game_child("오늘도 환생 2"), region=(0.46, 0.01, 0.526, 0.027))
+# jpeg = capture_jpeg(find_game_child("오늘도 환생 2"), region=(0.358, 0.13, 0.64, 0.32))
 
-with open("screenshot.jpg", "wb") as f:
-    f.write(jpeg)
+# with open("screenshot.jpg", "wb") as f:
+#     f.write(jpeg)
 

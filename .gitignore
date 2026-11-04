@@ -1,12 +1,13 @@
-.env
 .venv/
 __pycache__/
 .vscode/
 
 client/node_modules
 client/.next
-client/.env
+*.env
 
-agent/MacroAgent.spec
 build
 dist
+
+*.exe
+*.spec

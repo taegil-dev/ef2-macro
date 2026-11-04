@@ -15,7 +15,7 @@ python -m pip install -r requirements.txt
 폴더 위치 agent에서 아래 명령어 cmd에서 실행
 실행 후 dist 폴더에 exe 파일 생성
 
-pyinstaller --onefile --name MacroAgent --add-data "image_match/templates;image_match/templates" agent.py
+pyinstaller --clean --onefile --console --name agent --icon "favicon.ico" --collect-all rapidocr --add-data "image_match/templates;image_match/templates" agent.py
 
 
 # macro 수정 방법
@@ -28,3 +28,5 @@ _sequence가 모여서 macros가 됩니다. 이 단계부터 client에서 실행
 
 만약 더 복잡한 매크로를 위한다면 multi_macros 변수가 있습니다. 이는 조건, 종료 시 처리 등등 복잡한 기능을 제공하며
 여러 매크로를 합칠 수 있습니다.
+
+해당 파일은 매크로 실행 시마다 읽기 때문에 수정사항이 즉시 반영됩니다.
