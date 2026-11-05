@@ -90,9 +90,5 @@ def capture_jpeg(
     
     return out.getvalue()
 
-# test code
-# jpeg = capture_jpeg(find_game_child("오늘도 환생 2"), region=(0.358, 0.13, 0.64, 0.32))
 
-# with open("screenshot.jpg", "wb") as f:
-#     f.write(jpeg)
 

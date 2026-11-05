@@ -114,7 +114,7 @@ def check_rebirth(image_matcher, REBIRTH_POS):
     jpeg = capture_jpeg(find_game_child(), region=REBIRTH_POS)
     
     # 이미지 매칭
-    match_result = image_matcher.match(jpeg, "rebirth", threshold=0.8)
+    match_result = image_matcher.match(jpeg, "rebirth", threshold=0.7)
 
     return match_result["matched"]
 

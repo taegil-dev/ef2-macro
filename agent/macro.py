@@ -256,6 +256,7 @@ _sequence = {
         _pos["성 탭"],
         _pos["프리셋 변경 버튼"],
         _pos["첫번째 영웅 버튼"],
+        _pos["두번째 유물 버튼"],
         _pos["두번째 펫 버튼"],
         _pos["프리셋 변경 저장 버튼"],
         _pos["프리셋 변경 취소 버튼"],
@@ -532,13 +533,7 @@ multi_macros = {
          "condition": "wave",
          "goal": 7950,
          "sequence": macros["웨이브 8000"]["data"],
-         "ignore": {"condition": "wave", "type": "higher", "goal": 8500}},
-
-        {"name": "웨이브 8500",
-         "condition": "wave",
-         "goal": 8500,
-         "sequence": macros["웨이브 8500"]["data"],
-         "ignore": {"condition": "wave", "type": "higher", "goal": 9200}},
+         "ignore": {"condition": "wave", "type": "higher", "goal": 8950}},
 
         {"name": "영입", 
          "condition": "empty",
@@ -548,7 +543,7 @@ multi_macros = {
 
         {"name": "웨이브 9000",
          "condition": "wave",
-         "goal": 9000,
+         "goal": 8950,
          "sequence": macros["웨이브 9000"]["data"],
          "ignore": {"condition": "wave", "type": "higher", "goal": 9700}},
 

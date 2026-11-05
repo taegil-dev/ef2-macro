@@ -178,7 +178,8 @@ def run_sequence(kind, sequence):
             if pos[0] == "click":
                 mc.click(
                     pos[1], 
-                    pos[2]
+                    pos[2],
+                    show_marker=False
                 )
             elif pos[0] == "swipe":
                 mc.swipe(
@@ -189,7 +190,8 @@ def run_sequence(kind, sequence):
                     pos[3], 
                     pos[4], 
                     pos[5], 
-                    pos[6]
+                    pos[6],
+                    show_marker=False
                 )
             elif pos[0] == "delay":
                 macro_stop.wait(pos[1])
