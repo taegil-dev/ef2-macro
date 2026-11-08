@@ -249,7 +249,6 @@ def run_macro(kind, macro, sequence, pos):
                     macro_stop.wait(MACRO_DELAY)
                     break
 
-                # print(f'{datetime.datetime.now().strftime("%H:%M")} - 현재 층 : {floor}, 목표 : {goal}')
                 print(f'{datetime.datetime.now().strftime("%H:%M")} - 시퀀스 실행 : {sequence["name"]}')
 
                 run_sequence(kind, sequence['sequence'])
@@ -257,9 +256,7 @@ def run_macro(kind, macro, sequence, pos):
 
             macro_stop.wait(MACRO_DELAY)
         elif check and condition == "gold":
-            gold_info = im.check_gold(pos["GOLD_POS"])
-
-            gold, suffix = gold_info
+            gold, suffix = im.check_gold(pos["GOLD_POS"])
             if suffix == "":
                 macro_stop.wait(MACRO_DELAY)
                 continue
@@ -273,7 +270,22 @@ def run_macro(kind, macro, sequence, pos):
                     macro_stop.wait(MACRO_DELAY)
                     break
 
-                # print(f'{datetime.datetime.now().strftime("%H:%M")} - 현재 골드 : {gold}{suffix}, 목표 : {goal}')
+                print(f'{datetime.datetime.now().strftime("%H:%M")} - 시퀀스 실행 : {sequence["name"]}')
+
+                run_sequence(kind, sequence['sequence'])
+                break
+
+            macro_stop.wait(MACRO_DELAY)
+        elif check and condition == "time":
+            current_time = im.check_time(pos["TIMER_POS"])
+            if im.compare_time(current_time, goal):
+                if ignore_condition(sequence['ignore'], pos):
+
+                    print(f'{datetime.datetime.now().strftime("%H:%M")} - 무시 조건 충족; 시퀀스 실행 건너뜀 : {sequence["name"]}')
+
+                    macro_stop.wait(MACRO_DELAY)
+                    break
+
                 print(f'{datetime.datetime.now().strftime("%H:%M")} - 시퀀스 실행 : {sequence["name"]}')
 
                 run_sequence(kind, sequence['sequence'])
@@ -373,6 +385,7 @@ def load_macros():
             "WAVE_POS": module.WAVE_POS,
             "WAVE_POS2": module.WAVE_POS2,
             "DIAMOND_POS": module.DIAMOND_POS,
+            "TIMER_POS": module.TIMER_POS,
             "MEDAL_POS": module.MEDAL_POS,
             "REBIRTH_POS": module.REBIRTH_POS,
             "CONTINUE_POS": module.CONTINUE_POS

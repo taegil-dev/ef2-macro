@@ -36,6 +36,20 @@ def compare_gold(gold1: str, gold2: str) -> int:
     # 같은 단위일 경우 숫자 비교
     return (num1["value"] > num2["value"]) - (num1["value"] < num2["value"])
 
+def compare_time(current: tuple[str, str, str], goal: str) -> int:
+    target = goal.split(':')
+    target_seconds, target_minutes, target_hours = int(target.pop()), int(target.pop()), int(target.pop()) if target else 0
+    # 시간 비교
+    if int(current[2]) != int(goal.split(':')[2]):
+        return int(current[2]) > int(goal.split(':')[2])
+
+    # 분 비교
+    if int(current[1]) != int(goal.split(':')[1]):
+        return int(current[1]) > int(goal.split(':')[1])
+    
+    # 초 비교
+    return int(current[0]) > int(goal.split(':')[0])
+
 def check_gold(GOLD_POS):
     # 현재 게임 화면 캡처 (JPEG bytes 반환)
     jpeg = capture_jpeg(find_game_child(), region=GOLD_POS)
@@ -109,12 +123,27 @@ def check_floor(WAVE_POS, WAVE_POS2, compare=True):
 
     return floor
 
+def check_time(TIMER_POS):
+    # 현재 게임 화면 캡처 (JPEG bytes 반환)
+    jpeg = capture_jpeg(find_game_child(), region=TIMER_POS)
+
+    # OCR 분석
+    text = ocr.recognize_jpeg(jpeg)
+
+    match = re.search(r"\d+:\d+", text)
+
+    if not match:
+        return "0", "0", "0"
+    
+    date = match.group().split(":")
+    return date.pop(), date.pop(), date.pop() if date else 0
+
 def check_rebirth(image_matcher, REBIRTH_POS):
     # 현재 게임 화면 캡처 (JPEG bytes 반환)
     jpeg = capture_jpeg(find_game_child(), region=REBIRTH_POS)
     
     # 이미지 매칭
-    match_result = image_matcher.match(jpeg, "rebirth", threshold=0.7)
+    match_result = image_matcher.match(jpeg, "rebirth", threshold=0.5)
 
     return match_result["matched"]
 
