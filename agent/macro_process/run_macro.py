@@ -39,10 +39,10 @@ def ignore_condition(
             return False
         
         gold, suffix = gold_info
-        if(ignore['type'] == 'lower' and im.compare_gold(f"{gold}{suffix}", ignore['goal']) < 0):
-            return True
-        elif (ignore['type'] == 'higher' and im.compare_gold(f"{gold}{suffix}", ignore['goal']) > 0):
-            return True
+        if(ignore['type'] == 'lower'):
+            return not im.compare_gold(f"{gold}{suffix}", ignore['goal'])
+        elif (ignore['type'] == 'higher'):
+            return im.compare_gold(f"{gold}{suffix}", ignore['goal'])
         
     return False
 
