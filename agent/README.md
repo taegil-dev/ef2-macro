@@ -15,7 +15,7 @@ python -m pip install -r requirements.txt
 폴더 위치 agent에서 아래 명령어 cmd에서 실행
 실행 후 dist 폴더에 exe 파일 생성
 
-pyinstaller --clean --onefile --console --name agent --icon "favicon.ico" --collect-all rapidocr --add-data "image_match/templates;image_match/templates" agent.py
+pyinstaller --clean --onefile --console --name agent --icon "favicon.ico" --add-data "image_match/templates;image_match/templates" agent.py
 
 
 # macro 수정 방법

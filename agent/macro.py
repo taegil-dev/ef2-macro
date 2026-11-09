@@ -304,11 +304,6 @@ _sequence = {
         _delay["짧은 딜레이"],
     ],
     "9000 영웅 프리셋 변경 시퀀스": [
-        _pos["성 탭"],
-        _pos["프리셋 변경 버튼"],
-        _pos["프리셋 변경 저장 버튼"],
-        _pos["프리셋 변경 취소 버튼"],
-
         _pos["영웅 탭"],
         _pos["네번째 영웅 프리셋 버튼"],
         _pos["영웅 프리셋 확인 버튼"],
@@ -320,11 +315,6 @@ _sequence = {
         _delay["짧은 딜레이"],
     ],
     "9700 영웅 프리셋 변경 시퀀스": [
-        _pos["성 탭"],
-        _pos["프리셋 변경 버튼"],
-        _pos["프리셋 변경 저장 버튼"],
-        _pos["프리셋 변경 취소 버튼"],
-
         _pos["영웅 탭"],
         _pos["다섯번째 영웅 프리셋 버튼"],
         _pos["영웅 프리셋 확인 버튼"],
@@ -332,9 +322,12 @@ _sequence = {
         _delay["짧은 딜레이"],
     ],
     "테스트 시퀀스": [
-        _pos["중앙 성"],
-        _pos["오른쪽 대각 위 영웅 to 왼쪽"],
-        _pos["오른쪽 위 영웅 to 왼쪽 대각 아래"],
+        _pos["퀘스트 탭"],
+        _pos["스와이프"],
+        _pos["스와이프"],
+        _pos["스와이프"],
+
+        _delay["짧은 딜레이"],
     ]
 }
 
@@ -458,10 +451,10 @@ multi_macros = {
          "ignore": None},
 
         {"name": "영웅 및 성 강화", 
-         "condition": "wave",
-         "goal": 5100,
+         "condition": "time",
+         "goal": "00:30",
          "sequence": macros["영웅 및 성 강화"]["data"],
-         "ignore": {"condition": "wave", "type": "higher", "goal": 8000}},
+         "ignore": {"condition": "gold", "type": "higher", "goal": "50ao"}},
 
         {"name": "퀘스트 29 레벨업", 
          "condition": "gold",
@@ -544,7 +537,7 @@ multi_macros = {
     ]},
     "테스트": {"name": "테스트", "rebirth": macros["환생"]["data"], "continue": macros["이어하기"]["data"], "data": [
         {"name": "테스트", 
-         "condition": "wave",
+         "condition": "empty",
          "goal": 0,
          "sequence": macros["테스트"]["data"],
          "ignore": None}

@@ -16,7 +16,7 @@ export async function POST(req: NextRequest, context: { params: Promise<{ id: st
     return error('Invalid JSON'); 
   }
 
-  if (!['done','failed'].includes(body.status)) 
+  if (!['done', 'claimed', 'failed'].includes(body.status)) 
     return error('Invalid status');
 
   const { data, error: dbError } = await admin()

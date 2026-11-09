@@ -1,4 +1,3 @@
-"""Read numbers from a normalized region of a captured JPEG using RapidOCR."""
 import io
 import logging
 

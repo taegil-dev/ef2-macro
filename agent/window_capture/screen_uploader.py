@@ -1,4 +1,3 @@
-import logging
 import os
 import sys
 import threading
@@ -16,7 +15,6 @@ else:
 
 load_dotenv(base_dir / ".env")
 
-log = logging.getLogger('screen_uploader')
 
 def screen_loop(stop: threading.Event, screen_watching: threading.Event):
     base = os.environ['API_BASE_URL'].rstrip('/')
@@ -46,6 +44,9 @@ def screen_loop(stop: threading.Event, screen_watching: threading.Event):
             started = time.monotonic()
             try:
                 hwnd = find_game_child(title, target_class)
+                if not hwnd:
+                    continue
+                
                 jpeg = capture_jpeg(hwnd, region=region)
                 
                 if not screen_watching.is_set():
@@ -61,7 +62,7 @@ def screen_loop(stop: threading.Event, screen_watching: threading.Event):
             except Exception as exc:
                 message = str(exc)
                 if message != last_error:
-                    log.warning('Screen upload unavailable: %s', message)
+                    print('Screen upload unavailable: %s', message)
                     last_error = message
 
             stop.wait(max(0, interval - (time.monotonic() - started)))

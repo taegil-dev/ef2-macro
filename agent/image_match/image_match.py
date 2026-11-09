@@ -22,16 +22,15 @@ def compare_gold(gold1: str, gold2: str) -> int:
     num2 = parse_gold_value(gold2)
 
     if num1 is None or num2 is None:
-        print("Invalid gold format")
-        return 0
+        return False
     
     # 단위 길이 비교
     if len(num1["unit"]) != len(num2["unit"]):
-        return 1 if len(num1["unit"]) > len(num2["unit"]) else -1
+        return len(num1["unit"]) > len(num2["unit"])
 
     # 단위 알파벳 순서 비교
     if num1["unit"] != num2["unit"]:
-        return 1 if num1["unit"] > num2["unit"] else -1
+        return num1["unit"] > num2["unit"]
 
     # 같은 단위일 경우 숫자 비교
     return (num1["value"] > num2["value"]) - (num1["value"] < num2["value"])
@@ -39,16 +38,17 @@ def compare_gold(gold1: str, gold2: str) -> int:
 def compare_time(current: tuple[str, str, str], goal: str) -> int:
     target = goal.split(':')
     target_seconds, target_minutes, target_hours = int(target.pop()), int(target.pop()), int(target.pop()) if target else 0
+    
     # 시간 비교
-    if int(current[2]) != int(goal.split(':')[2]):
-        return int(current[2]) > int(goal.split(':')[2])
+    if int(current[2]) != target_hours:
+        return int(current[2]) > target_hours
 
     # 분 비교
-    if int(current[1]) != int(goal.split(':')[1]):
-        return int(current[1]) > int(goal.split(':')[1])
+    if int(current[1]) != target_minutes:
+        return int(current[1]) > target_minutes
     
     # 초 비교
-    return int(current[0]) > int(goal.split(':')[0])
+    return int(current[0]) > target_seconds
 
 def check_gold(GOLD_POS):
     # 현재 게임 화면 캡처 (JPEG bytes 반환)
