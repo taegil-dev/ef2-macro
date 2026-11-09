@@ -171,7 +171,7 @@ def run_macro(thread_var, kind, macro, sequence, pos):
             # 골드 비교는 문자열로 비교 "100az"
             if im.compare_gold(f"{gold}{suffix}", goal):
                 if ignore_condition(sequence['ignore'], pos):
-                    print(f'{datetime.datetime.now().strftime("%H:%M")} - ❌ {sequence["name"]} 무시; 현재 웨이브 {floor} : 목표 웨이브 {sequence["ignore"]["goal"]}')
+                    print(f'{datetime.datetime.now().strftime("%H:%M")} - ❌ {sequence["name"]} 무시; 현재 골드 {gold}{suffix} : 목표 골드 {sequence["ignore"]["goal"]}')
                     break
 
                 print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️  시퀀스 {sequence["name"]} 실행')
@@ -187,7 +187,7 @@ def run_macro(thread_var, kind, macro, sequence, pos):
             # 튜플과 문자열로 비교 00:00:00
             if im.compare_time(current_time, goal):
                 if ignore_condition(sequence['ignore'], pos):
-                    print(f'{datetime.datetime.now().strftime("%H:%M")} - ❌ {sequence["name"]} 무시; 현재 웨이브 {floor} : 목표 웨이브 {sequence["ignore"]["goal"]}')
+                    print(f'{datetime.datetime.now().strftime("%H:%M")} - ❌ {sequence["name"]} 무시; 현재 시간 {current_time} : 목표 시간 {sequence["ignore"]["goal"]}')
                     break
 
                 print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️  시퀀스 {sequence["name"]} 실행')
@@ -216,10 +216,6 @@ def run_macro(thread_var, kind, macro, sequence, pos):
 
         # 일반 매크로 실행; 아무 조건 없음
         elif condition == "empty":
-            if check and ignore_condition(sequence['ignore'], pos):
-                print(f'{datetime.datetime.now().strftime("%H:%M")} - ❌ {sequence["name"]} 무시; 현재 웨이브 {floor} : 목표 웨이브 {sequence["ignore"]["goal"]}')
-                break
-
             print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️  시퀀스 {sequence["name"]} 실행')
 
             run_sequence(thread_var, kind, sequence['sequence'])
