@@ -107,7 +107,7 @@ def run_macro(thread_var, kind, macro, sequence, pos):
         # 게임 재실행
         if thread_var.restart.is_set():
 
-            print(f'{datetime.datetime.now().strftime("%H:%M")} - 매크로 일시중지; 게임 재실행 중')
+            print(f'{datetime.datetime.now().strftime("%H:%M")} - ⛔ 매크로 일시중지; 게임 재실행 중')
 
             # 재실행 까지 대기
             while thread_var.restart.is_set():
@@ -127,7 +127,7 @@ def run_macro(thread_var, kind, macro, sequence, pos):
             # 매크로 결과에 넣을 웨이브 탐지 단, 환생창이 있을 경우 중앙 웨이브 탐지를 하지 못하므로 비교는 하지 않는다
             wave = im.check_floor(pos["WAVE_POS"], pos["WAVE_POS2"], compare=False)
 
-            print(f'{datetime.datetime.now().strftime("%H:%M")} - wave: {wave}, 환생 감지; 이어하기 감지 : {_continue}')
+            print(f'{datetime.datetime.now().strftime("%H:%M")} - ⚠️ 현재 웨이브: {wave}, 환생 감지; {_continue and "🔁 이어하기" or "❇️ 환생"}')
 
             if _continue:
                 run_sequence(thread_var, "RUN_MULTI_MACRO", macro["continue"])
@@ -150,10 +150,10 @@ def run_macro(thread_var, kind, macro, sequence, pos):
             if floor >= goal:
                 # 무시 조건 체크
                 if ignore_condition(sequence['ignore'], pos):
-                    print(f'{datetime.datetime.now().strftime("%H:%M")} - 무시 조건 충족; 시퀀스 실행 건너뜀 : {sequence["name"]}')
+                    print(f'{datetime.datetime.now().strftime("%H:%M")} - ❌ {sequence["name"]} 무시; 현재 웨이브 {floor} : 목표 웨이브 {sequence["ignore"]["goal"]}')
                     break
 
-                print(f'{datetime.datetime.now().strftime("%H:%M")} - 시퀀스 실행 : {sequence["name"]}')
+                print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️ 시퀀스 {sequence["name"]} 실행')
 
                 run_sequence(thread_var, kind, sequence['sequence'])
                 break
@@ -169,10 +169,10 @@ def run_macro(thread_var, kind, macro, sequence, pos):
             # 골드 비교는 문자열로 비교 "100az"
             if im.compare_gold(f"{gold}{suffix}", goal):
                 if ignore_condition(sequence['ignore'], pos):
-                    print(f'{datetime.datetime.now().strftime("%H:%M")} - 무시 조건 충족; 시퀀스 실행 건너뜀 : {sequence["name"]}')
+                    print(f'{datetime.datetime.now().strftime("%H:%M")} - ❌ {sequence["name"]} 무시; 현재 웨이브 {floor} : 목표 웨이브 {sequence["ignore"]["goal"]}')
                     break
 
-                print(f'{datetime.datetime.now().strftime("%H:%M")} - 시퀀스 실행 : {sequence["name"]}')
+                print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️ 시퀀스 {sequence["name"]} 실행')
 
                 run_sequence(thread_var, kind, sequence['sequence'])
                 break
@@ -185,10 +185,10 @@ def run_macro(thread_var, kind, macro, sequence, pos):
             # 튜플과 문자열로 비교 00:00:00
             if im.compare_time(current_time, goal):
                 if ignore_condition(sequence['ignore'], pos):
-                    print(f'{datetime.datetime.now().strftime("%H:%M")} - 무시 조건 충족; 시퀀스 실행 건너뜀 : {sequence["name"]}')
+                    print(f'{datetime.datetime.now().strftime("%H:%M")} - ❌ {sequence["name"]} 무시; 현재 웨이브 {floor} : 목표 웨이브 {sequence["ignore"]["goal"]}')
                     break
 
-                print(f'{datetime.datetime.now().strftime("%H:%M")} - 시퀀스 실행 : {sequence["name"]}')
+                print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️ 시퀀스 {sequence["name"]} 실행')
 
                 run_sequence(thread_var, kind, sequence['sequence'])
                 break
@@ -203,8 +203,8 @@ def run_macro(thread_var, kind, macro, sequence, pos):
             data = {
                 "양궁": { "func": atm.auto_shoot_fast, "args": [image_matcher, thread_var.macro_stop] }
             }
-
-            print(f'{datetime.datetime.now().strftime("%H:%M")} - 시퀀스 실행 : {sequence["name"]}')
+            
+            print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️ 시퀀스 {sequence["name"]} 실행')
 
             # 시퀀스 이름으로 함수를 찾아서 실행
             if sequence['name'] in data:
@@ -215,10 +215,10 @@ def run_macro(thread_var, kind, macro, sequence, pos):
         # 일반 매크로 실행; 아무 조건 없음
         elif condition == "empty":
             if check and ignore_condition(sequence['ignore'], pos):
-                print(f'{datetime.datetime.now().strftime("%H:%M")} - 무시 조건 충족; 시퀀스 실행 건너뜀 : {sequence["name"]}')
+                print(f'{datetime.datetime.now().strftime("%H:%M")} - ❌ {sequence["name"]} 무시; 현재 웨이브 {floor} : 목표 웨이브 {sequence["ignore"]["goal"]}')
                 break
 
-            print(f'{datetime.datetime.now().strftime("%H:%M")} - 시퀀스 실행 : {sequence["name"]}')
+            print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️ 시퀀스 {sequence["name"]} 실행')
 
             run_sequence(thread_var, kind, sequence['sequence'])
             break

@@ -47,7 +47,7 @@ _pos = {
     "길드 닫기 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.01, 0.2),
 
     "퀘스트 탭": ("click", _LEFT_WINDOW_X + 0.03, 0.97),
-    "스와이프": ("swipe", _LEFT_WINDOW_X + 0.03, 0.9, _LEFT_WINDOW_X + 0.03, 0.68, 0.1, 2),
+    "스와이프": ("swipe", _LEFT_WINDOW_X + 0.03, 0.85, _LEFT_WINDOW_X + 0.03, 0.7, 0.1, 3),
     "정스와이프": ("swipe", _LEFT_WINDOW_X + 0.03, 0.68, _LEFT_WINDOW_X + 0.03, 0.75, 0.1, 1),
     "29 퀘스트 오픈 및 강화 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.04, 0.82),
     "30 퀘스트 오픈 및 강화 버튼": ("click", _LEFT_WINDOW_X + _WIDTH - 0.04, 0.89),
@@ -267,7 +267,9 @@ _sequence = {
     "퀘스트 스와이프 시퀀스": [
         _pos["퀘스트 탭"],
         _pos["스와이프"],
+        _delay["짧은 딜레이"],
         _pos["스와이프"],
+        _delay["짧은 딜레이"],
         _pos["스와이프"],
 
         _delay["짧은 딜레이"],

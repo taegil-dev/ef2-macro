@@ -106,7 +106,8 @@ def post_command_result(
                 diamond = im.check_diamond(pos["DIAMOND_POS"])
                 medal, medal_unit = im.check_medal(pos["MEDAL_POS"])
 
-                msg = f"환생 결과 : Wave {wave} 🎖️{medal}{medal_unit} 💎{diamond}"
+                msg = f"❇️ 환생 결과 : Wave {wave} 🎖️{medal}{medal_unit} 💎{diamond}"
+                print(f'{datetime.datetime.now().strftime("%H:%M")} - {msg}')
 
             result = {'status': 'done', 'error': msg}
             ack = client.post(f'commands/{command_id}/ack', json=result)
@@ -124,8 +125,6 @@ def run_command(
     ):
     global state, last_error
     try:
-        print(f'{datetime.datetime.now().strftime("%H:%M")} - {kind == "RUN_MULTI_MACRO" and "멀티 " or "싱글 "}매크로 실행 : {macro["name"]}')
-
         is_rebirth = False
         wave = 0
         for sequence in macro["data"]:
@@ -136,11 +135,12 @@ def run_command(
                 break
 
             wave, is_rebirth = rm.run_macro(thread_var, kind, macro, sequence,  pos)
-        
+
+        print(f'{datetime.datetime.now().strftime("%H:%M")} - ✅ 매크로 종료{is_rebirth and "; 환생 성공" or ""}')
         post_command_result(command_id, pos, wave, is_rebirth)
     except Exception as e:
         last_error = str(e)
-        print(f'{datetime.datetime.now().strftime("%H:%M")} - 매크로 실패: {last_error}; 매크로 종료')
+        print(f'{datetime.datetime.now().strftime("%H:%M")} - ❌ 매크로 실패: {last_error}; 매크로 종료')
         macro_stop.set()
     finally:
         state = 'idle'
@@ -203,7 +203,7 @@ def execute(command: dict[str, Any], command_id: str):
     if kind == 'STOP':
         stop_macro()
         
-        print(f'{datetime.datetime.now().strftime("%H:%M")} - 매크로 중지 응답')
+        print(f'{datetime.datetime.now().strftime("%H:%M")} - ⛔ 매크로 중지')
 
     elif kind == 'CLICK':
         stop_macro()
@@ -231,7 +231,7 @@ def execute(command: dict[str, Any], command_id: str):
         macro_name = p.get('name')
         is_repeat = p.get('repeat')
 
-        print(f'{datetime.datetime.now().strftime("%H:%M")} - 매크로 실행 응답 : {macro_name}, 반복 : {is_repeat}')
+        print(f'{datetime.datetime.now().strftime("%H:%M")} - ✅ 매크로 {macro_name} 실행{is_repeat and " (반복)" or ""}')
 
         if not macro_name:
             raise ValueError('Missing macro name')
@@ -263,7 +263,7 @@ def main():
     if not API.startswith('https://') and not API.startswith('http://localhost'):
         raise SystemExit('API_BASE_URL must use HTTPS (except localhost)')
     
-    print(f'Agent started for {DEVICE}')
+    print(f'\n{datetime.datetime.now().strftime("%H:%M")} - ✅ 에이전트 정상 실행중 id: {DEVICE}')
 
     last_beat = 0.
 
@@ -332,9 +332,9 @@ if __name__ == '__main__':
 
         target_path = Path(shortcut_path)
         if target_path.exists():
-            print(f"\n✅ 경로가 정상적으로 인식되었습니다: {target_path}")
+            print(f"✅ 경로가 정상적으로 인식되었습니다: {target_path}")
         else:
-            print(f"\n❌ 경로를 찾을 수 없습니다: {target_path}")
+            print(f"❌ 경로를 찾을 수 없습니다: {target_path}")
             exit(1)
 
         rg.set_restart(restart, shortcut_path)
