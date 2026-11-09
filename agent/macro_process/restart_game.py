@@ -6,7 +6,6 @@ import win32con
 import threading
 
 PROCESS_KEYWORDS = ["play games"]
-RESTART_INTERVAL = 4 * 60 * 60
 
 restart_stop = threading.Event()
 
@@ -86,11 +85,11 @@ def restart_game(shortcut_path):
     return False
 
 
-def restart_loop(restart, shortcut_path):
+def restart_loop(restart, shortcut_path, restart_time):
     global last_restart
 
     while not restart_stop.is_set():
-        if time.monotonic() - last_restart >= RESTART_INTERVAL:
+        if time.monotonic() - last_restart >= restart_time:
             restart.set()
             restart_game(shortcut_path)
             restart.clear()
@@ -100,8 +99,8 @@ def restart_loop(restart, shortcut_path):
 
 
 
-def set_restart(restart, shortcut_path):
+def set_restart(restart, shortcut_path, restart_time):
     global last_restart
     last_restart = time.monotonic()
-    t = threading.Thread(target=restart_loop, args=(restart, shortcut_path,), daemon=True)
+    t = threading.Thread(target=restart_loop, args=(restart, shortcut_path, restart_time), daemon=True)
     t.start()

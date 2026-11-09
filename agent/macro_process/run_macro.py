@@ -116,6 +116,8 @@ def run_macro(thread_var, kind, macro, sequence, pos):
             # 첫 화면 제거
             thread_var.macro_stop.wait(5)
             mc.click(0.5, 0, show_marker=False)
+            thread_var.macro_stop.wait(1)
+            mc.click(0.47, 0.55, show_marker=True)
             continue
 
         # 환생 체크
@@ -153,7 +155,7 @@ def run_macro(thread_var, kind, macro, sequence, pos):
                     print(f'{datetime.datetime.now().strftime("%H:%M")} - ❌ {sequence["name"]} 무시; 현재 웨이브 {floor} : 목표 웨이브 {sequence["ignore"]["goal"]}')
                     break
 
-                print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️ 시퀀스 {sequence["name"]} 실행')
+                print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️  시퀀스 {sequence["name"]} 실행')
 
                 run_sequence(thread_var, kind, sequence['sequence'])
                 break
@@ -172,7 +174,7 @@ def run_macro(thread_var, kind, macro, sequence, pos):
                     print(f'{datetime.datetime.now().strftime("%H:%M")} - ❌ {sequence["name"]} 무시; 현재 웨이브 {floor} : 목표 웨이브 {sequence["ignore"]["goal"]}')
                     break
 
-                print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️ 시퀀스 {sequence["name"]} 실행')
+                print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️  시퀀스 {sequence["name"]} 실행')
 
                 run_sequence(thread_var, kind, sequence['sequence'])
                 break
@@ -188,7 +190,7 @@ def run_macro(thread_var, kind, macro, sequence, pos):
                     print(f'{datetime.datetime.now().strftime("%H:%M")} - ❌ {sequence["name"]} 무시; 현재 웨이브 {floor} : 목표 웨이브 {sequence["ignore"]["goal"]}')
                     break
 
-                print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️ 시퀀스 {sequence["name"]} 실행')
+                print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️  시퀀스 {sequence["name"]} 실행')
 
                 run_sequence(thread_var, kind, sequence['sequence'])
                 break
@@ -204,7 +206,7 @@ def run_macro(thread_var, kind, macro, sequence, pos):
                 "양궁": { "func": atm.auto_shoot_fast, "args": [image_matcher, thread_var.macro_stop] }
             }
             
-            print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️ 시퀀스 {sequence["name"]} 실행')
+            print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️  시퀀스 {sequence["name"]} 실행')
 
             # 시퀀스 이름으로 함수를 찾아서 실행
             if sequence['name'] in data:
@@ -218,7 +220,7 @@ def run_macro(thread_var, kind, macro, sequence, pos):
                 print(f'{datetime.datetime.now().strftime("%H:%M")} - ❌ {sequence["name"]} 무시; 현재 웨이브 {floor} : 목표 웨이브 {sequence["ignore"]["goal"]}')
                 break
 
-            print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️ 시퀀스 {sequence["name"]} 실행')
+            print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️  시퀀스 {sequence["name"]} 실행')
 
             run_sequence(thread_var, kind, sequence['sequence'])
             break

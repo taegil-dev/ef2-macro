@@ -19,8 +19,10 @@ def find_game_child(game_title: str = "오늘도 환생 2", target_class: str = 
                 matches.append(child)
         win32gui.EnumChildWindows(hwnd, on_child, None)
     win32gui.EnumWindows(on_window, None)
+
     if not matches:
-        raise RuntimeError(f'Game child window not found: {game_title} / {target_class}')
+        return None
+    
     return matches[0]
 
 

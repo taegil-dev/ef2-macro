@@ -337,7 +337,13 @@ if __name__ == '__main__':
             print(f"❌ 경로를 찾을 수 없습니다: {target_path}")
             exit(1)
 
-        rg.set_restart(restart, shortcut_path)
+        restart_time = input("자동 재실행 시간 설정(기본 3600초)(숫지만 입력): ")
+        try:
+            restart_time = int(restart_time)
+        except ValueError:
+            restart_time = 3600
+
+        rg.set_restart(restart, shortcut_path, restart_time)
         
     signal.signal(signal.SIGINT, handle_signal)
     signal.signal(signal.SIGTERM, handle_signal)
