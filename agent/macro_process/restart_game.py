@@ -6,6 +6,8 @@ import win32gui
 import win32con
 import threading
 
+import macro_click.macro_click as mc
+
 PROCESS_KEYWORDS = ["play games"]
 
 restart_stop = threading.Event()
@@ -28,6 +30,25 @@ def alt_tab():
         win32con.VK_MENU, 0,
         win32con.KEYEVENTF_KEYUP, 0
     )
+
+def restart_init():
+    # 첫 화면 제거
+    restart_stop.wait(5)
+    mc.click(0.5, 0, show_marker=False)
+
+    # 오프라인 등반 창 뜨면 제거
+    restart_stop.wait(1)
+    mc.click(0.47, 0.55, show_marker=False)
+
+    # 영웅 탭
+    restart_stop.wait(1)
+    mc.click(0.425, 0.97, show_marker=False)
+
+    # 영웅 프리셋 창 활성화
+    restart_stop.wait(1)
+    mc.click(0.52, 0.6, show_marker=False)
+    
+    restart_stop.wait(1)
 
 
 def find_game_child(game_title: str = "오늘도 환생 2", target_class: str = 'CROSVM_1') -> int:
@@ -58,7 +79,7 @@ def close_game(hwnd, timeout = 10.0):
         if not win32gui.IsWindow(hwnd):
             return True
 
-        time.sleep(0.2)
+        restart_stop.wait(0.2)
 
     return False
 
@@ -99,7 +120,7 @@ def restart_game(shortcut_path):
             pass
 
         timeout -= 1
-        time.sleep(1)
+        restart_stop.wait(1)
 
     print("=== 게임 실행 실패 ===")
     return False
@@ -118,6 +139,8 @@ def restart_loop(restart, shortcut_path, restart_time):
                 continue
 
             alt_tab()
+            alt_tab()
+            restart_init()
             restart.clear()
             last_restart = time.monotonic()
 

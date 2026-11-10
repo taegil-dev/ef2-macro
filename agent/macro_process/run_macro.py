@@ -16,28 +16,6 @@ image_matcher.load_template("continue_end", BASE_DIR / "image_match" / "template
 image_matcher.load_template("arrow_target", BASE_DIR / "image_match" / "templates" / "arrow_target.jpg")
 
 
-def restart(thread_var):
-    # 재실행 까지 대기
-    while thread_var.restart.is_set():
-        thread_var.macro_stop.wait(1)
-
-    # 첫 화면 제거
-    thread_var.macro_stop.wait(5)
-    mc.click(0.5, 0, show_marker=True)
-
-    # 오프라인 등반 창 뜨면 제거
-    thread_var.macro_stop.wait(1)
-    mc.click(0.47, 0.55, show_marker=True)
-
-    # 영웅 탭
-    thread_var.macro_stop.wait(1)
-    mc.click(0.344, 0.97, show_marker=True)
-
-    # 영웅 프리셋 창 활성화
-    thread_var.macro_stop.wait(1)
-    mc.click(0.52, 0.97, show_marker=True)
-
-
 def rebirth(thread_var):
     # 환생 버튼
     mc.click(0.538, 0.47, show_marker=False)
@@ -118,51 +96,58 @@ def run_sequence(thread_var, kind, sequence, image_pos):
     is_rebirth = False
     # 서브 시퀀스; 멀티 매크로의 경우 시퀀스 안에 시퀀스가 있음
     def run_subsequence(subsequence):
-        for pos in subsequence:
-            if thread_var.shutdown.is_set() or thread_var.macro_stop.is_set():
-                break
+        while True:
+            restart = False
+            for pos in subsequence:
+                if thread_var.shutdown.is_set() or thread_var.macro_stop.is_set():
+                    break
 
-            if thread_var.restart.is_set():
-                print(f'{datetime.datetime.now().strftime("%H:%M")} - ⛔ 매크로 일시중지; 게임 재실행 중')
+                if thread_var.restart.is_set():
+                    print(f'{datetime.datetime.now().strftime("%H:%M")} - ⛔ 매크로 일시중지; 게임 재실행 중')
+                    while thread_var.restart.is_set():
+                        continue
+                    print(f'{datetime.datetime.now().strftime("%H:%M")} - 🚥 매크로 재시작')
+                    restart = True
+                    break
 
-                restart(thread_var)
+                # 환생 체크
+                result = im.check_rebirth(image_matcher, image_pos["REBIRTH_POS"])
+                if result:
+                    check = rebirth_sequence(thread_var, image_pos)
+                    # 이어하기
+                    if not check[0]:
+                        continue
+                    # 환생
+                    else:
+                        return True
+
+
+                if pos[0] == "click":
+                    mc.click(
+                        pos[1], 
+                        pos[2],
+                        show_marker=False
+                    )
+                elif pos[0] == "swipe":
+                    mc.swipe(
+                        thread_var.shutdown,
+                        thread_var.macro_stop,
+                        pos[1], 
+                        pos[2], 
+                        pos[3], 
+                        pos[4], 
+                        pos[5], 
+                        pos[6],
+                        show_marker=False
+                    )
+                elif pos[0] == "delay":
+                    thread_var.macro_stop.wait(pos[1])
+
+                thread_var.macro_stop.wait(SEQUENCE_DELAY)
+
+            if restart:
                 continue
-
-            # 환생 체크
-            result = im.check_rebirth(image_matcher, image_pos["REBIRTH_POS"])
-            if result:
-                check = rebirth_sequence(thread_var, image_pos)
-                # 이어하기
-                if not check[0]:
-                    continue
-                # 환생
-                else:
-                    return True
-
-
-            if pos[0] == "click":
-                mc.click(
-                    pos[1], 
-                    pos[2],
-                    show_marker=False
-                )
-            elif pos[0] == "swipe":
-                mc.swipe(
-                    thread_var.shutdown,
-                    thread_var.macro_stop,
-                    pos[1], 
-                    pos[2], 
-                    pos[3], 
-                    pos[4], 
-                    pos[5], 
-                    pos[6],
-                    show_marker=False
-                )
-            elif pos[0] == "delay":
-                thread_var.macro_stop.wait(pos[1])
-
-            thread_var.macro_stop.wait(SEQUENCE_DELAY)
-        return False
+            return False
 
     # 멀티 매크로 일 경우 시퀀스 안의 시퀀스를 차례대로 실행
     if kind == "RUN_MULTI_MACRO":
@@ -196,10 +181,10 @@ def run_macro(thread_var, kind, sequence, pos):
 
         # 게임 재실행
         if thread_var.restart.is_set():
-
             print(f'{datetime.datetime.now().strftime("%H:%M")} - ⛔ 매크로 일시중지; 게임 재실행 중')
-
-            restart(thread_var)
+            while thread_var.restart.is_set():
+                continue
+            print(f'{datetime.datetime.now().strftime("%H:%M")} - 🚥 매크로 재시작')
             continue
 
         # 시퀀스 돌리다가 환생한 상태
