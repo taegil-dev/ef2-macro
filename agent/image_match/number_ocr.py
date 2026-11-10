@@ -1,11 +1,8 @@
 import io
-import logging
 
 import numpy as np # type: ignore
 from PIL import Image, ImageEnhance, ImageOps # type: ignore
 from rapidocr import RapidOCR # type: ignore
-
-logging.getLogger("RapidOCR").setLevel(logging.WARNING)
 
 class OCRService:
     def __init__(self):

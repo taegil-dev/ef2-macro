@@ -134,24 +134,6 @@ def _custom_delay(secondes):
     return ("delay", secondes)
 
 _sequence = {
-    "환생 시퀀스": [
-        _pos["2배 환생 버튼"],
-
-        _delay["긴 딜레이"],
-
-        _pos["영웅 탭"],
-
-        _delay["짧은 딜레이"],
-    ],
-    "이어하기 시퀀스": [
-        _pos["이어하기 버튼"],
-        _pos["중앙 성"], _pos["중앙 성"], _pos["중앙 성"], _pos["중앙 성"], _pos["중앙 성"],
-        _pos["중앙 성"], _pos["중앙 성"], _pos["중앙 성"], _pos["중앙 성"], _pos["중앙 성"],
-        _pos["중앙 성"], _pos["중앙 성"], _pos["중앙 성"], _pos["중앙 성"], _pos["중앙 성"],
-        _pos["중앙 성"], _pos["중앙 성"], _pos["중앙 성"],
-
-        _delay["짧은 딜레이"],
-    ],
     "영입 시퀀스": [
         _pos["영웅 탭"],
         _pos["영입 및 구매 버튼"],
@@ -338,14 +320,6 @@ _sequence = {
 }
 
 macros = {
-    "환생": {"name": "환생", "data": [
-        {"name": "환생",
-         "sequence": _sequence["환생 시퀀스"]},
-    ]},
-    "이어하기": {"name": "이어하기", "data": [
-        {"name": "이어하기",
-         "sequence": _sequence["이어하기 시퀀스"]},
-    ]},
     "양궁 시작": {"name": "양궁 시작", "data": [
         {"name": "양궁 시작",
          "sequence": _sequence["양궁 시퀀스"]},
@@ -437,7 +411,7 @@ macros = {
 }
 
 multi_macros = {
-    "자동 환생": {"name": "자동 환생", "rebirth": macros["환생"]["data"], "continue": macros["이어하기"]["data"], "data": [
+    "자동 환생": {"name": "자동 환생", "data": [
         {"name": "등반 프리셋 변경", 
          "condition": "empty",
          "goal": 0,
@@ -448,12 +422,6 @@ multi_macros = {
          "condition": "empty",
          "goal": 0,
          "sequence": macros["영입"]["data"],
-         "ignore": None},
-
-        {"name": "비서", 
-         "condition": "empty",
-         "goal": 0,
-         "sequence": macros["비서"]["data"],
          "ignore": None},
 
         {"name": "영웅 및 성 강화", 
@@ -490,6 +458,12 @@ multi_macros = {
          "condition": "empty",
          "goal": 0,
          "sequence": macros["영입"]["data"],
+         "ignore": None},
+
+        {"name": "비서", 
+         "condition": "empty",
+         "goal": 0,
+         "sequence": macros["비서"]["data"],
          "ignore": None},
 
         {"name": "웨이브 8000",
@@ -541,7 +515,7 @@ multi_macros = {
          "sequence": macros["양궁 끝"]["data"],
          "ignore": None},
     ]},
-    "테스트": {"name": "테스트", "rebirth": macros["환생"]["data"], "continue": macros["이어하기"]["data"], "data": [
+    "테스트": {"name": "테스트", "data": [
         {"name": "테스트", 
          "condition": "time",
          "goal": "2:51:30",

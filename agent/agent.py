@@ -127,24 +127,33 @@ def run_command(
     try:
         is_rebirth = False
         wave = 0
+
+        # 매크로 안 시퀀스 순차적으로 실행
         for sequence in macro["data"]:
             if shutdown.is_set() or macro_stop.is_set():
                 break
 
+            # 어떤 매크로든 환생하면 그대로 종료
             if is_rebirth:
                 break
 
-            wave, is_rebirth = rm.run_macro(thread_var, kind, macro, sequence,  pos)
+            # 매크로 실행; 실행 결과로 환생 또는 종료 시 현재 웨이브랑 환생 여부를 반환
+            wave, is_rebirth = rm.run_macro(thread_var, kind, sequence, pos)
 
         print(f'{datetime.datetime.now().strftime("%H:%M")} - ✅ 매크로 종료{is_rebirth and "; 환생 성공" or ""}')
+
+        # 매크로 실행 결과를 클라이언트로 전송
         post_command_result(command_id, pos, wave, is_rebirth)
+
     except Exception as e:
         last_error = str(e)
         print(f'{datetime.datetime.now().strftime("%H:%M")} - ❌ 매크로 실패: {last_error}; 매크로 종료')
         macro_stop.set()
+
     finally:
         state = 'idle'
 
+    # 반복 매크로의 경우 다시 실행
     if is_repeat and not shutdown.is_set() and not macro_stop.is_set():
         post_repeat_command(kind, macro)
 

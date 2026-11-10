@@ -1,3 +1,4 @@
+import logging
 import re
 import cv2
 import numpy as np
@@ -5,6 +6,7 @@ from image_match.number_ocr import OCRService
 from window_capture.screen_capture import capture_jpeg, find_game_child
 
 ocr = OCRService()
+logging.getLogger("RapidOCR").setLevel(logging.WARNING)
 
 def parse_gold_value(text: str):
     match = re.fullmatch(r"(\d+(?:\.\d+)?)([a-z]+)", text.strip())

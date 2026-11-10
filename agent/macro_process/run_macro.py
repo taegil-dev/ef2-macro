@@ -7,7 +7,7 @@ import arrow_target_macro.arrow_target_macro as atm
 from agent import BASE_DIR
 
 SEQUENCE_DELAY = 0.2
-MACRO_DELAY = 2
+MACRO_DELAY = 1
 
 image_matcher = im.ImageMatcher()
 image_matcher.load_template("rebirth", BASE_DIR / "image_match" / "templates" / "rebirth.jpg")
@@ -16,7 +16,66 @@ image_matcher.load_template("continue_end", BASE_DIR / "image_match" / "template
 image_matcher.load_template("arrow_target", BASE_DIR / "image_match" / "templates" / "arrow_target.jpg")
 
 
+def restart(thread_var):
+    # 재실행 까지 대기
+    while thread_var.restart.is_set():
+        thread_var.macro_stop.wait(1)
+
+    # 첫 화면 제거
+    thread_var.macro_stop.wait(5)
+    mc.click(0.5, 0, show_marker=True)
+
+    # 오프라인 등반 창 뜨면 제거
+    thread_var.macro_stop.wait(1)
+    mc.click(0.47, 0.55, show_marker=True)
+
+    # 영웅 탭
+    thread_var.macro_stop.wait(1)
+    mc.click(0.344, 0.97, show_marker=True)
+
+    # 영웅 프리셋 창 활성화
+    thread_var.macro_stop.wait(1)
+    mc.click(0.52, 0.97, show_marker=True)
+
+
+def rebirth(thread_var):
+    # 환생 버튼
+    mc.click(0.538, 0.47, show_marker=False)
+    thread_var.macro_stop.wait(5)
+
+    # 영웅 탭
+    mc.click(0.344, 0.97, show_marker=False)
+
+
+def continue_game(thread_var):
+    # 이어하기 버튼
+    mc.click(0.608, 0.45, show_marker=False)
+    thread_var.macro_stop.wait(0.2)
+
+    # 중앙 성
+    for _ in range(18):
+        mc.click(0.5, 0.26, show_marker=False)
+
+
+def rebirth_sequence(thread_var, pos):
+    # 이어하기 체크
+    _continue = im.check_continue(image_matcher, pos["CONTINUE_POS"])
+
+    # 매크로 결과에 넣을 웨이브 탐지 단, 환생창이 있을 경우 중앙 웨이브 탐지를 하지 못하므로 비교는 하지 않는다
+    wave = im.check_floor(pos["WAVE_POS"], pos["WAVE_POS2"], compare=False)
+
+    print(f'{datetime.datetime.now().strftime("%H:%M")} - ⚠️ 현재 웨이브: {wave}, 환생 감지; {_continue and "🔁 이어하기" or "❇️ 환생"}')
+
+    thread_var.macro_stop.wait(1)
+    if _continue:
+        continue_game(thread_var)
+        return False, wave
+    
+    rebirth(thread_var)
+    return True, wave
+
 def ignore_condition(
+        sequence_name: str,
         ignore: dict[str, Any], 
         pos: dict[str, tuple[float, float, float, float]]
     ) -> bool:
@@ -29,8 +88,11 @@ def ignore_condition(
             return False
         
         if(ignore['type'] == 'lower' and floor < ignore['goal']):
+            print(f'{datetime.datetime.now().strftime("%H:%M")} - ❌ {sequence_name} 무시; 현재 웨이브 {floor} < 목표 웨이브 {ignore["goal"]}')
             return True
+        
         elif (ignore['type'] == 'higher' and floor > ignore['goal']):
+            print(f'{datetime.datetime.now().strftime("%H:%M")} - ❌ {sequence_name} 무시; 현재 웨이브 {floor} > 목표 웨이브 {ignore["goal"]}')
             return True
         
     elif ignore['condition'] == 'gold':
@@ -39,15 +101,21 @@ def ignore_condition(
             return False
         
         gold, suffix = gold_info
+        result = im.compare_gold(f"{gold}{suffix}", ignore['goal'])
         if(ignore['type'] == 'lower'):
-            return not im.compare_gold(f"{gold}{suffix}", ignore['goal'])
+            if not result:
+                print(f'{datetime.datetime.now().strftime("%H:%M")} - ❌ {sequence_name} 무시; 현재 골드 {gold}{suffix} < 목표 골드 {ignore["goal"]}')
+                return True
+        
         elif (ignore['type'] == 'higher'):
-            return im.compare_gold(f"{gold}{suffix}", ignore['goal'])
+            if result:
+                print(f'{datetime.datetime.now().strftime("%H:%M")} - ❌ {sequence_name} 무시; 현재 골드 {gold}{suffix} > 목표 골드 {ignore["goal"]}')
+                return True
         
     return False
 
-def run_sequence(thread_var, kind, sequence):
-
+def run_sequence(thread_var, kind, sequence, image_pos):
+    is_rebirth = False
     # 서브 시퀀스; 멀티 매크로의 경우 시퀀스 안에 시퀀스가 있음
     def run_subsequence(subsequence):
         for pos in subsequence:
@@ -57,17 +125,20 @@ def run_sequence(thread_var, kind, sequence):
             if thread_var.restart.is_set():
                 print(f'{datetime.datetime.now().strftime("%H:%M")} - ⛔ 매크로 일시중지; 게임 재실행 중')
 
-                # 재실행 까지 대기
-                while thread_var.restart.is_set():
-                    thread_var.macro_stop.wait(1)
-
-                # 첫 화면 제거
-                thread_var.macro_stop.wait(5)
-                mc.click(0.5, 0, show_marker=False)
-                
-                thread_var.macro_stop.wait(2)
-                mc.click(0.47, 0.55, show_marker=True)
+                restart(thread_var)
                 continue
+
+            # 환생 체크
+            result = im.check_rebirth(image_matcher, image_pos["REBIRTH_POS"])
+            if result:
+                check = rebirth_sequence(thread_var, image_pos)
+                # 이어하기
+                if not check[0]:
+                    continue
+                # 환생
+                else:
+                    return True
+
 
             if pos[0] == "click":
                 mc.click(
@@ -91,6 +162,7 @@ def run_sequence(thread_var, kind, sequence):
                 thread_var.macro_stop.wait(pos[1])
 
             thread_var.macro_stop.wait(SEQUENCE_DELAY)
+        return False
 
     # 멀티 매크로 일 경우 시퀀스 안의 시퀀스를 차례대로 실행
     if kind == "RUN_MULTI_MACRO":
@@ -98,17 +170,20 @@ def run_sequence(thread_var, kind, sequence):
             if thread_var.shutdown.is_set() or thread_var.macro_stop.is_set():
                 break
 
-            run_subsequence(subsequence["sequence"])
+            is_rebirth = run_subsequence(subsequence["sequence"])
+            if is_rebirth:
+                break
 
     # 일반 매크로는 한번만 실행
     elif kind == "RUN_MACRO":
-        run_subsequence(sequence)
+        is_rebirth = run_subsequence(sequence)
 
     # 매크로 실행 후 대기
     thread_var.macro_stop.wait(MACRO_DELAY)
+    return is_rebirth
 
 
-def run_macro(thread_var, kind, macro, sequence, pos):
+def run_macro(thread_var, kind, sequence, pos):
     check = kind == "RUN_MULTI_MACRO"
     condition = kind == "RUN_MULTI_MACRO" and sequence['condition'] or "empty"
     goal = kind == "RUN_MULTI_MACRO" and sequence['goal'] or 0
@@ -124,47 +199,23 @@ def run_macro(thread_var, kind, macro, sequence, pos):
 
             print(f'{datetime.datetime.now().strftime("%H:%M")} - ⛔ 매크로 일시중지; 게임 재실행 중')
 
-            # 재실행 까지 대기
-            while thread_var.restart.is_set():
-                thread_var.macro_stop.wait(1)
-
-            # 첫 화면 제거
-            thread_var.macro_stop.wait(5)
-            mc.click(0.5, 0, show_marker=True)
-
-            # 오프라인 등반 창 뜨면 제거
-            thread_var.macro_stop.wait(1)
-            mc.click(0.47, 0.55, show_marker=True)
-
-            # 영웅 탭
-            thread_var.macro_stop.wait(1)
-            mc.click(0.344, 0.97, show_marker=True)
-
-            # 영웅 프리셋 창 활성화
-            thread_var.macro_stop.wait(1)
-            mc.click(0.52, 0.97, show_marker=True)
+            restart(thread_var)
             continue
+
+        # 시퀀스 돌리다가 환생한 상태
+        if is_rebirth:
+            return wave, is_rebirth
 
         # 환생 체크
         result = im.check_rebirth(image_matcher, pos["REBIRTH_POS"])
         if result:
-
-            # 이어하기 체크
-            _continue = im.check_continue(image_matcher, pos["CONTINUE_POS"])
-            # 매크로 결과에 넣을 웨이브 탐지 단, 환생창이 있을 경우 중앙 웨이브 탐지를 하지 못하므로 비교는 하지 않는다
-            wave = im.check_floor(pos["WAVE_POS"], pos["WAVE_POS2"], compare=False)
-
-            print(f'{datetime.datetime.now().strftime("%H:%M")} - ⚠️  현재 웨이브: {wave}, 환생 감지; {_continue and "🔁 이어하기" or "❇️  환생"}')
-
-            if _continue:
-                run_sequence(thread_var, "RUN_MULTI_MACRO", macro["continue"])
+            check = rebirth_sequence(thread_var, pos)
+            # 이어하기
+            if not check[0]:
                 continue
-
-            run_sequence(thread_var, "RUN_MULTI_MACRO", macro["rebirth"])
-
-            is_rebirth = True
-            # 환생 버튼이 안눌러졌어도 어차피 반복 실행 시 다시 환생창 체크부터 진행하기 때문에 문제 없음
-            return wave, is_rebirth
+            # 환생
+            else:
+                return check[1], True
 
         # 웨이브 조건 체크
         if check and condition == "wave":
@@ -176,14 +227,13 @@ def run_macro(thread_var, kind, macro, sequence, pos):
 
             if floor >= goal:
                 # 무시 조건 체크
-                if ignore_condition(sequence['ignore'], pos):
-                    print(f'{datetime.datetime.now().strftime("%H:%M")} - ❌ {sequence["name"]} 무시; 현재 웨이브 {floor} : 목표 웨이브 {sequence["ignore"]["goal"]}')
+                if ignore_condition(sequence["name"], sequence['ignore'], pos):
                     break
 
                 print(f'{datetime.datetime.now().strftime("%H:%M")} - 🔔 현재 웨이브 {floor} : 목표 웨이브 {goal}')
-                print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️  시퀀스 {sequence["name"]} 실행')
+                print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️ 시퀀스 {sequence["name"]} 실행')
 
-                run_sequence(thread_var, kind, sequence['sequence'])
+                is_rebirth = run_sequence(thread_var, kind, sequence['sequence'], pos)
                 break
 
         # 골드 조건 체크
@@ -196,14 +246,13 @@ def run_macro(thread_var, kind, macro, sequence, pos):
 
             # 골드 비교는 문자열로 비교 "100az"
             if im.compare_gold(f"{gold}{suffix}", goal):
-                if ignore_condition(sequence['ignore'], pos):
-                    print(f'{datetime.datetime.now().strftime("%H:%M")} - ❌ {sequence["name"]} 무시; 현재 골드 {gold}{suffix} : 목표 골드 {sequence["ignore"]["goal"]}')
+                if ignore_condition(sequence["name"], sequence['ignore'], pos):
                     break
 
                 print(f'{datetime.datetime.now().strftime("%H:%M")} - 🔔 현재 골드 {gold}{suffix} : 목표 골드 {goal}')
-                print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️  시퀀스 {sequence["name"]} 실행')
+                print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️ 시퀀스 {sequence["name"]} 실행')
 
-                run_sequence(thread_var, kind, sequence['sequence'])
+                is_rebirth = run_sequence(thread_var, kind, sequence['sequence'], pos)
                 break
 
         # 시간 조건 체크
@@ -214,14 +263,13 @@ def run_macro(thread_var, kind, macro, sequence, pos):
 
             # 튜플과 문자열로 비교 00:00:00
             if im.compare_time(current_time, goal):
-                if ignore_condition(sequence['ignore'], pos):
-                    print(f'{datetime.datetime.now().strftime("%H:%M")} - ❌ {sequence["name"]} 무시; 현재 시간 {current_time[2]}:{current_time[1]}:{current_time[0]} : 목표 시간 {sequence["ignore"]["goal"]}')
+                if ignore_condition(sequence["name"], sequence['ignore'], pos):
                     break
 
                 print(f'{datetime.datetime.now().strftime("%H:%M")} - 🔔 현재 시간 {current_time[2]}:{current_time[1]}:{current_time[0]} : 목표 시간 {goal}')
-                print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️  시퀀스 {sequence["name"]} 실행')
+                print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️ 시퀀스 {sequence["name"]} 실행')
 
-                run_sequence(thread_var, kind, sequence['sequence'])
+                is_rebirth = run_sequence(thread_var, kind, sequence['sequence'], pos)
                 break
 
         # 환생 조건일 경우 환생할 때 까지 반복; 즉, 매크로의 마지막
@@ -235,7 +283,7 @@ def run_macro(thread_var, kind, macro, sequence, pos):
                 "양궁": { "func": atm.auto_shoot_fast, "args": [image_matcher, thread_var.macro_stop] }
             }
             
-            print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️  시퀀스 {sequence["name"]} 실행')
+            print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️ 시퀀스 {sequence["name"]} 실행')
 
             # 시퀀스 이름으로 함수를 찾아서 실행
             if sequence['name'] in data:
@@ -245,9 +293,12 @@ def run_macro(thread_var, kind, macro, sequence, pos):
 
         # 일반 매크로 실행; 아무 조건 없음
         elif condition == "empty":
-            print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️  시퀀스 {sequence["name"]} 실행')
+            if ignore_condition(sequence["name"], sequence['ignore'], pos):
+                break
 
-            run_sequence(thread_var, kind, sequence['sequence'])
+            print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️ 시퀀스 {sequence["name"]} 실행')
+
+            is_rebirth = run_sequence(thread_var, kind, sequence['sequence'], pos)
             break
 
     return wave, is_rebirth

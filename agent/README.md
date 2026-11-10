@@ -1,24 +1,37 @@
+# 가이드
 
-# 편집기에서 실행 방법
-## 구글 플레이 창은 항상 전체화면 f11
+- [가이드](#가이드)
+  - [편집기에서 실행 방법](#편집기에서-실행-방법)
+    - [구글 플레이 창은 항상 전체화면 f11](#구글-플레이-창은-항상-전체화면-f11)
+  - [exe 파일로 만드는 방법](#exe-파일로-만드는-방법)
+    - [exe 파일과 macro.py, .env 파일은 같은 폴더에 있어야 합니다](#exe-파일과-macropy-env-파일은-같은-폴더에-있어야-합니다)
+  - [macro 수정 방법](#macro-수정-방법)
+
+## 편집기에서 실행 방법
+
+### 구글 플레이 창은 항상 전체화면 f11
 
 폴더 위치 agent에서 아래 명령어를 cmd에서 실행
 
+``` command
 python -m venv .venv
 .\.venv\Scripts\activate.bat
 python -m pip install -r requirements.txt
 .\.venv\Scripts\Python.exe agent.py
+```
 
-# exe 파일로 만드는 방법
-## exe 파일과 macro.py, .env 파일은 같은 폴더에 있어야 합니다.
+## exe 파일로 만드는 방법
+
+### exe 파일과 macro.py, .env 파일은 같은 폴더에 있어야 합니다
 
 폴더 위치 agent에서 아래 명령어 cmd에서 실행
 실행 후 dist 폴더에 exe 파일 생성
 
+``` command
 pyinstaller --clean --onefile --console --name agent --icon "favicon.ico" --collect-all rapidocr --add-data "image_match/templates;image_match/templates" agent.py
+```
 
-
-# macro 수정 방법
+## macro 수정 방법
 
 macro.py에 구글 플레이 게임즈 for pc에서 f11 전체화면 기준으로 작성된 버튼별 위치가 _pos에 저장되어 있습니다.
 
