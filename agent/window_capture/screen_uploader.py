@@ -62,7 +62,6 @@ def screen_loop(stop: threading.Event, screen_watching: threading.Event):
             except Exception as exc:
                 message = str(exc)
                 if message != last_error:
-                    print('Screen upload unavailable: %s', message)
                     last_error = message
 
             stop.wait(max(0, interval - (time.monotonic() - started)))

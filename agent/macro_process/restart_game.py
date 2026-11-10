@@ -1,6 +1,7 @@
 import os
 import time
 import psutil
+import win32api
 import win32gui
 import win32con
 import threading
@@ -8,6 +9,25 @@ import threading
 PROCESS_KEYWORDS = ["play games"]
 
 restart_stop = threading.Event()
+
+def alt_tab():
+    win32api.keybd_event(
+        win32con.VK_MENU, 0, 0, 0
+    )
+
+    win32api.keybd_event(
+        win32con.VK_TAB, 0, 0, 0
+    )
+
+    win32api.keybd_event(
+        win32con.VK_TAB, 0,
+        win32con.KEYEVENTF_KEYUP, 0
+    )
+
+    win32api.keybd_event(
+        win32con.VK_MENU, 0,
+        win32con.KEYEVENTF_KEYUP, 0
+    )
 
 
 def find_game_child(game_title: str = "오늘도 환생 2", target_class: str = 'CROSVM_1') -> int:
@@ -73,7 +93,7 @@ def restart_game(shortcut_path):
         try:
             hwnd = find_game_child()
             if hwnd:
-                print("=== 게임 실행 완료 ===")
+                print("=== 게임 실행 완료 ===\n")
                 return True
         except RuntimeError:
             pass
@@ -88,10 +108,16 @@ def restart_game(shortcut_path):
 def restart_loop(restart, shortcut_path, restart_time):
     global last_restart
 
+    print("")
     while not restart_stop.is_set():
         if time.monotonic() - last_restart >= restart_time:
             restart.set()
-            restart_game(shortcut_path)
+            print("=== 게임 종료 시작 ===")
+            result = restart_game(shortcut_path)
+            if not result:
+                continue
+
+            alt_tab()
             restart.clear()
             last_restart = time.monotonic()
 

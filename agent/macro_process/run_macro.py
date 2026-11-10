@@ -54,6 +54,21 @@ def run_sequence(thread_var, kind, sequence):
             if thread_var.shutdown.is_set() or thread_var.macro_stop.is_set():
                 break
 
+            if thread_var.restart.is_set():
+                print(f'{datetime.datetime.now().strftime("%H:%M")} - ⛔ 매크로 일시중지; 게임 재실행 중')
+
+                # 재실행 까지 대기
+                while thread_var.restart.is_set():
+                    thread_var.macro_stop.wait(1)
+
+                # 첫 화면 제거
+                thread_var.macro_stop.wait(5)
+                mc.click(0.5, 0, show_marker=False)
+                
+                thread_var.macro_stop.wait(2)
+                mc.click(0.47, 0.55, show_marker=True)
+                continue
+
             if pos[0] == "click":
                 mc.click(
                     pos[1], 
@@ -115,9 +130,19 @@ def run_macro(thread_var, kind, macro, sequence, pos):
 
             # 첫 화면 제거
             thread_var.macro_stop.wait(5)
-            mc.click(0.5, 0, show_marker=False)
+            mc.click(0.5, 0, show_marker=True)
+
+            # 오프라인 등반 창 뜨면 제거
             thread_var.macro_stop.wait(1)
             mc.click(0.47, 0.55, show_marker=True)
+
+            # 영웅 탭
+            thread_var.macro_stop.wait(1)
+            mc.click(0.344, 0.97, show_marker=True)
+
+            # 영웅 프리셋 창 활성화
+            thread_var.macro_stop.wait(1)
+            mc.click(0.52, 0.97, show_marker=True)
             continue
 
         # 환생 체크
@@ -129,7 +154,7 @@ def run_macro(thread_var, kind, macro, sequence, pos):
             # 매크로 결과에 넣을 웨이브 탐지 단, 환생창이 있을 경우 중앙 웨이브 탐지를 하지 못하므로 비교는 하지 않는다
             wave = im.check_floor(pos["WAVE_POS"], pos["WAVE_POS2"], compare=False)
 
-            print(f'{datetime.datetime.now().strftime("%H:%M")} - ⚠️ 현재 웨이브: {wave}, 환생 감지; {_continue and "🔁 이어하기" or "❇️ 환생"}')
+            print(f'{datetime.datetime.now().strftime("%H:%M")} - ⚠️  현재 웨이브: {wave}, 환생 감지; {_continue and "🔁 이어하기" or "❇️  환생"}')
 
             if _continue:
                 run_sequence(thread_var, "RUN_MULTI_MACRO", macro["continue"])
@@ -155,6 +180,7 @@ def run_macro(thread_var, kind, macro, sequence, pos):
                     print(f'{datetime.datetime.now().strftime("%H:%M")} - ❌ {sequence["name"]} 무시; 현재 웨이브 {floor} : 목표 웨이브 {sequence["ignore"]["goal"]}')
                     break
 
+                print(f'{datetime.datetime.now().strftime("%H:%M")} - 🔔 현재 웨이브 {floor} : 목표 웨이브 {goal}')
                 print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️  시퀀스 {sequence["name"]} 실행')
 
                 run_sequence(thread_var, kind, sequence['sequence'])
@@ -174,6 +200,7 @@ def run_macro(thread_var, kind, macro, sequence, pos):
                     print(f'{datetime.datetime.now().strftime("%H:%M")} - ❌ {sequence["name"]} 무시; 현재 골드 {gold}{suffix} : 목표 골드 {sequence["ignore"]["goal"]}')
                     break
 
+                print(f'{datetime.datetime.now().strftime("%H:%M")} - 🔔 현재 골드 {gold}{suffix} : 목표 골드 {goal}')
                 print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️  시퀀스 {sequence["name"]} 실행')
 
                 run_sequence(thread_var, kind, sequence['sequence'])
@@ -182,14 +209,16 @@ def run_macro(thread_var, kind, macro, sequence, pos):
         # 시간 조건 체크
         elif check and condition == "time":
 
-            # (초, 분, 시)의 튜플 반환
+            # (초, 분, 시)의 정수 튜플 반환
             current_time = im.check_time(pos["TIMER_POS"])
+
             # 튜플과 문자열로 비교 00:00:00
             if im.compare_time(current_time, goal):
                 if ignore_condition(sequence['ignore'], pos):
-                    print(f'{datetime.datetime.now().strftime("%H:%M")} - ❌ {sequence["name"]} 무시; 현재 시간 {current_time} : 목표 시간 {sequence["ignore"]["goal"]}')
+                    print(f'{datetime.datetime.now().strftime("%H:%M")} - ❌ {sequence["name"]} 무시; 현재 시간 {current_time[2]}:{current_time[1]}:{current_time[0]} : 목표 시간 {sequence["ignore"]["goal"]}')
                     break
 
+                print(f'{datetime.datetime.now().strftime("%H:%M")} - 🔔 현재 시간 {current_time[2]}:{current_time[1]}:{current_time[0]} : 목표 시간 {goal}')
                 print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️  시퀀스 {sequence["name"]} 실행')
 
                 run_sequence(thread_var, kind, sequence['sequence'])

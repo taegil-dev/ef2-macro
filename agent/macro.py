@@ -62,6 +62,7 @@ _pos = {
     "비서 완료 버튼": ("click", _LEFT_WINDOW_X + 0.15, 0.82),
 
     "영웅 탭": ("click", _LEFT_WINDOW_X + 0.09, 0.97),
+    "영웅 프리셋 활성화 버튼": ("click", 0.52, 0.97),
     "첫번째 영웅 프리셋 버튼": ("click", _LEFT_WINDOW_X + 0.04, 0.65),
     "두번째 영웅 프리셋 버튼": ("click", _LEFT_WINDOW_X + 0.10, 0.65),
     "세번째 영웅 프리셋 버튼": ("click", _LEFT_WINDOW_X + 0.16, 0.65),
@@ -129,6 +130,9 @@ _delay = {
     "긴 딜레이": ("delay", 5),
 }
 
+def _custom_delay(secondes):
+    return ("delay", secondes)
+
 _sequence = {
     "환생 시퀀스": [
         _pos["2배 환생 버튼"],
@@ -163,7 +167,7 @@ _sequence = {
         _pos["성채 버튼"],
         _pos["비서 버튼"],
 
-        _delay["긴 딜레이"],
+        _custom_delay(10),
         _pos["비서 확인 버튼"],
         _pos["비서 완료 버튼"],
 
@@ -454,7 +458,7 @@ multi_macros = {
 
         {"name": "영웅 및 성 강화", 
          "condition": "time",
-         "goal": "00:30",
+         "goal": "00:35",
          "sequence": macros["영웅 및 성 강화"]["data"],
          "ignore": {"condition": "gold", "type": "higher", "goal": "50ao"}},
 
@@ -539,8 +543,8 @@ multi_macros = {
     ]},
     "테스트": {"name": "테스트", "rebirth": macros["환생"]["data"], "continue": macros["이어하기"]["data"], "data": [
         {"name": "테스트", 
-         "condition": "empty",
-         "goal": 0,
+         "condition": "time",
+         "goal": "2:51:30",
          "sequence": macros["테스트"]["data"],
          "ignore": None}
     ]}
