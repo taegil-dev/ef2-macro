@@ -12,10 +12,10 @@ from pathlib import Path
 
 # print(match_result)
 
-jpeg = sc.capture_jpeg(sc.find_game_child("오늘도 환생 2"), region=(0.40, 0.55, 0.46, 0.578))
+jpeg = sc.capture_jpeg(sc.find_game_child("오늘도 환생 2"), region=(0.603, 0.55, 0.645, 0.58))
 # jpeg = sc.capture_jpeg(sc.find_game_child("오늘도 환생 2"), region=(0.357, 0.129, 0.641, 0.321))
 
 with open("screenshot.jpg", "wb") as f:
     f.write(jpeg)
 
-im.check_time((0.40, 0.55, 0.46, 0.578))
+print(im.check_gold((0.603, 0.55, 0.645, 0.58)))

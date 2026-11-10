@@ -2,7 +2,7 @@ _LEFT_WINDOW_X = 0.335
 _RIGHT_WINDOW_X = 0.658
 _WIDTH = _RIGHT_WINDOW_X - _LEFT_WINDOW_X
 
-GOLD_POS = 0.606, 0.55, 0.64, 0.58
+GOLD_POS = 0.603, 0.55, 0.645, 0.58
 DIAMOND_POS = 0.47, 0.55, 0.53, 0.58
 MEDAL_POS = 0.53, 0.55, 0.58, 0.58
 WAVE_POS = 0.46, 0.01, 0.526, 0.027
@@ -450,7 +450,7 @@ multi_macros = {
 
         {"name": "퀘스트 30 레벨업",
          "condition": "gold",
-         "goal": "600au",
+         "goal": "300au",
          "sequence": macros["퀘스트 30 레벨업"]["data"],
          "ignore": None},
 
@@ -486,7 +486,7 @@ multi_macros = {
 
         {"name": "웨이브 9700",
          "condition": "wave",
-         "goal": 9700,
+         "goal": 9705,
          "sequence": macros["웨이브 9700"]["data"],
          "ignore": None},
 
