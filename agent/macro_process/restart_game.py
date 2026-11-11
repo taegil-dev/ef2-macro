@@ -41,14 +41,14 @@ def restart_init():
     mc.click(0.47, 0.55, show_marker=False)
 
     # 영웅 탭
-    restart_stop.wait(1)
+    restart_stop.wait(0.2)
     mc.click(0.425, 0.97, show_marker=False)
 
     # 영웅 프리셋 창 활성화
-    restart_stop.wait(1)
+    restart_stop.wait(0.2)
     mc.click(0.52, 0.6, show_marker=False)
     
-    restart_stop.wait(1)
+    restart_stop.wait(0.5)
 
 
 def find_game_child(game_title: str = "오늘도 환생 2", target_class: str = 'CROSVM_1') -> int:

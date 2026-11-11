@@ -149,15 +149,27 @@ _sequence = {
         _pos["성채 버튼"],
         _pos["비서 버튼"],
 
-        _custom_delay(10),
         _pos["비서 확인 버튼"],
-        _pos["비서 완료 버튼"],
 
-        _delay["긴 딜레이"],
-        _pos["비서 완료 버튼"],
+        _custom_delay(1), _pos["비서 완료 버튼"],
+        _custom_delay(1), _pos["비서 완료 버튼"],
+        _custom_delay(1), _pos["비서 완료 버튼"],
+        _custom_delay(1), _pos["비서 완료 버튼"],
+        _custom_delay(1), _pos["비서 완료 버튼"],
+        _custom_delay(1), _pos["비서 완료 버튼"],
+        _custom_delay(1), _pos["비서 완료 버튼"],
+        _custom_delay(1), _pos["비서 완료 버튼"],
+        _custom_delay(1), _pos["비서 완료 버튼"],
+        _custom_delay(1), _pos["비서 완료 버튼"],
+        _custom_delay(1), _pos["비서 완료 버튼"],
+        _custom_delay(1), _pos["비서 완료 버튼"],
+        _custom_delay(1), _pos["비서 완료 버튼"],
+        _custom_delay(1), _pos["비서 완료 버튼"],
+        _custom_delay(1), _pos["비서 완료 버튼"],
+
         _pos["성 탭"],
 
-        _delay["짧은 딜레이"],
+        _custom_delay(1),
     ],
     "양궁 시퀀스": [
         _pos["길드 버튼"],
@@ -298,12 +310,17 @@ _sequence = {
         _pos["영웅 프리셋 확인 버튼"],
 
         _pos["영웅 자동 강화 버튼"],
-        _delay["긴 딜레이"],
         _pos["영웅 자동 강화 버튼"],
 
-        _delay["짧은 딜레이"],
+        _custom_delay(1),
     ],
     "9700 영웅 프리셋 변경 시퀀스": [
+        _pos["성 탭"],
+        _pos["프리셋 변경 버튼"],
+        _pos["세번째 유물 버튼"],
+        _pos["프리셋 변경 저장 버튼"],
+        _pos["프리셋 변경 취소 버튼"],
+
         _pos["영웅 탭"],
         _pos["다섯번째 영웅 프리셋 버튼"],
         _pos["영웅 프리셋 확인 버튼"],
@@ -385,8 +402,14 @@ macros = {
          "sequence": _sequence["등반 프리셋 시퀀스"]},
     ]},
     "웨이브 8000": {"name": "8000 웨이브", "data": [
+        {"name": "병사 레벨업 감소 프리셋", 
+         "sequence": _sequence["병사 레벨업 감소 프리셋 시퀀스"]},
+
         {"name": "8000 영웅 프리셋 변경", 
          "sequence": _sequence["8000 영웅 프리셋 변경 시퀀스"]},
+
+        {"name": "등반 프리셋", 
+         "sequence": _sequence["등반 프리셋 시퀀스"]},
     ]},
     "웨이브 9000": {"name": "9000 웨이브", "data": [
         {"name": "병사 레벨업 감소 프리셋", 
