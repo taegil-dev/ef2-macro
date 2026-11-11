@@ -13,7 +13,8 @@
 
 폴더 위치 agent에서 아래 명령어를 cmd에서 실행
 
-``` command
+``` bat
+cd agent
 python -m venv .venv
 .\.venv\Scripts\activate.bat
 python -m pip install -r requirements.txt
@@ -27,7 +28,7 @@ python -m pip install -r requirements.txt
 폴더 위치 agent에서 아래 명령어 cmd에서 실행
 실행 후 dist 폴더에 exe 파일 생성
 
-``` command
+``` bat
 pyinstaller --clean --onefile --console --name agent --icon "favicon.ico" --collect-all rapidocr --add-data "image_match/templates;image_match/templates" agent.py
 ```
 
