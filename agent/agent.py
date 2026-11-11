@@ -219,7 +219,7 @@ def execute(command: dict[str, Any], command_id: str):
 
         print(f'{datetime.datetime.now().strftime("%H:%M")} - CLICK command executed')
 
-        mc.click(float(p['x']), float(p['y']), float(p.get('duration', .05)))
+        mc.click(macro_stop, float(p['x']), float(p['y']))
 
     elif kind == 'SWIPE':
         stop_macro()
@@ -227,12 +227,12 @@ def execute(command: dict[str, Any], command_id: str):
         print(f'{datetime.datetime.now().strftime("%H:%M")} - SWIPE command executed')
 
         mc.swipe(
+            shutdown,
+            macro_stop,
             float(p['start_x']), 
             float(p['start_y']), 
             float(p['end_x']), 
-            float(p['end_y']), 
-            float(p.get('duration', .5)), 
-            int(p.get('steps', 30))
+            float(p['end_y'])
         )
 
     elif kind == 'RUN_MACRO' or kind == 'RUN_MULTI_MACRO':
@@ -333,6 +333,10 @@ if __name__ == '__main__':
         shutdown.set()
         macro_stop.set()
         screen_stop.set()
+        rg.stop_restart()
+
+    signal.signal(signal.SIGINT, handle_signal)
+    signal.signal(signal.SIGTERM, handle_signal)
 
     res = input("자동 재실행 기능을 사용하시겠습니까?(y/n): ")
     if res.lower() == 'y':
@@ -354,6 +358,4 @@ if __name__ == '__main__':
 
         rg.set_restart(restart, shortcut_path, restart_time)
         
-    signal.signal(signal.SIGINT, handle_signal)
-    signal.signal(signal.SIGTERM, handle_signal)
     main()

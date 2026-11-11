@@ -42,7 +42,7 @@ def coords(hwnd: int, rx: float, ry: float) -> tuple[int, int]:
         raise RuntimeError('Game client area has zero size')
     return x, y
 
-def click(rx: float, ry: float, duration: float = .05, show_marker: bool = True):
+def click(thread_stop, rx: float, ry: float, duration: float = .05, show_marker: bool = True):
     hwnd = find_target()
 
     if win32gui.IsIconic(win32gui.GetAncestor(hwnd, win32con.GA_ROOT)):
@@ -68,7 +68,7 @@ def click(rx: float, ry: float, duration: float = .05, show_marker: bool = True)
         click_marker.show_click_marker(hwnd, x, y)
 
     try:
-        time.sleep(duration)
+        thread_stop.wait(duration)
     finally:
         win32gui.PostMessage(
             hwnd, 
@@ -116,7 +116,7 @@ def swipe(
         for i in range(1, steps + 1):
             if shutdown.is_set() or macro_stop.is_set():
                 break
-            threading.Event().wait(duration / steps)
+            macro_stop.wait(duration / steps)
 
             progress = i / steps
             x, y = int(x1 + (x2 - x1) * progress), int(y1 + (y2 - y1) * progress)

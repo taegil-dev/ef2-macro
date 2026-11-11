@@ -33,20 +33,20 @@ def alt_tab():
 
 def restart_init():
     # 첫 화면 제거
-    restart_stop.wait(5)
-    mc.click(0.5, 0, show_marker=False)
+    restart_stop.wait(10)
+    mc.click(restart_stop, 0.5, 0.05, show_marker=False)
 
     # 오프라인 등반 창 뜨면 제거
     restart_stop.wait(1)
-    mc.click(0.47, 0.55, show_marker=False)
+    mc.click(restart_stop, 0.47, 0.55, show_marker=False)
 
     # 영웅 탭
     restart_stop.wait(0.2)
-    mc.click(0.425, 0.97, show_marker=False)
+    mc.click(restart_stop, 0.425, 0.97, show_marker=False)
 
     # 영웅 프리셋 창 활성화
     restart_stop.wait(0.2)
-    mc.click(0.52, 0.6, show_marker=False)
+    mc.click(restart_stop, 0.52, 0.6, show_marker=False)
     
     restart_stop.wait(0.5)
 
@@ -153,3 +153,7 @@ def set_restart(restart, shortcut_path, restart_time):
     last_restart = time.monotonic()
     t = threading.Thread(target=restart_loop, args=(restart, shortcut_path, restart_time), daemon=True)
     t.start()
+
+
+def stop_restart():
+    restart_stop.set()

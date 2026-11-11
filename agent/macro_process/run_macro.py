@@ -18,21 +18,21 @@ image_matcher.load_template("arrow_target", BASE_DIR / "image_match" / "template
 
 def rebirth(thread_var):
     # 환생 버튼
-    mc.click(0.538, 0.47, show_marker=False)
+    mc.click(thread_var.macro_stop, 0.538, 0.47, show_marker=False)
     thread_var.macro_stop.wait(5)
 
     # 영웅 탭
-    mc.click(0.344, 0.97, show_marker=False)
+    mc.click(thread_var.macro_stop, 0.344, 0.97, show_marker=False)
 
 
 def continue_game(thread_var):
     # 이어하기 버튼
-    mc.click(0.608, 0.45, show_marker=False)
+    mc.click(thread_var.macro_stop, 0.608, 0.45, show_marker=False)
     thread_var.macro_stop.wait(0.2)
 
     # 중앙 성
     for _ in range(18):
-        mc.click(0.5, 0.26, show_marker=False)
+        mc.click(thread_var.macro_stop, 0.5, 0.26, show_marker=False)
 
 
 def rebirth_sequence(thread_var, pos):
@@ -124,6 +124,7 @@ def run_sequence(thread_var, kind, sequence, image_pos):
 
                 if pos[0] == "click":
                     mc.click(
+                        thread_var.macro_stop,
                         pos[1], 
                         pos[2],
                         show_marker=False
