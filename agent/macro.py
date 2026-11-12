@@ -380,11 +380,8 @@ macros = {
         {"name": "퀘스트 확장 프리셋", 
          "sequence": _sequence["퀘스트 확장 프리셋 시퀀스"]},
 
-        {"name": "퀘스트 스와이프", 
-         "sequence": _sequence["퀘스트 스와이프 시퀀스"]},
-
-        {"name": "30 퀘스트 오픈 및 레벨업", 
-         "sequence": _sequence["30 퀘스트 오픈 및 레벨업 시퀀스"]},
+        {"name": "퀘스트 레벨업 딜레이", 
+         "sequence": [_custom_delay(10)]},
 
         {"name": "등반 프리셋", 
          "sequence": _sequence["등반 프리셋 시퀀스"]},
