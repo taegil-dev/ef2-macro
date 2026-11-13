@@ -35,7 +35,6 @@ load_dotenv(
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
 
 API = os.getenv('API_BASE_URL', '').rstrip('/')
-API_COMMON = os.getenv('API_COMMON_URL', '').rstrip('/')
 DEVICE = os.getenv('DEVICE_ID', 'my-windows-pc')
 TOKEN = os.getenv('DEVICE_TOKEN', '')
 POLL = max(.25, float(os.getenv('POLL_SECONDS', '1')))
@@ -84,7 +83,7 @@ def get_access_token():
 def post_repeat_command(kind: str, macro: dict[str, Any]):
     access_token = get_access_token()
     server_headers = {'Authorization': f'Bearer {access_token}'}
-    with httpx.Client(base_url=API_COMMON+'/', headers=server_headers, timeout=10) as client:
+    with httpx.Client(base_url=API+'/', headers=server_headers, timeout=10) as client:
         try:
             ack = client.post('api/dashboard/commands', 
                     json={"type": kind, "payload": {"name": macro["name"], "repeat": True}})
@@ -99,7 +98,7 @@ def post_command_result(
         wave,
         is_rebirth: bool):
     client_headers = {'Authorization': f'Bearer {TOKEN}', 'X-Device-ID': DEVICE}
-    with httpx.Client(base_url=API+'/', headers=client_headers, timeout=10) as client:
+    with httpx.Client(base_url=API+'/api/agent', headers=client_headers, timeout=10) as client:
         try:
             msg = ""
             if is_rebirth:
@@ -277,12 +276,15 @@ def main():
     last_beat = 0.
 
     headers = {'Authorization': f'Bearer {TOKEN}', 'X-Device-ID': DEVICE}
-    with httpx.Client(base_url=API+'/', headers=headers, timeout=10) as client:
+    with httpx.Client(base_url=API+'/api/agent', headers=headers, timeout=10) as client:
         while not shutdown.is_set():
             try:
                 # 주기적인 연결
                 if time.monotonic() - last_beat >= HEARTBEAT:
                     r = client.post('heartbeat', json={'status': state, 'last_error': last_error})
+                    if r.status_code == 404:
+                        continue
+
                     data = r.json()
 
                     # 웹페이지를 보고 있을 때만 화면 공유
@@ -298,6 +300,7 @@ def main():
                 r = client.get('commands/next')
 
                 r.raise_for_status()
+
                 # 명령 실행
                 cmd = r.json().get('command')
                 if cmd:
@@ -319,7 +322,7 @@ def main():
                 print(f'{datetime.datetime.now().strftime("%H:%M")} - {e.request.url}; Backend returned {e.response.text}')
 
             except (httpx.HTTPError, ValueError, KeyError) as e:
-                print(f'{datetime.datetime.now().strftime("%H:%M")} - Connection/protocol error: {e}')
+                print(f'{datetime.datetime.now().strftime("%H:%M")} - Connection/protocol error: {e}')\
 
             shutdown.wait(POLL)
 

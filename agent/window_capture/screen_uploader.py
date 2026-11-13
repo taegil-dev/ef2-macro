@@ -53,7 +53,7 @@ def screen_loop(stop: threading.Event, screen_watching: threading.Event):
                     continue
 
                 response = client.post(
-                    f'{base}/screenshot',
+                    f'{base}/api/agent/screenshot',
                     headers={'x-device-id': device_id, 'x-device-token': token, 'content-type': 'image/jpeg'},
                     content=jpeg,
                 )
