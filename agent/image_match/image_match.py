@@ -38,9 +38,12 @@ def compare_gold(gold1: str, gold2: str) -> int:
     return num1["value"] > num2["value"]
 
 def compare_time(current: tuple[int, int, int], goal: str) -> int:
-    target = goal.split(':')
-    target_seconds, target_minutes, target_hours = int(target.pop()), int(target.pop()), (target and int(target.pop()) or 0)
-    
+    try:
+        target = goal.split(':')
+        target_seconds, target_minutes, target_hours = int(target.pop()), int(target.pop()), (target and int(target.pop()) or 0)
+    except (ValueError, IndexError):
+        return False
+
     # 시간 비교
     if current[2] != target_hours:
         return current[2] > target_hours
@@ -138,8 +141,11 @@ def check_time(TIMER_POS):
         date = [int(d) for d in date]
     except ValueError:
         return 0, 0, 0
-
-    return date.pop(), date.pop(), (date.pop() if date else 0)
+    
+    try:
+        return date.pop(), date.pop(), (date.pop() if date else 0)
+    except IndexError:
+        return 0, 0, 0
 
 def check_rebirth(image_matcher, REBIRTH_POS):
     # 현재 게임 화면 캡처 (JPEG bytes 반환)
