@@ -39,6 +39,8 @@ DEVICE = os.getenv('DEVICE_ID', 'my-windows-pc')
 TOKEN = os.getenv('DEVICE_TOKEN', '')
 POLL = max(.25, float(os.getenv('POLL_SECONDS', '1')))
 HEARTBEAT = max(5, float(os.getenv('HEARTBEAT_SECONDS', '15')))
+SCREEN_INTERVAL = max(1, float(os.getenv('SCREEN_INTERVAL_SECONDS', '5')))
+SCREEN_REGION = os.getenv('SCREEN_REGION', '').strip()
 
 shutdown = threading.Event()
 macro_stop = threading.Event()
