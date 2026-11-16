@@ -3,6 +3,7 @@ import importlib
 import logging
 import os
 import signal
+import subprocess
 import sys
 import threading
 import time
@@ -10,11 +11,7 @@ from types import SimpleNamespace
 from typing import Any
 from Lib.pathlib import Path
 import datetime
-
 import httpx
-
-logging.getLogger("httpx").setLevel(logging.WARNING)
-
 from dotenv import load_dotenv # type: ignore
 from supabase import create_client
 
@@ -22,6 +19,7 @@ import macro_click.macro_click as mc
 from window_capture.screen_uploader import start_screen_thread
 import image_match.image_match as im
 from macro_process import run_macro as rm, restart_game as rg
+from updater import check_update as cu
 
 
 BASE_DIR = getattr(sys, "frozen", False) and Path(sys.executable).resolve().parent or Path(__file__).resolve().parent
@@ -32,15 +30,12 @@ load_dotenv(
     override=True
 )
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
+API = os.environ['API_BASE_URL'].rstrip('/')
+DEVICE = os.environ['DEVICE_ID']
+TOKEN = os.environ['DEVICE_TOKEN']
 
-API = os.getenv('API_BASE_URL', '').rstrip('/')
-DEVICE = os.getenv('DEVICE_ID', 'my-windows-pc')
-TOKEN = os.getenv('DEVICE_TOKEN', '')
-POLL = max(.25, float(os.getenv('POLL_SECONDS', '1')))
-HEARTBEAT = max(5, float(os.getenv('HEARTBEAT_SECONDS', '15')))
-SCREEN_INTERVAL = max(1, float(os.getenv('SCREEN_INTERVAL_SECONDS', '5')))
-SCREEN_REGION = os.getenv('SCREEN_REGION', '').strip()
+POLL = 2.0
+HEARTBEAT = 15
 
 shutdown = threading.Event()
 macro_stop = threading.Event()
@@ -49,7 +44,7 @@ macro_lock = threading.Lock()
 state = 'idle'
 last_error = ''
 
-screen_stop, screen_thread, screen_watching = start_screen_thread()
+screen_stop, screen_thread, screen_watching = start_screen_thread(shutdown)
 
 restart = threading.Event()
 
@@ -64,6 +59,9 @@ supabase = create_client(
     os.environ["SUPABASE_URL"],
     os.environ["SUPABASE_ANON_KEY"]
 )
+
+logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
 
 
 def get_access_token():
@@ -287,6 +285,8 @@ def main():
                     if r.status_code == 404:
                         continue
 
+                    print(r.url)
+
                     data = r.json()
 
                     # 웹페이지를 보고 있을 때만 화면 공유
@@ -323,14 +323,59 @@ def main():
             except httpx.HTTPStatusError as e:
                 print(f'{datetime.datetime.now().strftime("%H:%M")} - {e.request.url}; Backend returned {e.response.text}')
 
-            except (httpx.HTTPError, ValueError, KeyError) as e:
-                print(f'{datetime.datetime.now().strftime("%H:%M")} - Connection/protocol error: {e}')\
+            except (httpx.HTTPError, KeyError) as e:
+                print(f'{datetime.datetime.now().strftime("%H:%M")} - Connection/protocol error: {e}')
+
+            except ValueError as e:
+                print(f'{datetime.datetime.now().strftime("%H:%M")} - ValueError: {e}')
 
             shutdown.wait(POLL)
 
     screen_stop.set()
     screen_thread.join(timeout=2)
     stop_macro()
+
+
+def apply_restart():
+    res = input("자동 재실행 기능을 사용하시겠습니까?(y/n): ").strip().lower() == "y"
+    if not res:
+        return
+    
+    print("바탕화면에 있는 바로가기 파일을 찾고 있습니다...")
+
+    desktop = Path.home() / "Desktop"
+    target_path = desktop / "오늘도 환생 2  방치형 디펜스 RPG.lnk"
+    if target_path.exists():
+        print(f"✅ 파일을 정상적으로 찾았습니다: {target_path}")
+    else:
+        print(f"❌ 파일을 찾을 수 없습니다. 파일을 추가하고 다시 시도해주세요.")
+        exit(1)
+
+    restart_time = input("자동 재실행 시간 설정(기본 3600초)(숫지만 입력): ")
+    try:
+        restart_time = int(restart_time)
+    except ValueError:
+        restart_time = 3600
+
+    rg.set_restart(shutdown, restart, target_path, restart_time)
+
+
+def apply_update():
+    update_info = cu.check_update()
+    if not update_info:
+        return
+
+    print(f"업데이트 중... 버전: {update_info['version']}")
+
+    updater = os.path.join(BASE_DIR, "updater.exe")
+    subprocess.Popen(
+        [
+            updater,
+            str(os.getPid()),
+            sys.executable
+        ], cwd=BASE_DIR, creationflags=subprocess.CREATE_NEW_PROCESS_GROUP)
+
+    shutdown.set()
 
 
 if __name__ == '__main__':
@@ -340,27 +385,12 @@ if __name__ == '__main__':
         screen_stop.set()
         rg.stop_restart()
 
+    # 시그널 등록
     signal.signal(signal.SIGINT, handle_signal)
     signal.signal(signal.SIGTERM, handle_signal)
 
-    res = input("자동 재실행 기능을 사용하시겠습니까?(y/n): ")
-    if res.lower() == 'y':
-        shortcut_path = input("게임 바로가기 경로를 입력하세요(바로가기 파일의 경로를 복사해서 붙여넣기): ")
-        shortcut_path = shortcut_path.strip().strip('"').strip("'")
-
-        target_path = Path(shortcut_path)
-        if target_path.exists():
-            print(f"✅ 경로가 정상적으로 인식되었습니다: {target_path}")
-        else:
-            print(f"❌ 경로를 찾을 수 없습니다: {target_path}")
-            exit(1)
-
-        restart_time = input("자동 재실행 시간 설정(기본 3600초)(숫지만 입력): ")
-        try:
-            restart_time = int(restart_time)
-        except ValueError:
-            restart_time = 3600
-
-        rg.set_restart(restart, shortcut_path, restart_time)
+    # 업데이트 확인
+    apply_update()
+    apply_restart()
         
     main()

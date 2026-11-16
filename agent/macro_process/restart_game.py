@@ -5,6 +5,7 @@ import win32api
 import win32gui
 import win32con
 import threading
+from pathlib import Path
 
 import macro_click.macro_click as mc
 
@@ -84,7 +85,7 @@ def close_game(hwnd, timeout = 10.0):
     return False
 
 
-def restart_game(shortcut_path):
+def restart_game(shortcut_path: Path):
     hwnd = find_game_child()
     if hwnd and not close_game(hwnd):
         targets = []
@@ -126,11 +127,12 @@ def restart_game(shortcut_path):
     return False
 
 
-def restart_loop(restart, shortcut_path, restart_time):
+
+def restart_loop(shutdown: threading.Event, restart: threading.Event, shortcut_path: Path, restart_time: int):
     global last_restart
 
     print("")
-    while not restart_stop.is_set():
+    while not shutdown.is_set() and not restart_stop.is_set():
         if time.monotonic() - last_restart >= restart_time:
             restart.set()
             print("=== 게임 종료 시작 ===")
@@ -148,10 +150,11 @@ def restart_loop(restart, shortcut_path, restart_time):
 
 
 
-def set_restart(restart, shortcut_path, restart_time):
+
+def set_restart(shutdown: threading.Event, restart: threading.Event, shortcut_path: Path, restart_time):
     global last_restart
     last_restart = time.monotonic()
-    t = threading.Thread(target=restart_loop, args=(restart, shortcut_path, restart_time), daemon=True)
+    t = threading.Thread(target=restart_loop, args=(shutdown, restart, shortcut_path, restart_time), daemon=True)
     t.start()
 
 

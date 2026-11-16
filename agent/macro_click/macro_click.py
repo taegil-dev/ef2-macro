@@ -1,5 +1,4 @@
 import threading
-import time
 import macro_click.show_click_marker as click_marker
 import win32api, win32con, win32gui # type: ignore
 

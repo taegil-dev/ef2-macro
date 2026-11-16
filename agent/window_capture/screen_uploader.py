@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 import httpx # type: ignore
 from window_capture.screen_capture import capture_jpeg, find_game_child
 
-BASE_DIR = getattr(sys, "frozen", False) and Path(sys.executable).resolve().parent.parent or Path(__file__).resolve().parent.parent
+BASE_DIR = getattr(sys, "frozen", False) and Path(sys.executable).resolve().parent or Path(__file__).resolve().parent.parent
 ENV_PATH = BASE_DIR / ".env"
 
 load_dotenv(
@@ -16,27 +16,19 @@ load_dotenv(
     override=True
 )
 
-API = os.getenv('API_BASE_URL', '').rstrip('/')
-DEVICE = os.getenv('DEVICE_ID', 'my-windows-pc')
-TOKEN = os.getenv('DEVICE_TOKEN', '')
-SCREEN_INTERVAL = max(1, float(os.getenv('SCREEN_INTERVAL_SECONDS', '5')))
-SCREEN_REGION = os.getenv('SCREEN_REGION', '').strip()
+API = os.environ['API_BASE_URL'].rstrip('/')
+DEVICE = os.environ['DEVICE_ID']
+TOKEN = os.environ['DEVICE_TOKEN']
+
+SCREEN_INTERVAL = 1
+SCREEN_REGION = (0.335, 0.0, 0.658, 1.0)
 
 
-def screen_loop(stop: threading.Event, screen_watching: threading.Event):
+def screen_loop(shutdown: threading.Event, stop: threading.Event, screen_watching: threading.Event):
     last_error = None
-
-    region = (
-        tuple(float(v.strip()) for v in SCREEN_REGION.split(","))
-        if SCREEN_REGION else None
-    )
-
-    if region is not None and len(region) != 4:
-        raise ValueError("SCREEN_REGION must contain 4 numbers")
-    
     headers={'x-device-id': DEVICE, 'x-device-token': TOKEN, 'content-type': 'image/jpeg'}
     with httpx.Client(base_url=API+'/api/agent', headers=headers, timeout=15) as client:
-        while not stop.is_set():
+        while not shutdown.is_set() and not stop.is_set():
             if not screen_watching.is_set():
                 threading.Event().wait(1)
                 continue
@@ -47,7 +39,7 @@ def screen_loop(stop: threading.Event, screen_watching: threading.Event):
                 if not hwnd:
                     continue
                 
-                jpeg = capture_jpeg(hwnd, region=region)
+                jpeg = capture_jpeg(hwnd, region=SCREEN_REGION)
                 
                 if not screen_watching.is_set():
                     continue
@@ -64,10 +56,10 @@ def screen_loop(stop: threading.Event, screen_watching: threading.Event):
 
             stop.wait(max(0, SCREEN_INTERVAL - (time.monotonic() - started)))
 
-def start_screen_thread():
+def start_screen_thread(shutdown: threading.Event):
     stop = threading.Event()
     watching = threading.Event()
-    thread = threading.Thread(target=screen_loop, args=(stop, watching), name='screen-uploader', daemon=True)
+    thread = threading.Thread(target=screen_loop, args=(shutdown, stop, watching), name='screen-uploader', daemon=True)
     thread.start()
     
     return stop, thread, watching

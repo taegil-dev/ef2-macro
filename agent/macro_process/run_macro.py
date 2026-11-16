@@ -23,6 +23,7 @@ def rebirth(thread_var):
 
     # 영웅 탭
     mc.click(thread_var.macro_stop, 0.344, 0.97, show_marker=False)
+    thread_var.macro_stop.wait(1)
 
 
 def continue_game(thread_var):

@@ -50,7 +50,7 @@ def capture_jpeg(
 
     try:
         bmp.CreateCompatibleBitmap(dc, width, height)
-        mem.SelectObject(bmp)
+        old = mem.SelectObject(bmp)
 
         # PW_CLIENTONLY (1) + PW_RENDERFULLCONTENT (2)
         ok = user32.PrintWindow(hwnd, mem.GetSafeHdc(), 3)
@@ -74,6 +74,7 @@ def capture_jpeg(
                 int(image.height * y2),
             ))
     finally:
+        mem.SelectObject(old)
         win32gui.DeleteObject(bmp.GetHandle())
         mem.DeleteDC()
         dc.DeleteDC()
