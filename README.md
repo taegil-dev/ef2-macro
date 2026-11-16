@@ -32,7 +32,7 @@ python -m venv .venv
 
 ``` bat
 cd agent
-pyinstaller --clean --onefile --console --name agent --icon "favicon.ico" --collect-all rapidocr --add-data "templates;templates" agent.py
+pyinstaller --clean --onefile --console --name agent --icon "favicon.ico" --collect-all rapidocr --collect-all onnxruntime --add-data "templates;templates" agent.py
 pyinstaller --clean --onefile --console --name updater ./updater/updater.py
 move /Y "dist\*" .
 ```
