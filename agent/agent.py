@@ -1,4 +1,5 @@
 from __future__ import annotations
+import ctypes
 import importlib
 import json
 import logging
@@ -342,7 +343,17 @@ def apply_restart():
     
     print("바탕화면에 있는 바로가기 파일을 찾고 있습니다...")
 
-    desktop = Path.home() / "Desktop"
+    buffer = ctypes.create_unicode_buffer(260)
+
+    ctypes.windll.shell32.SHGetFolderPathW(
+        None,
+        0x0010,  # CSIDL_DESKTOPDIRECTORY
+        None,
+        0,
+        buffer
+    )
+
+    desktop = Path(buffer.value)
     target_path = desktop / "오늘도 환생 2  방치형 디펜스 RPG.lnk"
     if target_path.exists():
         print(f"✅ 파일을 정상적으로 찾았습니다: {target_path}")

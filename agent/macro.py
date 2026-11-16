@@ -479,7 +479,7 @@ multi_macros = {
          "condition": "gold",
          "goal": "300au",
          "sequence": macros["퀘스트 30 레벨업"]["data"],
-         "ignore": {"condition": "wave", "type": "higher", "goal": 8000}},
+         "ignore": None},
 
         {"name": "영입", 
          "condition": "empty",
