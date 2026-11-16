@@ -457,11 +457,11 @@ multi_macros = {
          "sequence": macros["퀘스트 30 오픈"]["data"],
          "ignore": {"condition": "gold", "type": "higher", "goal": "1ap"}},
 
-        {"name": "퀘스트 30 레벨업",
-         "condition": "gold",
-         "goal": "300au",
-         "sequence": macros["퀘스트 30 레벨업"]["data"],
-         "ignore": {"condition": "wave", "type": "higher", "goal": 8000}},
+        {"name": "웨이브 8000",
+         "condition": "wave",
+         "goal": 7950,
+         "sequence": macros["웨이브 8000"]["data"],
+         "ignore": {"condition": "wave", "type": "higher", "goal": 8950}},
 
         {"name": "영입", 
          "condition": "empty",
@@ -475,11 +475,11 @@ multi_macros = {
          "sequence": macros["비서"]["data"],
          "ignore": None},
 
-        {"name": "웨이브 8000",
-         "condition": "wave",
-         "goal": 7950,
-         "sequence": macros["웨이브 8000"]["data"],
-         "ignore": {"condition": "wave", "type": "higher", "goal": 8950}},
+        {"name": "퀘스트 30 레벨업",
+         "condition": "gold",
+         "goal": "300au",
+         "sequence": macros["퀘스트 30 레벨업"]["data"],
+         "ignore": {"condition": "wave", "type": "higher", "goal": 8000}},
 
         {"name": "영입", 
          "condition": "empty",
