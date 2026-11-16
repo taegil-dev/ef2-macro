@@ -46,7 +46,7 @@ jobs:
           Copy-Item ./agent/macro.py package/
           Copy-Item ./agent/version.json package/
           Copy-Item ./agent/templates -Destination package/templates -Recurse
-          Compress-Archive -Path package/* -DestinationPath update.zip
+          Compress-Archive -Path package/* -DestinationPath release.zip
 
       - name: Publish Release
         env:
