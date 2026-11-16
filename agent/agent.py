@@ -336,7 +336,7 @@ def main():
 
 
 def apply_restart():
-    res = input("자동 재실행 기능을 사용하시겠습니까?(y/n): ").strip().lower() == "y"
+    res = input("\n🔁 자동 재실행 기능을 사용하시겠습니까?(y/n): ").strip().lower() == "y"
     if not res:
         return
     
@@ -350,7 +350,7 @@ def apply_restart():
         print(f"❌ 파일을 찾을 수 없습니다. 파일을 추가하고 다시 시도해주세요.")
         exit(1)
 
-    restart_time = input("자동 재실행 시간 설정(기본 3600초)(숫지만 입력): ")
+    restart_time = input("⏱️ 자동 재실행 시간 설정(기본 3600초)(숫지만 입력): ")
     try:
         restart_time = int(restart_time)
     except ValueError:
@@ -361,10 +361,11 @@ def apply_restart():
 
 def apply_update():
     update_info = cu.check_update()
+    print(f"🚀 agent.exe v{cu.get_current_version()} 실행 중...")
     if not update_info[0]:
         return
 
-    print(f"🎉 새로운 버전이 있습니다: v{update_info[1]['version']} 🎉\n현재 버전: v{cu.get_current_version()}")
+    print(f"\n🎉 새로운 버전이 있습니다: v{update_info[1]['version']} 🎉")
     is_update = input("업데이트 하시겠습니까? (y/n): ").strip().lower() == "y"
     if not is_update:
         return

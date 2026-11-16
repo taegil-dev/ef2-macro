@@ -9,6 +9,8 @@ import zipfile
 import httpx
 import psutil
 
+from updater.check_update import get_current_version
+
 BASE_DIR = getattr(sys, "frozen", False) and Path(sys.executable).resolve().parent or Path(__file__).resolve().parent.parent
 
 exclude_files = ["updater.exe", "release.zip"]
@@ -48,7 +50,17 @@ def main():
     temp_folder = BASE_DIR / "temp"
     temp_folder.mkdir(exist_ok=True)
 
-    print()
+    current_version = get_current_version()
+
+    banner = r"""
+    _   _ ____  ____    _  _____ _____
+    | | | |  _ \|  _ \  / \|_   _| ____|
+    | | | | |_) | | | |/ _ \ | | |  _|
+    | |_| |  __/| |_| / ___ \| | | |___
+    \___/|_|   |____/_/   \_\_| |_____|
+    """
+
+    print(banner)
     for asset in assets["assets"]:
         with httpx.stream(
             "GET", 
@@ -73,9 +85,11 @@ def main():
                         bar = "█" * filled + "░" * (bar_length - filled)
 
                         print(
+                            f"\n버전 {current_version} -> {assets['version']} 업데이트 중...\n"
                             f"\r[{bar}] {progress * 100:5.1f}% "
                             f"({downloaded / 1024 / 1024:.1f} / "
-                            f"{total_size / 1024 / 1024:.1f} MB)",
+                            f"{total_size / 1024 / 1024:.1f} MB)"
+                            f"\n잠시만 기다리세요...\n",
                             end="",
                             flush=True
                         )
