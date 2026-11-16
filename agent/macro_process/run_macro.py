@@ -3,7 +3,7 @@ import datetime
 
 import image_match.image_match as im
 import macro_click.macro_click as mc
-import arrow_target_macro.arrow_target_macro as atm
+import macro_process.arrow_target_macro as atm
 from agent import BASE_DIR
 
 SEQUENCE_DELAY = 0.2

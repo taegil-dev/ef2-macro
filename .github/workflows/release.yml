@@ -29,14 +29,18 @@ jobs:
           pip install pyinstaller
 
       - name: Build EXE
+        working-directory: ./agent
         run: pyinstaller agent.spec
 
       - name: Create ZIP
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force package
-          Copy-Item dist/agent.exe package/
-          Copy-Item version.json package/
+          Copy-Item ./agent/dist/agent.exe package/
+          Copy-Item ./agent/macro.py package/
+          Copy-Item ./agent/.env.example package/
+          Copy-Item ./agent/image_match/templates/* package/image_match/templates/
+          Copy-Item ./agent/version.json package/
           Compress-Archive -Path package/* -DestinationPath update.zip
 
       - name: Publish Release
