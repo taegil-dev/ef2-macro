@@ -376,9 +376,9 @@ def apply_update():
             str(os.getpid()),
             json.dumps(update_info[1]),
             sys.executable
-        ], cwd=BASE_DIR, creationflags=subprocess.CREATE_NEW_PROCESS_GROUP)
+        ], cwd=BASE_DIR, creationflags=subprocess.CREATE_NEW_CONSOLE)
 
-    shutdown.set()
+    sys.exit(0)
 
 
 if __name__ == '__main__':
@@ -394,9 +394,7 @@ if __name__ == '__main__':
 
     # 업데이트 확인
     apply_update()
-    if shutdown.is_set():
-        sys.exit(0)
-        
+    # 재시작 설정
     apply_restart()
         
     main()

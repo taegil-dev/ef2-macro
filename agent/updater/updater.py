@@ -11,7 +11,7 @@ import psutil
 
 BASE_DIR = getattr(sys, "frozen", False) and Path(sys.executable).resolve().parent or Path(__file__).resolve().parent.parent
 
-exclude_files = ["updater.exe", "updater.zip"]
+exclude_files = ["updater.exe", "release.zip"]
 
 
 def move_folder_files(src_folder: Path, dest_folder: Path):
@@ -81,10 +81,11 @@ def main():
                         )
             print()
 
-    with zipfile.ZipFile(temp_folder / "update.zip", "r") as zip_ref:
+    with zipfile.ZipFile(temp_folder / "release.zip", "r") as zip_ref:
         zip_ref.extractall(temp_folder)
 
     for file in temp_folder.iterdir():
+        print(f"Moving {file.name} to {BASE_DIR}")
         if file.name in exclude_files:
             continue
 
@@ -99,7 +100,9 @@ def main():
     shutil.rmtree(temp_folder)
 
     agent = os.path.join(BASE_DIR, "agent.exe")
-    subprocess.Popen([agent], cwd=BASE_DIR, creationflags=subprocess.CREATE_NEW_PROCESS_GROUP)
+    subprocess.Popen([agent], cwd=BASE_DIR, creationflags=subprocess.CREATE_NEW_CONSOLE)
+
+    sys.exit(0)
 
 
 if __name__ == "__main__":
