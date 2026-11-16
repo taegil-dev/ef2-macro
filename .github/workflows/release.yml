@@ -39,8 +39,8 @@ jobs:
           Copy-Item ./agent/dist/agent.exe package/
           Copy-Item ./agent/macro.py package/
           Copy-Item ./agent/.env.example package/
-          Copy-Item ./agent/image_match/templates/* package/image_match/templates/
           Copy-Item ./agent/version.json package/
+          Copy-Item ./agent/image_match -Destination package/image_match -Recurse
           Compress-Archive -Path package/* -DestinationPath update.zip
 
       - name: Publish Release
