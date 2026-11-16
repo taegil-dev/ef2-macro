@@ -285,8 +285,6 @@ def main():
                     if r.status_code == 404:
                         continue
 
-                    print(r.url)
-
                     data = r.json()
 
                     # 웹페이지를 보고 있을 때만 화면 공유
