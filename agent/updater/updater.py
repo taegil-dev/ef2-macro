@@ -9,11 +9,16 @@ import zipfile
 import httpx
 import psutil
 
-from updater.check_update import get_current_version
-
 BASE_DIR = getattr(sys, "frozen", False) and Path(sys.executable).resolve().parent or Path(__file__).resolve().parent.parent
 
 exclude_files = ["updater.exe", "release.zip"]
+
+
+def get_current_version():
+    path = os.path.join(BASE_DIR, "version.json")
+
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)["version"]
 
 
 def move_folder_files(src_folder: Path, dest_folder: Path):
@@ -61,6 +66,8 @@ def main():
     """
 
     print(banner)
+    print(f"\n버전 {current_version} -> {assets['version']} 업데이트 중...\n")
+    print(f"잠시만 기다리세요...\n")
     for asset in assets["assets"]:
         with httpx.stream(
             "GET", 
@@ -85,11 +92,9 @@ def main():
                         bar = "█" * filled + "░" * (bar_length - filled)
 
                         print(
-                            f"\n버전 {current_version} -> {assets['version']} 업데이트 중...\n"
                             f"\r[{bar}] {progress * 100:5.1f}% "
                             f"({downloaded / 1024 / 1024:.1f} / "
-                            f"{total_size / 1024 / 1024:.1f} MB)"
-                            f"\n잠시만 기다리세요...\n",
+                            f"{total_size / 1024 / 1024:.1f} MB)",
                             end="",
                             flush=True
                         )
