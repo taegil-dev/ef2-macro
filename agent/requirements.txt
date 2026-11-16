@@ -9,3 +9,4 @@ python-dotenv==1.2.4
 pywin32==312
 rapidocr==3.10.0
 supabase==2.34.1
+onnxruntime==1.32.0
