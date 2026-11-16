@@ -41,7 +41,12 @@ def check_update():
     if not isUpdate:
         return False
 
-    assets = [{"url": asset["browser_download_url"], "filename": asset["name"]} for asset in release["assets"]]
+    assets = [{
+        "url": asset["browser_download_url"], 
+        "size": asset["size"], 
+        "filename": asset["name"]
+        } for asset in release["assets"]]
+    
     _update_data = {
         "version": latest_version,
         "assets": assets

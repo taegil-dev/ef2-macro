@@ -10,10 +10,12 @@ SEQUENCE_DELAY = 0.2
 MACRO_DELAY = 1
 
 image_matcher = im.ImageMatcher()
-image_matcher.load_template("rebirth", BASE_DIR / "image_match" / "templates" / "rebirth.jpg")
-image_matcher.load_template("continue", BASE_DIR / "image_match" / "templates" / "continue.jpg")
-image_matcher.load_template("continue_end", BASE_DIR / "image_match" / "templates" / "continue_end.jpg")
-image_matcher.load_template("arrow_target", BASE_DIR / "image_match" / "templates" / "arrow_target.jpg")
+templates_dir = BASE_DIR / "templates"
+
+image_matcher.load_template("rebirth", templates_dir / "rebirth.jpg")
+image_matcher.load_template("continue", templates_dir / "continue.jpg")
+image_matcher.load_template("continue_end", templates_dir / "continue_end.jpg")
+image_matcher.load_template("arrow_target", templates_dir / "arrow_target.jpg")
 
 
 def rebirth(thread_var):

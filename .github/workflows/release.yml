@@ -30,17 +30,20 @@ jobs:
 
       - name: Build EXE
         working-directory: ./agent
-        run: pyinstaller agent.spec
+        run: |
+          pyinstaller agent.spec
+          pyinstaller updater.spec
 
       - name: Create ZIP
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force package
           Copy-Item ./agent/dist/agent.exe package/
+          Copy-Item ./agent/dist/updater.exe package/
           Copy-Item ./agent/macro.py package/
           Copy-Item ./agent/.env.example package/
           Copy-Item ./agent/version.json package/
-          Copy-Item ./agent/image_match -Destination package/image_match -Recurse
+          Copy-Item ./agent/templates -Destination package/templates -Recurse
           Compress-Archive -Path package/* -DestinationPath update.zip
 
       - name: Publish Release
