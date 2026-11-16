@@ -14,10 +14,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
@@ -30,18 +30,20 @@ jobs:
 
       - name: Build EXE
         working-directory: ./agent
+        shell: pwsh
         run: |
-          pyinstaller agent.spec
-          pyinstaller updater.spec
+          pyinstaller --distpath dist agent.spec
+          pyinstaller --distpath dist updater.spec
 
       - name: Create ZIP
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force package
+
           Copy-Item ./agent/dist/agent.exe package/
           Copy-Item ./agent/dist/updater.exe package/
+
           Copy-Item ./agent/macro.py package/
-          Copy-Item ./agent/.env.example package/
           Copy-Item ./agent/version.json package/
           Copy-Item ./agent/templates -Destination package/templates -Recurse
           Compress-Archive -Path package/* -DestinationPath update.zip
@@ -51,4 +53,4 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         shell: pwsh
         run: |
-          gh release create "${{ github.ref_name }}" update.zip --generate-notes --latest
+          gh release create "${{ github.ref_name }}" release.zip --generate-notes --latest

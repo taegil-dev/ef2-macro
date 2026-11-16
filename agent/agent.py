@@ -1,5 +1,6 @@
 from __future__ import annotations
 import importlib
+import json
 import logging
 import os
 import signal
@@ -285,8 +286,6 @@ def main():
                     if r.status_code == 404:
                         continue
 
-                    print(r.url)
-
                     data = r.json()
 
                     # 웹페이지를 보고 있을 때만 화면 공유
@@ -362,16 +361,20 @@ def apply_restart():
 
 def apply_update():
     update_info = cu.check_update()
-    if not update_info:
+    if not update_info[0]:
         return
 
-    print(f"업데이트 중... 버전: {update_info['version']}")
+    print(f"🎉 새로운 버전이 있습니다: v{update_info[1]['version']} 🎉\n현재 버전: v{cu.get_current_version()}")
+    is_update = input("업데이트 하시겠습니까? (y/n): ").strip().lower() == "y"
+    if not is_update:
+        return
 
     updater = os.path.join(BASE_DIR, "updater.exe")
     subprocess.Popen(
         [
             updater,
-            str(os.getPid()),
+            str(os.getpid()),
+            json.dumps(update_info[1]),
             sys.executable
         ], cwd=BASE_DIR, creationflags=subprocess.CREATE_NEW_PROCESS_GROUP)
 
@@ -391,6 +394,9 @@ if __name__ == '__main__':
 
     # 업데이트 확인
     apply_update()
+    if shutdown.is_set():
+        sys.exit(0)
+        
     apply_restart()
         
     main()

@@ -1,25 +1,37 @@
+import json
 import os
 from pathlib import Path
+import shutil
+import subprocess
 import sys
 import zipfile
 
 import httpx
 import psutil
 
-import check_update as cu
-
 BASE_DIR = getattr(sys, "frozen", False) and Path(sys.executable).resolve().parent or Path(__file__).resolve().parent.parent
-REPO = "taegil-dev/ef2-macro"
+
+exclude_files = ["updater.exe", "updater.zip"]
+
+
+def move_folder_files(src_folder: Path, dest_folder: Path):
+    dest_folder.mkdir(exist_ok=True)
+
+    for file in src_folder.iterdir():
+        if file.name in exclude_files:
+            continue
+
+        os.replace(
+            src_folder / file.name, 
+            dest_folder / file.name)
+
 
 def main():
-    cu.check_update()
-    if cu._update_data is None:
-        print("❌ 설치 가능한 버전이 없습니다.")
-        return
-    
     pid = int(sys.argv[1])
-    
+    assets = json.loads(sys.argv[2])
+
     # 기존 Agent 종료 대기
+    proc = None
     try:
         proc = psutil.Process(pid)
         proc.wait(timeout=30)
@@ -28,12 +40,16 @@ def main():
     except psutil.TimeoutExpired:
         print("대기 시간 초과")
         return
+    
+    if proc and proc.is_running():
+        print("agent.exe 종료 실패; 업데이트 실패")
+        return
 
     temp_folder = BASE_DIR / "temp"
     temp_folder.mkdir(exist_ok=True)
 
     print()
-    for asset in cu._update_data["assets"]:
+    for asset in assets["assets"]:
         with httpx.stream(
             "GET", 
             asset["url"], 
@@ -66,14 +82,25 @@ def main():
             print()
 
     with zipfile.ZipFile(temp_folder / "update.zip", "r") as zip_ref:
-        zip_ref.extractall(BASE_DIR)
+        zip_ref.extractall(temp_folder)
 
-    for asset in cu._update_data["assets"]:
+    for file in temp_folder.iterdir():
+        if file.name in exclude_files:
+            continue
+
+        if file.is_dir():
+            move_folder_files(file, BASE_DIR / file.name)
+            continue
+
         os.replace(
-            temp_folder / asset["filename"], 
-            BASE_DIR / asset["filename"])
+            temp_folder / file.name, 
+            BASE_DIR / file.name)
 
-    os.startfile(BASE_DIR / "agent.exe")
+    shutil.rmtree(temp_folder)
+
+    agent = os.path.join(BASE_DIR, "agent.exe")
+    subprocess.Popen([agent], cwd=BASE_DIR, creationflags=subprocess.CREATE_NEW_PROCESS_GROUP)
+
 
 if __name__ == "__main__":
     main()
