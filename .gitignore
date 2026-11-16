@@ -1,13 +1,14 @@
 .venv/
+venv/
 __pycache__/
+*.pyc
 .vscode/
 
 client/node_modules
 client/.next
 *.env
 
-build
-dist
+build/
+dist/
 
 *.exe
-*.spec

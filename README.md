@@ -1,23 +1,25 @@
-# 가이드
+# Ef2-macro (Google Play Games for PC)
 
-- [가이드](#가이드)
-  - [편집기에서 실행 방법](#편집기에서-실행-방법)
-    - [구글 플레이 창은 항상 전체화면 f11](#구글-플레이-창은-항상-전체화면-f11)
+- [Ef2-macro (Google Play Games for PC)](#ef2-macro-google-play-games-for-pc)
+  - [실행 방법](#실행-방법)
+    - [필수 조건](#필수-조건)
   - [exe 파일로 만드는 방법](#exe-파일로-만드는-방법)
     - [exe 파일과 macro.py, .env 파일은 같은 폴더에 있어야 합니다](#exe-파일과-macropy-env-파일은-같은-폴더에-있어야-합니다)
-  - [macro 수정 방법](#macro-수정-방법)
+  - [macro 수정](#macro-수정)
+    - [구조](#구조)
 
-## 편집기에서 실행 방법
+## 실행 방법
 
-### 구글 플레이 창은 항상 전체화면 f11
+### 필수 조건
 
-폴더 위치 agent에서 아래 명령어를 cmd에서 실행
+- above Python 3.6 version is need
+- F11 전체화면
 
 ``` bat
 cd agent
 python -m venv .venv
 .\.venv\Scripts\activate.bat
-python -m pip install -r requirements.txt
+.\.venv\Scripts\Python.exe -m pip install -r requirements.txt
 .\.venv\Scripts\Python.exe agent.py
 ```
 
@@ -29,10 +31,22 @@ python -m pip install -r requirements.txt
 실행 후 dist 폴더에 exe 파일 생성
 
 ``` bat
+cd agent
 pyinstaller --clean --onefile --console --name agent --icon "favicon.ico" --collect-all rapidocr --add-data "image_match/templates;image_match/templates" agent.py
+move /Y "dist\*" .
 ```
 
-## macro 수정 방법
+## macro 수정
+
+### 구조
+
+- macro.py
+  - multi_macros
+    - macros
+      - sequence
+        - pos
+        - delay
+  - screen_regions
 
 macro.py에 구글 플레이 게임즈 for pc에서 f11 전체화면 기준으로 작성된 버튼별 위치가 _pos에 저장되어 있습니다.
 
