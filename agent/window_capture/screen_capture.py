@@ -1,6 +1,10 @@
 import ctypes
 from ctypes import wintypes
 import io
+import os
+from pathlib import Path
+import sys
+from dotenv import load_dotenv
 import win32con, win32gui, win32ui # type: ignore
 from PIL import Image, ImageStat # type: ignore
 
@@ -8,20 +12,31 @@ user32 = ctypes.windll.user32
 user32.PrintWindow.argtypes = [wintypes.HWND, wintypes.HDC, wintypes.UINT]
 user32.PrintWindow.restype = wintypes.BOOL
 
+BASE_DIR = getattr(sys, "frozen", False) and Path(sys.executable).resolve().parent or Path(__file__).resolve().parent.parent
+ENV_PATH = BASE_DIR / ".env"
 
-def find_game_child(game_title: str = "오늘도 환생 2", target_class: str = 'CROSVM_1') -> int:
+load_dotenv(
+    dotenv_path=ENV_PATH,
+    override=True
+)
+
+GAME_TITLE = os.environ["GAME_TITLE"]
+GAME_TARGET_CLASS = os.environ["GAME_TARGET_CLASS"]
+
+
+def find_game_child() -> int:
     matches = []
     def on_window(hwnd, _):
-        if not win32gui.IsWindowVisible(hwnd) or game_title.lower() not in win32gui.GetWindowText(hwnd).lower():
+        if not win32gui.IsWindowVisible(hwnd) or GAME_TITLE.lower() not in win32gui.GetWindowText(hwnd).lower():
             return
         def on_child(child, _):
-            if win32gui.GetClassName(child) == target_class:
+            if win32gui.GetClassName(child) == GAME_TARGET_CLASS:
                 matches.append(child)
         win32gui.EnumChildWindows(hwnd, on_child, None)
     win32gui.EnumWindows(on_window, None)
 
     if not matches:
-        return None
+        raise RuntimeError(f'Game child window {GAME_TARGET_CLASS!r} not found (title contains {GAME_TITLE!r})')
     
     return matches[0]
 

@@ -22,6 +22,7 @@ from window_capture.screen_uploader import start_screen_thread
 import image_match.image_match as im
 from macro_process import run_macro as rm, restart_game as rg
 from updater import check_update as cu
+from macro_editor.ef2 import pos as p
 
 
 BASE_DIR = getattr(sys, "frozen", False) and Path(sys.executable).resolve().parent or Path(__file__).resolve().parent
@@ -123,7 +124,7 @@ def run_command(
         macro: list[dict[str, Any]], 
         kind: str,
         is_repeat: bool, 
-        pos: dict[str, tuple[float, float, float, float]]
+        region: dict[str, tuple[float, float, float, float]]
     ):
     global state, last_error
     try:
@@ -133,12 +134,12 @@ def run_command(
         print(f'{datetime.datetime.now().strftime("%H:%M")} - ✅ 매크로 {macro["name"]} 실행{is_repeat and " (반복)" or ""}')
 
         # 매크로 실행; 실행 결과로 환생 또는 종료 시 현재 웨이브랑 환생 여부를 반환
-        wave, is_rebirth = rm.run_macro(thread_var, kind, macro["data"], pos)
+        wave, is_rebirth = rm.run_macro(thread_var, kind, macro["data"], region)
 
         print(f'{datetime.datetime.now().strftime("%H:%M")} - ✅ 매크로 종료{is_rebirth and "; 환생 성공" or ""}')
 
         # 매크로 실행 결과를 클라이언트로 전송
-        post_command_result(command_id, pos, wave, is_rebirth)
+        post_command_result(command_id, region, wave, is_rebirth)
 
     except Exception as e:
         last_error = str(e)
@@ -173,16 +174,7 @@ def load_macros():
     return {
         "macros": module.macros,
         "multi_macros": module.multi_macros,
-        "pos": {
-            "GOLD_POS": module.GOLD_POS,
-            "WAVE_POS": module.WAVE_POS,
-            "WAVE_POS2": module.WAVE_POS2,
-            "DIAMOND_POS": module.DIAMOND_POS,
-            "TIMER_POS": module.TIMER_POS,
-            "MEDAL_POS": module.MEDAL_POS,
-            "REBIRTH_POS": module.REBIRTH_POS,
-            "CONTINUE_POS": module.CONTINUE_POS
-        }
+        "region": p.region
     }
 
 
@@ -252,7 +244,7 @@ def execute(command: dict[str, Any], command_id: str):
         macro_stop.clear()
         last_error = ''
         state = 'running'
-        t = threading.Thread(target=run_command, args=(command_id, macro, kind, is_repeat, data["pos"]), daemon=True)
+        t = threading.Thread(target=run_command, args=(command_id, macro, kind, is_repeat, data["region"]), daemon=True)
 
         with macro_lock:
             macro_thread = t

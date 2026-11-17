@@ -11,7 +11,7 @@ import psutil
 
 BASE_DIR = getattr(sys, "frozen", False) and Path(sys.executable).resolve().parent or Path(__file__).resolve().parent.parent
 
-exclude_files = ["updater.exe", "release.zip"]
+exclude_files = ["updater.exe", "release.zip", ".env.example"]
 
 
 def update_version(new_version: str):

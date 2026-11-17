@@ -1,19 +1,22 @@
-# Ef2-macro (Google Play Games for PC)
+# Google Play Games for PC Macro
 
-- [Ef2-macro (Google Play Games for PC)](#ef2-macro-google-play-games-for-pc)
+- [Google Play Games for PC Macro](#google-play-games-for-pc-macro)
   - [실행 방법](#실행-방법)
-    - [필수 조건](#필수-조건)
-  - [exe 파일로 만드는 방법](#exe-파일로-만드는-방법)
-    - [exe 파일과 macro.py, .env 파일은 같은 폴더에 있어야 합니다](#exe-파일과-macropy-env-파일은-같은-폴더에-있어야-합니다)
-  - [macro 수정](#macro-수정)
+    - [요구사항](#요구사항)
+    - [편집기에서 실행](#편집기에서-실행)
+    - [빌드](#빌드)
+    - [dist 폴더에 생긴 exe 파일 agent 폴더로 이동](#dist-폴더에-생긴-exe-파일-agent-폴더로-이동)
+  - [매크로 에디터](#매크로-에디터)
     - [구조](#구조)
 
 ## 실행 방법
 
-### 필수 조건
+### 요구사항
 
-- above Python 3.6 version is need
-- F11 전체화면
+- above Python 3.6
+- F11 maximizing on Google Play Games for PC
+
+### 편집기에서 실행
 
 ``` bat
 cd agent
@@ -23,21 +26,31 @@ python -m venv .venv
 .\.venv\Scripts\Python.exe agent.py
 ```
 
-## exe 파일로 만드는 방법
+(작업 디렉토리가 이미 agent라면 cd agent는 무시)
 
-### exe 파일과 macro.py, .env 파일은 같은 폴더에 있어야 합니다
-
-폴더 위치 agent에서 아래 명령어 cmd에서 실행
-실행 후 dist 폴더에 exe 파일 생성
+### 빌드
 
 ``` bat
 cd agent
 .\.venv\Scripts\python.exe -m PyInstaller --clean --onefile --console --name agent --icon "favicon.ico" --collect-all rapidocr --add-data "templates;templates" agent.py
 pyinstaller --clean --onefile --console --name updater ./updater/updater.py
-move /Y "dist\*" .
 ```
 
-## macro 수정
+(작업 디렉토리가 이미 agent라면 cd agent는 무시)
+
+### dist 폴더에 생긴 exe 파일 agent 폴더로 이동
+
+``` bat
+agent/
+├── dist/
+│   ├── agent.exe
+│   └── updater.exe
+├── .env
+├── macro.py
+└── version.json
+```
+
+## 매크로 에디터
 
 ### 구조
 

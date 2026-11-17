@@ -8,7 +8,7 @@ from packaging.version import Version
 
 
 BASE_DIR = getattr(sys, "frozen", False) and Path(sys.executable).resolve().parent or Path(__file__).resolve().parent.parent
-REPO = "taegil-dev/ef2-macro"
+REPO = "taegil-dev/google-play-games-for-pc-macro"
 
 
 def get_current_version():

@@ -1,27 +1,39 @@
+import os
+from pathlib import Path
+import sys
 import threading
+
+from dotenv import load_dotenv
 import macro_click.show_click_marker as click_marker
 import win32api, win32con, win32gui # type: ignore
 
 __all__ = ["click", "swipe"]
 
+BASE_DIR = getattr(sys, "frozen", False) and Path(sys.executable).resolve().parent or Path(__file__).resolve().parent.parent
+ENV_PATH = BASE_DIR / ".env"
 
-def find_target(game_title: str = "오늘도 환생 2", target_class: str = 'CROSVM_1') -> int:
+load_dotenv(
+    dotenv_path=ENV_PATH,
+    override=True
+)
+
+GAME_TITLE = os.environ["GAME_TITLE"]
+GAME_TARGET_CLASS = os.environ["GAME_TARGET_CLASS"]
+
+
+def find_game_child() -> int:
     matches = []
-    def top(hwnd, _):
-        if win32gui.IsWindowVisible(hwnd) and game_title.lower() in win32gui.GetWindowText(hwnd).lower():
-
-            children = []
-            def child(ch, _):
-                if win32gui.GetClassName(ch) == target_class:
-                    children.append(ch)
-
-            win32gui.EnumChildWindows(hwnd, child, None)
-            matches.extend(children)
-
-    win32gui.EnumWindows(top, None)
+    def on_window(hwnd, _):
+        if not win32gui.IsWindowVisible(hwnd) or GAME_TITLE.lower() not in win32gui.GetWindowText(hwnd).lower():
+            return
+        def on_child(child, _):
+            if win32gui.GetClassName(child) == GAME_TARGET_CLASS:
+                matches.append(child)
+        win32gui.EnumChildWindows(hwnd, on_child, None)
+    win32gui.EnumWindows(on_window, None)
 
     if not matches:
-        raise RuntimeError(f'Game child window {target_class!r} not found (title contains {game_title!r})')
+        raise RuntimeError(f'Game child window {GAME_TARGET_CLASS!r} not found (title contains {GAME_TITLE!r})')
     
     return matches[0]
 
@@ -42,7 +54,7 @@ def coords(hwnd: int, rx: float, ry: float) -> tuple[int, int]:
     return x, y
 
 def click(thread_stop, rx: float, ry: float, duration: float = .05, show_marker: bool = True):
-    hwnd = find_target()
+    hwnd = find_game_child()
 
     if win32gui.IsIconic(win32gui.GetAncestor(hwnd, win32con.GA_ROOT)):
         raise RuntimeError('Game is minimized')
@@ -87,7 +99,7 @@ def swipe(
         steps: int = 30, 
         show_marker: bool = True
     ):
-    hwnd = find_target()
+    hwnd = find_game_child()
 
     if win32gui.IsIconic(win32gui.GetAncestor(hwnd, win32con.GA_ROOT)):
         raise RuntimeError('Game is minimized')
