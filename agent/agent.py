@@ -130,17 +130,10 @@ def run_command(
         is_rebirth = False
         wave = 0
 
-        # 매크로 안 시퀀스 순차적으로 실행
-        for sequence in macro["data"]:
-            if shutdown.is_set() or macro_stop.is_set():
-                break
+        print(f'{datetime.datetime.now().strftime("%H:%M")} - ✅ 매크로 {macro["name"]} 실행{is_repeat and " (반복)" or ""}')
 
-            # 어떤 매크로든 환생하면 그대로 종료
-            if is_rebirth:
-                break
-
-            # 매크로 실행; 실행 결과로 환생 또는 종료 시 현재 웨이브랑 환생 여부를 반환
-            wave, is_rebirth = rm.run_macro(thread_var, kind, sequence, pos)
+        # 매크로 실행; 실행 결과로 환생 또는 종료 시 현재 웨이브랑 환생 여부를 반환
+        wave, is_rebirth = rm.run_macro(thread_var, kind, macro["data"], pos)
 
         print(f'{datetime.datetime.now().strftime("%H:%M")} - ✅ 매크로 종료{is_rebirth and "; 환생 성공" or ""}')
 
@@ -242,14 +235,11 @@ def execute(command: dict[str, Any], command_id: str):
         macro_name = p.get('name')
         is_repeat = p.get('repeat')
 
-        print(f'{datetime.datetime.now().strftime("%H:%M")} - ✅ 매크로 {macro_name} 실행{is_repeat and " (반복)" or ""}')
-
         if not macro_name:
             raise ValueError('Missing macro name')
         
         data = load_macros()
 
-        macro = None
         if kind == 'RUN_MACRO':
             macro = data["macros"][macro_name]
 
@@ -263,8 +253,10 @@ def execute(command: dict[str, Any], command_id: str):
         last_error = ''
         state = 'running'
         t = threading.Thread(target=run_command, args=(command_id, macro, kind, is_repeat, data["pos"]), daemon=True)
+
         with macro_lock:
             macro_thread = t
+
         t.start()
     else:
         raise ValueError(f'Unsupported command: {kind}')

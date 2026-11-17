@@ -7,7 +7,7 @@ import macro_process.arrow_target_macro as atm
 from agent import BASE_DIR
 
 SEQUENCE_DELAY = 0.2
-MACRO_DELAY = 1
+MACRO_DELAY = 2
 
 image_matcher = im.ImageMatcher()
 templates_dir = BASE_DIR / "templates"
@@ -81,27 +81,33 @@ def ignore_condition(
         if not gold_info:
             return False
         
-        gold, suffix = gold_info
-        result = im.compare_gold(f"{gold}{suffix}", ignore['goal'])
+        gold_str = f"{gold_info['value']}{gold_info['unit']}"
+        result = im.compare_gold(gold_str, ignore['goal'])
         if(ignore['type'] == 'lower'):
             if not result:
-                print(f'{datetime.datetime.now().strftime("%H:%M")} - ❌ {sequence_name} 무시; 현재 골드 {gold}{suffix} < 목표 골드 {ignore["goal"]}')
+                print(f'{datetime.datetime.now().strftime("%H:%M")} - ❌ {sequence_name} 무시; 현재 골드 {gold_str} < 목표 골드 {ignore["goal"]}')
                 return True
         
         elif (ignore['type'] == 'higher'):
             if result:
-                print(f'{datetime.datetime.now().strftime("%H:%M")} - ❌ {sequence_name} 무시; 현재 골드 {gold}{suffix} > 목표 골드 {ignore["goal"]}')
+                print(f'{datetime.datetime.now().strftime("%H:%M")} - ❌ {sequence_name} 무시; 현재 골드 {gold_str} > 목표 골드 {ignore["goal"]}')
                 return True
         
     return False
 
-def run_sequence(thread_var, kind, sequence, image_pos):
+def run_sequence(thread_var, sequences, image_pos):
     is_rebirth = False
-    # 서브 시퀀스; 멀티 매크로의 경우 시퀀스 안에 시퀀스가 있음
-    def run_subsequence(subsequence):
+    for sequence in sequences:
+        if thread_var.shutdown.is_set() or thread_var.macro_stop.is_set():
+            break
+
+        # 재실행 감지 용 반복문
         while True:
             restart = False
-            for pos in subsequence:
+            for pos in sequence.get("sequence", []):
+                # 시퀀스 딜레이
+                thread_var.macro_stop.wait(SEQUENCE_DELAY)
+
                 if thread_var.shutdown.is_set() or thread_var.macro_stop.is_set():
                     break
 
@@ -111,8 +117,9 @@ def run_sequence(thread_var, kind, sequence, image_pos):
                     # 매크로를 잠시 멈춤
                     while thread_var.restart.is_set():
                         continue
-                    
+
                     print(f'{datetime.datetime.now().strftime("%H:%M")} - 🚥 매크로 재시작')
+                    # 재실행 시 시퀀스 처음부터 다시 시작
                     restart = True
                     break
 
@@ -124,8 +131,8 @@ def run_sequence(thread_var, kind, sequence, image_pos):
                     if not check[0]:
                         continue
                     # 환생
-                    else:
-                        return True
+                    is_rebirth = True
+                    break
 
 
                 if pos[0] == "click":
@@ -150,35 +157,25 @@ def run_sequence(thread_var, kind, sequence, image_pos):
                 elif pos[0] == "delay":
                     thread_var.macro_stop.wait(pos[1])
 
-                thread_var.macro_stop.wait(SEQUENCE_DELAY)
-
+            # 중간에 멈출 시 다시 시작
             if restart:
                 continue
-            return False
+            # 재실행이 아닐 시 while문 탈출
+            break
 
-    # 멀티 매크로 일 경우 시퀀스 안의 시퀀스를 차례대로 실행
-    if kind == "RUN_MULTI_MACRO":
-        for subsequence in sequence:
-            if thread_var.shutdown.is_set() or thread_var.macro_stop.is_set():
-                break
-
-            is_rebirth = run_subsequence(subsequence["sequence"])
-            if is_rebirth:
-                break
-
-    # 일반 매크로는 한번만 실행
-    elif kind == "RUN_MACRO":
-        is_rebirth = run_subsequence(sequence)
-
-    # 매크로 실행 후 대기
-    thread_var.macro_stop.wait(MACRO_DELAY)
     return is_rebirth
 
 
-def run_macro(thread_var, kind, sequence, pos):
-    check = kind == "RUN_MULTI_MACRO"
-    condition = kind == "RUN_MULTI_MACRO" and sequence['condition'] or "empty"
-    goal = kind == "RUN_MULTI_MACRO" and sequence['goal'] or 0
+def run_macro(thread_var, kind, macro, pos):
+    is_multi_macro = kind == "RUN_MULTI_MACRO"
+
+    # 서로 다른 조건들을 가진 시퀀스들을 전부 실행; 단, 먼저 조건이 충족된 시퀀스만 실행, 순자적 실행
+    condition_wave = macro.get("wave", None)
+    condition_gold = macro.get("gold", None)
+    condition_time = macro.get("time", None)
+    condition_rebirth = macro.get("rebirth", None)
+    condition_custom = macro.get("custom", None)
+    condition_empty = macro.get("empty", None)
 
     wave = 0
     is_rebirth = False
@@ -191,6 +188,7 @@ def run_macro(thread_var, kind, sequence, pos):
             print(f'{datetime.datetime.now().strftime("%H:%M")} - ⛔ 매크로 일시중지; 게임 재실행 중')
             while thread_var.restart.is_set():
                 continue
+
             print(f'{datetime.datetime.now().strftime("%H:%M")} - 🚥 매크로 재시작')
             continue
 
@@ -201,75 +199,78 @@ def run_macro(thread_var, kind, sequence, pos):
         # 환생 체크
         result = im.check_rebirth(image_matcher, pos["REBIRTH_POS"])
         if result:
-            check = rebirth_sequence(thread_var, pos)
+            is_rebirth, wave = rebirth_sequence(thread_var, pos)
             # 이어하기
-            if not check[0]:
+            if not is_rebirth:
                 continue
-            # 환생
-            else:
-                return check[1], True
+
+        # 단일 매크로는 조건 매크로가 없으므로 바로 실행
+        if not is_multi_macro:
+            is_rebirth = run_sequence(thread_var, macro, pos)
+            break
+
+        # 환생 조건일 경우 환생할 때 까지 체크
+        if condition_rebirth:
+            pass
 
         # 웨이브 조건 체크
-        if check and condition == "wave":
+        if condition_wave:
+            goal = condition_wave[0].get("goal", 0)
+            name = condition_wave[0].get("name", "Unnamed Sequence")
+            ignore = condition_wave[0].get("ignore", None)
 
             # 웨이브를 확인하는 절차; 상단 웨이브는 뿔피리, 엘비에 따라 숫자가 이상하게 생길 수 있으므로 중앙 웨이브랑 비교하여 한번 걸러냄
             floor = im.check_floor(pos["WAVE_POS"], pos["WAVE_POS2"])
-            if not floor:
-                continue
-
-            if floor >= goal:
-                # 무시 조건 체크
-                if ignore_condition(sequence["name"], sequence['ignore'], pos):
-                    break
-
-                print(f'{datetime.datetime.now().strftime("%H:%M")} - 🔔 현재 웨이브 {floor} : 목표 웨이브 {goal}')
-                print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️ 시퀀스 {sequence["name"]} 실행')
-
-                is_rebirth = run_sequence(thread_var, kind, sequence['sequence'], pos)
-                break
+            if floor:
+                # 실행한 시퀀스 제거
+                sequence = condition_wave.pop(0)
+                if floor >= goal:
+                    if not ignore_condition(name, ignore, pos):
+                        print(f'{datetime.datetime.now().strftime("%H:%M")} - 🔔 현재 웨이브 {floor} : 목표 웨이브 {goal}')
+                        print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️ 시퀀스 {name} 실행')
+                        is_rebirth = run_sequence(thread_var, sequence['sequence'], pos)
 
         # 골드 조건 체크
-        elif check and condition == "gold":
+        if condition_gold:
+            goal = condition_gold[0].get("goal", "1a")
+            name = condition_gold[0].get("name", "Unnamed Sequence")
+            ignore = condition_gold[0].get("ignore", None)
 
             # 골드는 숫자와 단위로 감지
-            gold, suffix = im.check_gold(pos["GOLD_POS"])
-            if suffix == "":
-                continue
+            gold = im.check_gold(pos["GOLD_POS"])
+            if gold:
+                # 실행한 시퀀스 제거
+                sequence = condition_gold.pop(0)
 
-            # 골드 비교는 문자열로 비교 "100az"
-            if im.compare_gold(f"{gold}{suffix}", goal):
-                if ignore_condition(sequence["name"], sequence['ignore'], pos):
-                    break
-
-                print(f'{datetime.datetime.now().strftime("%H:%M")} - 🔔 현재 골드 {gold}{suffix} : 목표 골드 {goal}')
-                print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️ 시퀀스 {sequence["name"]} 실행')
-
-                is_rebirth = run_sequence(thread_var, kind, sequence['sequence'], pos)
-                break
+                gold_str = f"{gold['value']}{gold['unit']}"
+                # 골드 비교는 문자열로 비교 "100az"
+                if im.compare_gold(gold_str, goal):
+                    if not ignore_condition(name, ignore, pos):
+                        print(f'{datetime.datetime.now().strftime("%H:%M")} - 🔔 현재 골드 {gold_str} : 목표 골드 {goal}')
+                        print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️ 시퀀스 {sequence["name"]} 실행')
+                        is_rebirth = run_sequence(thread_var, sequence['sequence'], pos)
 
         # 시간 조건 체크
-        elif check and condition == "time":
+        if condition_time:
+            goal = condition_time[0].get("goal", "00:00")
+            name = condition_time[0].get("name", "Unnamed Sequence")
+            ignore = condition_time[0].get("ignore", None)
 
             # (초, 분, 시)의 정수 튜플 반환
             current_time = im.check_time(pos["TIMER_POS"])
 
+            # 실행한 시퀀스 제거
+            sequence = condition_time.pop(0)
+
             # 튜플과 문자열로 비교 00:00:00
             if im.compare_time(current_time, goal):
-                if ignore_condition(sequence["name"], sequence['ignore'], pos):
-                    break
+                if not ignore_condition(name, ignore, pos):
+                    print(f'{datetime.datetime.now().strftime("%H:%M")} - 🔔 현재 시간 {current_time[2]}:{current_time[1]}:{current_time[0]} : 목표 시간 {goal}')
+                    print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️ 시퀀스 {sequence["name"]} 실행')
+                    is_rebirth = run_sequence(thread_var, sequence['sequence'], pos)
 
-                print(f'{datetime.datetime.now().strftime("%H:%M")} - 🔔 현재 시간 {current_time[2]}:{current_time[1]}:{current_time[0]} : 목표 시간 {goal}')
-                print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️ 시퀀스 {sequence["name"]} 실행')
-
-                is_rebirth = run_sequence(thread_var, kind, sequence['sequence'], pos)
-                break
-
-        # 환생 조건일 경우 환생할 때 까지 반복; 즉, 매크로의 마지막
-        elif check and condition == "rebirth":
-            continue
-
-        # 일반적인 매크로가 아닌 특수 목적용 매크로를 위한 조건
-        elif check and condition == "custom":
+        # 특수 목적용 매크로
+        if condition_custom:
             # 실행할 함수를 넣어둠
             data = {
                 "양궁": { "func": atm.auto_shoot_fast, "args": [image_matcher, thread_var.macro_stop] }
@@ -283,14 +284,15 @@ def run_macro(thread_var, kind, sequence, pos):
                 data[sequence['name']]["func"](*data[sequence['name']]["args"])
                 break
 
-        # 일반 매크로 실행; 아무 조건 없음
-        elif condition == "empty":
-            if ignore_condition(sequence["name"], sequence['ignore'], pos):
-                break
+        # 조건이 없는 시퀀스 실행
+        if condition_empty:
+            name = condition_empty[0].get("name", "Unnamed Sequence")
+            ignore = condition_empty[0].get("ignore", None)
 
-            print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️ 시퀀스 {sequence["name"]} 실행')
-
-            is_rebirth = run_sequence(thread_var, kind, sequence['sequence'], pos)
-            break
+            # 실행한 시퀀스 제거
+            sequence = condition_empty.pop(0)
+            if not ignore_condition(name, ignore, pos):
+                print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️ 시퀀스 {sequence["name"]} 실행')
+                is_rebirth = run_sequence(thread_var, sequence['sequence'], pos)
 
     return wave, is_rebirth

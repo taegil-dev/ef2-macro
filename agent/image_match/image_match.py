@@ -65,9 +65,9 @@ def check_gold(GOLD_POS):
     gold = parse_gold_value(text)
 
     if gold is None:
-        return 0, ""
+        return None
 
-    return gold["value"], gold["unit"]
+    return gold
 
 def check_diamond(DIAMOND_POS):
     # 현재 게임 화면 캡처 (JPEG bytes 반환)

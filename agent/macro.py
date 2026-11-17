@@ -333,202 +333,124 @@ _sequence = {
 
 macros = {
     "양궁 시작": {"name": "양궁 시작", "data": [
-        {"name": "양궁 시작",
-         "sequence": _sequence["양궁 시퀀스"]},
+        {"name": "양궁 시작", "sequence": _sequence["양궁 시퀀스"]}
     ]},
     "양궁 끝": {"name": "양궁 끝", "data": [
-        {"name": "양궁 끝",
-         "sequence": _sequence["양궁 닫기 시퀀스"]},
+        {"name": "양궁 끝", "sequence": _sequence["양궁 닫기 시퀀스"]}
     ]},
     "영입": {"name": "영입", "data": [
-        {"name": "영입", 
-         "sequence": _sequence["영입 시퀀스"]},
+        {"name": "영입", "sequence": _sequence["영입 시퀀스"]}
     ]},
     "비서": {"name": "비서", "data": [
-        {"name": "비서",
-         "sequence": _sequence["비서 시퀀스"]},
+        {"name": "비서", "sequence": _sequence["비서 시퀀스"]}
     ]},
     "등반 영웅 프리셋": {"name": "등반 영웅 프리셋", "data": [
-        {"name": "등반 영웅 프리셋", 
-         "sequence": _sequence["등반 영웅 프리셋 시퀀스"]},
+        {"name": "등반 영웅 프리셋", "sequence": _sequence["등반 영웅 프리셋 시퀀스"]}
     ]},
     "영웅 및 성 강화": {"name": "영웅 및 성 강화", "data": [
-        {"name": "영웅 및 성 강화", 
-         "sequence": _sequence["영웅 및 성 강화 시퀀스"]},
+        {"name": "영웅 및 성 강화", "sequence": _sequence["영웅 및 성 강화 시퀀스"]}
     ]},
     "퀘스트 29 레벨업": {"name": "퀘스트 29 레벨업", "data": [
-        {"name": "퀘스트 확장 프리셋", 
-         "sequence": _sequence["퀘스트 확장 프리셋 시퀀스"]},
-
-        {"name": "퀘스트 레벨업 딜레이", 
-         "sequence": [_custom_delay(10)]},
-
-        {"name": "등반 프리셋", 
-         "sequence": _sequence["등반 프리셋 시퀀스"]},
+        {"name": "퀘스트 확장 프리셋", "sequence": _sequence["퀘스트 확장 프리셋 시퀀스"]},
+        {"name": "퀘스트 레벨업 딜레이", "sequence": [_custom_delay(10)]},
+        {"name": "등반 프리셋", "sequence": _sequence["등반 프리셋 시퀀스"]},
     ]},
     "퀘스트 30 오픈": {"name": "퀘스트 30 오픈", "data": [
-        {"name": "퀘스트 오픈 프리셋", 
-         "sequence": _sequence["퀘스트 오픈 프리셋 시퀀스"]},
-
-        {"name": "퀘스트 오픈 딜레이", 
-         "sequence": [_custom_delay(5)]},
-
-        {"name": "등반 프리셋", 
-         "sequence": _sequence["등반 프리셋 시퀀스"]},
+        {"name": "퀘스트 오픈 프리셋", "sequence": _sequence["퀘스트 오픈 프리셋 시퀀스"]},
+        {"name": "딜레이", "sequence": [_custom_delay(5)]},
+        {"name": "등반 프리셋", "sequence": _sequence["등반 프리셋 시퀀스"]},
     ]},
     "퀘스트 30 레벨업": {"name": "퀘스트 30 레벨업", "data": [
-        {"name": "퀘스트 확장 프리셋", 
-         "sequence": _sequence["퀘스트 확장 프리셋 시퀀스"]},
-
-        {"name": "퀘스트 레벨업 딜레이", 
-         "sequence": [_custom_delay(10)]},
-
-        {"name": "등반 프리셋", 
-         "sequence": _sequence["등반 프리셋 시퀀스"]},
+        {"name": "퀘스트 확장 프리셋", "sequence": _sequence["퀘스트 확장 프리셋 시퀀스"]},
+        {"name": "딜레이", "sequence": [_custom_delay(10)]},
+        {"name": "등반 프리셋", "sequence": _sequence["등반 프리셋 시퀀스"]},
     ]},
     "웨이브 8000": {"name": "8000 웨이브", "data": [
-        {"name": "병사 레벨업 감소 프리셋", 
-         "sequence": _sequence["병사 레벨업 감소 프리셋 시퀀스"]},
-
-        {"name": "8000 영웅 프리셋 변경", 
-         "sequence": _sequence["8000 영웅 프리셋 변경 시퀀스"]},
-
-        {"name": "등반 프리셋", 
-         "sequence": _sequence["등반 프리셋 시퀀스"]},
+        {"name": "병사 레벨업 감소 프리셋", "sequence": _sequence["병사 레벨업 감소 프리셋 시퀀스"]},
+        {"name": "8000 영웅 프리셋 변경", "sequence": _sequence["8000 영웅 프리셋 변경 시퀀스"]},
+        {"name": "등반 프리셋", "sequence": _sequence["등반 프리셋 시퀀스"]},
     ]},
     "웨이브 9000": {"name": "9000 웨이브", "data": [
-        {"name": "병사 레벨업 감소 프리셋", 
-         "sequence": _sequence["병사 레벨업 감소 프리셋 시퀀스"]},
-
-        {"name": "9000 영웅 프리셋 변경", 
-         "sequence": _sequence["9000 영웅 프리셋 변경 시퀀스"]},
-
-        {"name": "등반 프리셋", 
-         "sequence": _sequence["등반 프리셋 시퀀스"]},
-
-        {"name": "병사 레벨 증가 프리셋", 
-         "sequence": _sequence["병사 레벨 증가 프리셋 시퀀스"]},
+        {"name": "병사 레벨업 감소 프리셋", "sequence": _sequence["병사 레벨업 감소 프리셋 시퀀스"]},
+        {"name": "9000 영웅 프리셋 변경", "sequence": _sequence["9000 영웅 프리셋 변경 시퀀스"]},
+        {"name": "등반 프리셋", "sequence": _sequence["등반 프리셋 시퀀스"]},
+        {"name": "병사 레벨 증가 프리셋", "sequence": _sequence["병사 레벨 증가 프리셋 시퀀스"]},
     ]},
     "웨이브 9700": {"name": "9700 웨이브", "data": [
-        {"name": "9700 영웅 프리셋 변경", 
-         "sequence": _sequence["9700 영웅 프리셋 변경 시퀀스"]},
+        {"name": "9700 영웅 프리셋 변경", "sequence": _sequence["9700 영웅 프리셋 변경 시퀀스"]},
     ]},
-    "테스트": {"name": "테스트", "data": [
-        {"name": "테스트", 
-         "sequence": _sequence["테스트 시퀀스"]},
-    ]}
+    "테스트": {"name": "테스트", "data": []}
 }
 
 multi_macros = {
-    "자동 환생": {"name": "자동 환생", "data": [
-        {"name": "등반 프리셋 변경", 
-         "condition": "empty",
-         "goal": 0,
-         "sequence": macros["등반 영웅 프리셋"]["data"],
-         "ignore": {"condition": "wave", "type": "higher", "goal": 7950}},
+    "자동 환생": {"name": "자동 환생", "data": {
+        "rebirth": [
+            {"name": "환생"},
+        ],
 
-        {"name": "영입", 
-         "condition": "empty",
-         "goal": 0,
-         "sequence": macros["영입"]["data"],
-         "ignore": None},
+        "time": [
+            {"name": "등반 프리셋 변경", 
+             "goal": "00:00",
+             "sequence": macros["등반 영웅 프리셋"]["data"],
+             "ignore": {"condition": "wave", "type": "higher", "goal": 9000}},
 
-        {"name": "영웅 및 성 강화", 
-         "condition": "time",
-         "goal": "00:35",
-         "sequence": macros["영웅 및 성 강화"]["data"],
-         "ignore": {"condition": "gold", "type": "higher", "goal": "50ao"}},
+            {"name": "영입", 
+             "goal": "00:00",
+             "sequence": macros["영입"]["data"]},
 
-        {"name": "퀘스트 29 레벨업", 
-         "condition": "gold",
-         "goal": "3ao",
-         "sequence": macros["퀘스트 29 레벨업"]["data"],
-         "ignore": {"condition": "gold", "type": "higher", "goal": "1ap"}},
+            {"name": "영웅 및 성 강화", 
+             "goal": "00:35",
+             "sequence": macros["영웅 및 성 강화"]["data"],
+             "ignore": {"condition": "gold", "type": "higher", "goal": "50ao"}},
 
-        {"name": "영웅 및 성 강화", 
-         "condition": "empty",
-         "goal": 0,
-         "sequence": macros["영웅 및 성 강화"]["data"],
-         "ignore": {"condition": "gold", "type": "higher", "goal": "50ao"}},
+            {"name": "비서", 
+             "goal": "00:50",
+             "sequence": macros["비서"]["data"]},
+        ],
 
-        {"name": "퀘스트 30 오픈", 
-         "condition": "gold",
-         "goal": "130ao",
-         "sequence": macros["퀘스트 30 오픈"]["data"],
-         "ignore": {"condition": "gold", "type": "higher", "goal": "1ap"}},
+        "gold": [
+            {"name": "퀘스트 29 레벨업", 
+            "goal": "3ao",
+            "sequence": macros["퀘스트 29 레벨업"]["data"],
+            "ignore": {"condition": "gold", "type": "higher", "goal": "1ap"}},
 
-        {"name": "웨이브 8000",
-         "condition": "wave",
-         "goal": 7950,
-         "sequence": macros["웨이브 8000"]["data"],
-         "ignore": {"condition": "wave", "type": "higher", "goal": 8950}},
+            {"name": "퀘스트 30 오픈", 
+             "goal": "130ao",
+             "sequence": macros["퀘스트 30 오픈"]["data"],
+             "ignore": {"condition": "gold", "type": "higher", "goal": "1ap"}},
 
-        {"name": "영입", 
-         "condition": "empty",
-         "goal": 0,
-         "sequence": macros["영입"]["data"],
-         "ignore": None},
+            {"name": "영웅 및 성 강화", 
+             "goal": "1au",
+             "sequence": macros["영웅 및 성 강화"]["data"]},
 
-        {"name": "비서", 
-         "condition": "empty",
-         "goal": 0,
-         "sequence": macros["비서"]["data"],
-         "ignore": None},
+            {"name": "퀘스트 30 레벨업",
+             "goal": "300au",
+             "sequence": macros["퀘스트 30 레벨업"]["data"],
+             "ignore": {"condition": "wave", "type": "higher", "goal": 9000}},
+        ],
 
-        {"name": "퀘스트 30 레벨업",
-         "condition": "gold",
-         "goal": "300au",
-         "sequence": macros["퀘스트 30 레벨업"]["data"],
-         "ignore": None},
+        "wave": [
+            {"name": "웨이브 9000",
+             "goal": 9400,
+             "sequence": macros["웨이브 9000"]["data"],
+             "ignore": {"condition": "wave", "type": "higher", "goal": 9700}},
 
-        {"name": "영입", 
-         "condition": "empty",
-         "goal": 0,
-         "sequence": macros["영입"]["data"],
-         "ignore": None},
+            {"name": "웨이브 9700",
+             "goal": 9705,
+             "sequence": macros["웨이브 9700"]["data"]},
+        ],
+    }},
+    "양궁": {"name": "양궁", "data": {
+        "empty": [
+            {"name": "양궁 시작", "sequence": macros["양궁 시작"]["data"]},
 
-        {"name": "웨이브 9000",
-         "condition": "wave",
-         "goal": 9000,
-         "sequence": macros["웨이브 9000"]["data"],
-         "ignore": {"condition": "wave", "type": "higher", "goal": 9700}},
+            {"name": "양궁",
+             "condition": "custom",
+             "goal": 0,
+             "sequence": ""},
 
-        {"name": "웨이브 9700",
-         "condition": "wave",
-         "goal": 9705,
-         "sequence": macros["웨이브 9700"]["data"],
-         "ignore": None},
-
-        {"name": "환생",
-          "condition": "rebirth",
-          "goal": 0,
-          "sequence": None,
-          "ignore": None},
-    ]},
-    "양궁": {"name": "양궁", "data": [
-        {"name": "양궁 시작",
-         "condition": "empty",
-         "goal": 0,
-         "sequence": macros["양궁 시작"]["data"],
-         "ignore": None},
-
-        {"name": "양궁",
-         "condition": "custom",
-         "goal": 0,
-         "sequence": "",
-         "ignore": None},
-
-        {"name": "양궁 끝",
-         "condition": "empty",
-         "goal": 0,
-         "sequence": macros["양궁 끝"]["data"],
-         "ignore": None},
-    ]},
-    "테스트": {"name": "테스트", "data": [
-        {"name": "테스트", 
-         "condition": "time",
-         "goal": "2:51:30",
-         "sequence": macros["테스트"]["data"],
-         "ignore": None}
-    ]}
+            {"name": "양궁 끝", "sequence": macros["양궁 끝"]["data"]},
+        ]
+    }},
+    "테스트": {"name": "테스트", "data": {}}
 }
