@@ -326,7 +326,7 @@ def apply_restart():
     if not res:
         return
     
-    print("바탕화면에 있는 바로가기 파일을 찾고 있습니다...")
+    print("\n바탕화면에 있는 바로가기 파일을 찾고 있습니다...\n")
 
     # 바탕화면 경로 가져오기; 윈도우 환경에 따라 절대적인 경로가 다르기 때문에 컴퓨터에 저장되어 있는 바탕화면 경로를 가져오는 방법을 사용
     buffer = ctypes.create_unicode_buffer(260)

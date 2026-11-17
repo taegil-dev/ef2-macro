@@ -175,7 +175,6 @@ def run_macro(thread_var, kind, macro, region):
     condition_wave = macro.get("wave", None)
     condition_gold = macro.get("gold", None)
     condition_time = macro.get("time", None)
-    condition_rebirth = macro.get("rebirth", None)
     condition_custom = macro.get("custom", None)
     condition_empty = macro.get("empty", None)
 
@@ -184,7 +183,7 @@ def run_macro(thread_var, kind, macro, region):
     while not thread_var.shutdown.is_set() and not thread_var.macro_stop.is_set():
         # 매크로 딜레이
         thread_var.macro_stop.wait(MACRO_DELAY)
-
+        
         # 게임 재실행
         if thread_var.restart.is_set():
             print(f'{datetime.datetime.now().strftime("%H:%M")} - ⛔ 매크로 일시중지; 게임 재실행 중')
@@ -211,10 +210,6 @@ def run_macro(thread_var, kind, macro, region):
             is_rebirth = run_sequence(thread_var, macro, region)
             break
 
-        # 환생 조건일 경우 환생할 때 까지 체크
-        if condition_rebirth:
-            pass
-
         # 웨이브 조건 체크
         if condition_wave:
             goal = condition_wave[0].get("goal", 0)
@@ -224,9 +219,9 @@ def run_macro(thread_var, kind, macro, region):
             # 웨이브를 확인하는 절차; 상단 웨이브는 뿔피리, 엘비에 따라 숫자가 이상하게 생길 수 있으므로 중앙 웨이브랑 비교하여 한번 걸러냄
             floor = im.check_floor(region["WAVE_POS"], region["WAVE_POS2"])
             if floor:
-                # 실행한 시퀀스 제거
-                sequence = condition_wave.pop(0)
                 if floor >= goal:
+                    # 실행한 시퀀스 제거
+                    sequence = condition_wave.pop(0)
                     if not ignore_condition(name, ignore, region):
                         print(f'{datetime.datetime.now().strftime("%H:%M")} - 🔔 현재 웨이브 {floor} : 목표 웨이브 {goal}')
                         print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️ 시퀀스 {name} 실행')
@@ -241,12 +236,12 @@ def run_macro(thread_var, kind, macro, region):
             # 골드는 숫자와 단위로 감지
             gold = im.check_gold(region["GOLD_POS"])
             if gold:
-                # 실행한 시퀀스 제거
-                sequence = condition_gold.pop(0)
-
                 gold_str = f"{gold['value']}{gold['unit']}"
+
                 # 골드 비교는 문자열로 비교 "100az"
                 if im.compare_gold(gold_str, goal):
+                    # 실행한 시퀀스 제거
+                    sequence = condition_gold.pop(0)
                     if not ignore_condition(name, ignore, region):
                         print(f'{datetime.datetime.now().strftime("%H:%M")} - 🔔 현재 골드 {gold_str} : 목표 골드 {goal}')
                         print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️ 시퀀스 {sequence["name"]} 실행')
@@ -261,11 +256,10 @@ def run_macro(thread_var, kind, macro, region):
             # (초, 분, 시)의 정수 튜플 반환
             current_time = im.check_time(region["TIMER_POS"])
 
-            # 실행한 시퀀스 제거
-            sequence = condition_time.pop(0)
-
             # 튜플과 문자열로 비교 00:00:00
             if im.compare_time(current_time, goal):
+                # 실행한 시퀀스 제거
+                sequence = condition_time.pop(0)
                 if not ignore_condition(name, ignore, region):
                     print(f'{datetime.datetime.now().strftime("%H:%M")} - 🔔 현재 시간 {current_time[2]}:{current_time[1]}:{current_time[0]} : 목표 시간 {goal}')
                     print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️ 시퀀스 {sequence["name"]} 실행')
