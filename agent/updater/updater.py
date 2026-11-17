@@ -14,6 +14,17 @@ BASE_DIR = getattr(sys, "frozen", False) and Path(sys.executable).resolve().pare
 exclude_files = ["updater.exe", "release.zip"]
 
 
+def update_version(new_version: str):
+    path = BASE_DIR / "version.json"
+    with path.open("r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    data["version"] = new_version
+
+    with path.open("w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+
+
 def get_current_version():
     path = os.path.join(BASE_DIR, "version.json")
 
@@ -103,6 +114,8 @@ def main():
     with zipfile.ZipFile(temp_folder / "release.zip", "r") as zip_ref:
         zip_ref.extractall(temp_folder)
 
+
+    # 가져온 파일 덮어쓰기; 단, updater.exe와 release.zip은 제외; updater.exe는 현재 실행 중, 그래서 updater.exe는 수정하면 다시 설치
     for file in temp_folder.iterdir():
         print(f"Moving {file.name} to {BASE_DIR}")
         if file.name in exclude_files:
@@ -116,6 +129,10 @@ def main():
             temp_folder / file.name, 
             BASE_DIR / file.name)
 
+    # version.json의 버전 업데이트; 그냥 json 수정해서 업로드 하면 되지만 개발 중에 귀찮아서 깃헙 릴리즈 태그로 업데이트
+    update_version(assets["version"])
+
+    # 폴더 삭제; 내부 파일 포함
     shutil.rmtree(temp_folder)
 
     agent = os.path.join(BASE_DIR, "agent.exe")

@@ -105,10 +105,13 @@ def run_sequence(thread_var, kind, sequence, image_pos):
                 if thread_var.shutdown.is_set() or thread_var.macro_stop.is_set():
                     break
 
+                # 게임 재실행
                 if thread_var.restart.is_set():
                     print(f'{datetime.datetime.now().strftime("%H:%M")} - ⛔ 매크로 일시중지; 게임 재실행 중')
+                    # 매크로를 잠시 멈춤
                     while thread_var.restart.is_set():
                         continue
+                    
                     print(f'{datetime.datetime.now().strftime("%H:%M")} - 🚥 매크로 재시작')
                     restart = True
                     break

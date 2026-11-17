@@ -53,7 +53,8 @@ restart = threading.Event()
 thread_var = SimpleNamespace(
     shutdown=shutdown,
     macro_stop=macro_stop,
-    restart=restart
+    restart=restart,
+    screen_watching=screen_watching
 )
 
 
@@ -343,8 +344,8 @@ def apply_restart():
     
     print("바탕화면에 있는 바로가기 파일을 찾고 있습니다...")
 
+    # 바탕화면 경로 가져오기; 윈도우 환경에 따라 절대적인 경로가 다르기 때문에 컴퓨터에 저장되어 있는 바탕화면 경로를 가져오는 방법을 사용
     buffer = ctypes.create_unicode_buffer(260)
-
     ctypes.windll.shell32.SHGetFolderPathW(
         None,
         0x0010,  # CSIDL_DESKTOPDIRECTORY
@@ -354,6 +355,8 @@ def apply_restart():
     )
 
     desktop = Path(buffer.value)
+
+    # 파일이름은 항상 동일(구글 플레이 for PC 기준)
     target_path = desktop / "오늘도 환생 2  방치형 디펜스 RPG.lnk"
     if target_path.exists():
         print(f"✅ 파일을 정상적으로 찾았습니다: {target_path}")

@@ -134,7 +134,10 @@ def restart_loop(shutdown: threading.Event, restart: threading.Event, shortcut_p
     print("")
     while not shutdown.is_set() and not restart_stop.is_set():
         if time.monotonic() - last_restart >= restart_time:
+            # 재시작 이벤트를 발생시키고 매크로가 멈출 때까지 대기
             restart.set()
+            restart_stop.wait(5)
+
             print("=== 게임 종료 시작 ===")
             result = restart_game(shortcut_path)
             if not result:

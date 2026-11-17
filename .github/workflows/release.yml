@@ -43,6 +43,7 @@ jobs:
           Copy-Item ./agent/dist/agent.exe package/
           Copy-Item ./agent/dist/updater.exe package/
 
+          Copy-Item ./agent/.env.example package/
           Copy-Item ./agent/macro.py package/
           Copy-Item ./agent/version.json package/
           Copy-Item ./agent/templates -Destination package/templates -Recurse
