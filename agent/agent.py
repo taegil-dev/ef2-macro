@@ -37,7 +37,7 @@ API = os.environ['API_BASE_URL'].rstrip('/')
 DEVICE = os.environ['DEVICE_ID']
 TOKEN = os.environ['DEVICE_TOKEN']
 
-POLL = 2.0
+POLL = 10
 HEARTBEAT = 15
 
 shutdown = threading.Event()
@@ -316,8 +316,8 @@ def main():
 
             shutdown.wait(POLL)
 
-    screen_stop.set()
-    screen_thread.join(timeout=2)
+    # screen_stop.set()
+    # screen_thread.join(timeout=2)
     stop_macro()
 
 
@@ -384,7 +384,7 @@ if __name__ == '__main__':
     def handle_signal(_signum, _frame):
         shutdown.set()
         macro_stop.set()
-        screen_stop.set()
+        # screen_stop.set()
         rg.stop_restart()
 
     # 시그널 등록
