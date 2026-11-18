@@ -47,7 +47,7 @@ macro_lock = threading.Lock()
 state = 'idle'
 last_error = ''
 
-screen_stop, screen_thread, screen_watching = start_screen_thread(shutdown)
+# screen_stop, screen_thread, screen_watching = start_screen_thread(shutdown)
 
 restart = threading.Event()
 
@@ -55,7 +55,7 @@ thread_var = SimpleNamespace(
     shutdown=shutdown,
     macro_stop=macro_stop,
     restart=restart,
-    screen_watching=screen_watching
+    # screen_watching=screen_watching
 )
 
 
@@ -275,10 +275,10 @@ def main():
                     data = r.json()
 
                     # 웹페이지를 보고 있을 때만 화면 공유
-                    if data.get("screen_watching"):
-                        screen_watching.set()
-                    else:
-                        screen_watching.clear()
+                    # if data.get("screen_watching"):
+                    #     screen_watching.set()
+                    # else:
+                    #     screen_watching.clear()
 
                     r.raise_for_status()
                     last_beat = time.monotonic()

@@ -156,7 +156,13 @@ def restart_loop(shutdown: threading.Event, restart: threading.Event, shortcut_p
                 continue
 
             alt_tab()
+            restart_stop.wait(1)
             alt_tab()
+            restart_stop.wait(1)
+            alt_tab()
+            restart_stop.wait(1)
+            alt_tab()
+            restart_stop.wait(1)
             restart_init()
             restart.clear()
             last_restart = time.monotonic()

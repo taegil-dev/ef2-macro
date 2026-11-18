@@ -431,7 +431,7 @@ multi_macros = {
 
         "wave": [
             {"name": "웨이브 9000",
-             "goal": 9400,
+             "goal": 9200,
              "sequence": macros["웨이브 9000"]["data"],
              "ignore": {"condition": "wave", "type": "higher", "goal": 9700}},
 
