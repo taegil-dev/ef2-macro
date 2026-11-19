@@ -4,6 +4,7 @@ import importlib
 import json
 import logging
 import os
+import msvcrt
 import signal
 import subprocess
 import sys
@@ -36,9 +37,8 @@ load_dotenv(
 API = os.environ['API_BASE_URL'].rstrip('/')
 DEVICE = os.environ['DEVICE_ID']
 TOKEN = os.environ['DEVICE_TOKEN']
-
-POLL = 10
-HEARTBEAT = 15
+POLL = float(os.environ['POLL'])
+HEARTBEAT = float(os.environ['HEARTBEAT'])
 
 shutdown = threading.Event()
 macro_stop = threading.Event()
@@ -66,6 +66,30 @@ supabase = create_client(
 
 logging.getLogger("httpx").setLevel(logging.WARNING)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
+
+
+def load_macros():
+    path = BASE_DIR / "macro.py"
+
+    if not path.is_file():
+        raise FileNotFoundError(f"매크로 파일을 찾을 수 없습니다: {path}")
+
+    spec = importlib.util.spec_from_file_location(
+        "external_macros",
+        path
+    )
+
+    if spec is None or spec.loader is None:
+        raise RuntimeError("매크로 파일을 로드할 수 없습니다.")
+
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    return {
+        "macros": module.macros,
+        "multi_macros": module.multi_macros,
+        "region": p.region
+    }
 
 
 def get_access_token():
@@ -96,22 +120,10 @@ def post_repeat_command(kind: str, macro: dict[str, Any]):
             print(f'Error occurred while sending repeat command: {e}')
 
 
-def post_command_result(
-        command_id: str, 
-        pos: dict[str, tuple[float, float, float, float]],
-        wave,
-        is_rebirth: bool):
+def post_command_result(command_id: str, msg: str):
     client_headers = {'Authorization': f'Bearer {TOKEN}', 'X-Device-ID': DEVICE}
     with httpx.Client(base_url=API+'/api/agent', headers=client_headers, timeout=10) as client:
         try:
-            msg = ""
-            if is_rebirth:
-                diamond = im.check_diamond(pos["DIAMOND_POS"])
-                medal, medal_unit = im.check_medal(pos["MEDAL_POS"])
-
-                msg = f"❇️ 환생 결과 : Wave {wave} 🎖️{medal}{medal_unit} 💎{diamond}"
-                print(f'{datetime.datetime.now().strftime("%H:%M")} - {msg}')
-
             result = {'status': 'done', 'error': msg}
             ack = client.post(f'commands/{command_id}/ack', json=result)
             ack.raise_for_status()
@@ -120,7 +132,7 @@ def post_command_result(
 
 
 def run_command(
-        command_id: str,
+        command_id: str | None,
         macro: list[dict[str, Any]], 
         kind: str,
         is_repeat: bool, 
@@ -128,18 +140,32 @@ def run_command(
     ):
     global state, last_error
     try:
-        is_rebirth = False
-        wave = 0
+        while not shutdown.is_set() and not macro_stop.is_set():
+            is_rebirth = False
+            wave = 0
 
-        print(f'{datetime.datetime.now().strftime("%H:%M")} - ✅ 매크로 {macro["name"]} 실행{is_repeat and " (반복)" or ""}')
+            print(f'{datetime.datetime.now().strftime("%H:%M")} - ✅ 매크로 {macro["name"]} 실행{is_repeat and " (반복)" or ""}')
 
-        # 매크로 실행; 실행 결과로 환생 또는 종료 시 현재 웨이브랑 환생 여부를 반환
-        wave, is_rebirth = rm.run_macro(thread_var, kind, macro["data"], region)
+            # 매크로 실행; 실행 결과로 환생 또는 종료 시 현재 웨이브랑 환생 여부를 반환
+            wave, is_rebirth = rm.run_macro(thread_var, macro["data"], region)
 
-        print(f'{datetime.datetime.now().strftime("%H:%M")} - ✅ 매크로 종료{is_rebirth and "; 환생 성공" or ""}')
+            print(f'{datetime.datetime.now().strftime("%H:%M")} - ✅ 매크로 종료{is_rebirth and "; 환생 성공" or ""}')
 
-        # 매크로 실행 결과를 클라이언트로 전송
-        post_command_result(command_id, region, wave, is_rebirth)
+            msg = ""
+            if is_rebirth:
+                diamond = im.check_diamond(region["DIAMOND_POS"])
+                medal, medal_unit = im.check_medal(region["MEDAL_POS"])
+
+                msg = f"❇️ 환생 결과 : Wave {wave} 🎖️{medal}{medal_unit} 💎{diamond}"
+                print(f'{datetime.datetime.now().strftime("%H:%M")} - {msg}')
+
+            # 매크로 실행 결과를 클라이언트로 전송
+            if command_id:
+                post_command_result(command_id, msg)
+            elif not command_id and is_repeat:
+                continue
+
+            break
 
     except Exception as e:
         last_error = str(e)
@@ -150,32 +176,8 @@ def run_command(
         state = 'idle'
 
     # 반복 매크로의 경우 다시 실행
-    if is_repeat and not shutdown.is_set() and not macro_stop.is_set():
+    if command_id and is_repeat and not shutdown.is_set() and not macro_stop.is_set():
         post_repeat_command(kind, macro)
-
-
-def load_macros():
-    path = BASE_DIR / "macro.py"
-
-    if not path.is_file():
-        raise FileNotFoundError(f"매크로 파일을 찾을 수 없습니다: {path}")
-
-    spec = importlib.util.spec_from_file_location(
-        "external_macros",
-        path
-    )
-
-    if spec is None or spec.loader is None:
-        raise RuntimeError("매크로 파일을 로드할 수 없습니다.")
-
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-
-    return {
-        "macros": module.macros,
-        "multi_macros": module.multi_macros,
-        "region": p.region
-    }
 
 
 def stop_macro():
@@ -253,13 +255,7 @@ def execute(command: dict[str, Any], command_id: str):
     else:
         raise ValueError(f'Unsupported command: {kind}')
 
-
-def main():
-    if not API.startswith('https://') and not API.startswith('http://localhost'):
-        raise SystemExit('API_BASE_URL must use HTTPS (except localhost)')
-    
-    print(f'\n{datetime.datetime.now().strftime("%H:%M")} - ✅ 에이전트 정상 실행중 id: {DEVICE}')
-
+def connect_server():
     last_beat = 0.
 
     headers = {'Authorization': f'Bearer {TOKEN}', 'X-Device-ID': DEVICE}
@@ -319,6 +315,94 @@ def main():
     # screen_stop.set()
     # screen_thread.join(timeout=2)
     stop_macro()
+
+
+def select_menu(multi_macro_names: list[str], macro_names: list[str]):
+    selected = 0
+
+    print("\033[s", end="", flush=True)
+    while True:
+        print("\033[u\033[J", end="", flush=True)
+
+        print(f'\n\r{datetime.datetime.now().strftime("%H:%M")} - 🔗 실행할 매크로를 선택해주세요', flush=True)
+
+        print("\n=== 멀티 매크로 ===", flush=True)
+        for i, option in enumerate(multi_macro_names):
+            if i % 3 == 0:
+                print("\n", end="", flush=True)
+            prefix = "💠" if i == selected else "  "
+            print(f"{prefix} {option}", end=" ", flush=True)
+
+        print("\n\n=== 단일 매크로 ===", flush=True)
+        for i, option in enumerate(macro_names):
+            if i % 3 == 0:
+                print("\n", end="", flush=True)
+            prefix = "💠" if i == selected - len(multi_macro_names) else "  "
+            print(f"{prefix} {option}", end=" ", flush=True)
+
+        print("\n\n← → 이동 | Enter 선택", end="", flush=True)
+
+        key = msvcrt.getch()
+
+        if key in (b"\x00", b"\xe0"):
+            key = msvcrt.getch()
+
+            if key == b"K":  # <
+                selected = (selected - 1) % len(multi_macro_names + macro_names)
+
+            elif key == b"M":  # >
+                selected = (selected + 1) % len(multi_macro_names + macro_names)
+
+        elif key == b"\r":  # Enter
+            kind = "multi_macros" if selected < len(multi_macro_names) else "macros"
+            macro = (multi_macro_names + macro_names)[selected]
+            return kind, macro
+
+
+def execute_on_local():
+    global macro_thread, state, last_error
+
+    data = load_macros()
+    multi_macro_names = [name for name, _ in data['multi_macros'].items()]
+    macro_names = [name for name, _ in data['macros'].items()]
+
+    while not shutdown.is_set():
+        kind, macro_name = select_menu(multi_macro_names, macro_names)
+        macro = data[kind][macro_name]
+
+        is_repeat = input("반복 실행 여부(y/n): ").strip().lower() == "y"
+
+        macro_stop.clear()
+        last_error = ''
+        state = 'running'
+        t = threading.Thread(target=run_command, args=(None, macro, kind, is_repeat, data["region"]), daemon=True)
+
+        with macro_lock:
+            macro_thread = t
+
+        t.start()
+        shutdown.wait(1)
+
+    # screen_stop.set()
+    # screen_thread.join(timeout=2)
+    stop_macro()
+
+
+def main():
+    if not API.startswith('https://') and not API.startswith('http://localhost'):
+        raise SystemExit('API_BASE_URL must use HTTPS (except localhost)')
+
+    # connect = input("\n🔗 서버와 연결하시겠습니까?(y/n)").strip().lower() == "y"
+
+    print(f'\n{datetime.datetime.now().strftime("%H:%M")} - ✅ 에이전트 정상 실행중 id: {DEVICE}')
+
+    # 서버 연결해서 실행
+    # if connect:
+    connect_server()
+    # 로컬로 실행
+    # else:
+    #     execute_on_local()
+
 
 
 def apply_restart():

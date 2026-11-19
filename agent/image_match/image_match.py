@@ -67,6 +67,9 @@ def check_gold(GOLD_POS):
     if gold is None:
         return None
 
+    if gold["value"] > 1000:
+        return None
+
     return gold
 
 def check_diamond(DIAMOND_POS):
@@ -95,7 +98,6 @@ def check_medal(MEDAL_POS):
     medal = parse_gold_value(text)
 
     if medal is None:
-        print(f"Invalid gold format: {text}")
         return 0, ""
 
     return medal["value"], medal["unit"]

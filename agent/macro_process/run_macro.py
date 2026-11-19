@@ -168,15 +168,16 @@ def run_sequence(thread_var, sequences, image_region):
     return is_rebirth
 
 
-def run_macro(thread_var, kind, macro, region):
-    is_multi_macro = kind == "RUN_MULTI_MACRO"
-
+def run_macro(thread_var, macro, region):
     # 서로 다른 조건들을 가진 시퀀스들을 전부 실행; 단, 먼저 조건이 충족된 시퀀스만 실행, 순자적 실행
     condition_wave = macro.get("wave", None)
     condition_gold = macro.get("gold", None)
     condition_time = macro.get("time", None)
     condition_custom = macro.get("custom", None)
     condition_empty = macro.get("empty", None)
+
+    # 전부 포함이 안된다면 일반 매크로
+    is_normal_macro = not any([condition_wave, condition_gold, condition_time, condition_custom, condition_empty])
 
     wave = 0
     is_rebirth = False
@@ -206,7 +207,7 @@ def run_macro(thread_var, kind, macro, region):
                 continue
 
         # 단일 매크로는 조건 매크로가 없으므로 바로 실행
-        if not is_multi_macro:
+        if is_normal_macro:
             is_rebirth = run_sequence(thread_var, macro, region)
             break
 

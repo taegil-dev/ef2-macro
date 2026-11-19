@@ -19,8 +19,7 @@ load_dotenv(
 API = os.environ['API_BASE_URL'].rstrip('/')
 DEVICE = os.environ['DEVICE_ID']
 TOKEN = os.environ['DEVICE_TOKEN']
-
-SCREEN_INTERVAL = 1
+SCREEN_INTERVAL = float(os.environ['SCREEN_INTERVAL'])
 SCREEN_REGION = (0.335, 0.0, 0.658, 1.0)
 
 
