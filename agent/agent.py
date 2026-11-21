@@ -243,8 +243,11 @@ def execute(command: dict[str, Any], command_id: str):
         raise ValueError(f'Unsupported command: {kind}')
 
 def connect_server():
+    global screen_stop
+    
     last_beat = 0.
 
+    screen_stop, screen_thread, screen_watching = start_screen_thread(shutdown)
 
     headers = {'Authorization': f'Bearer {env.DEVICE_TOKEN}', 'X-Device-ID': env.DEVICE}
     with httpx.Client(base_url=env.CLIENT_URL+'/api/agent', headers=headers, timeout=10) as client:
@@ -259,10 +262,10 @@ def connect_server():
                     data = r.json()
 
                     # 웹페이지를 보고 있을 때만 화면 공유
-                    # if data.get("screen_watching"):
-                    #     screen_watching.set()
-                    # else:
-                    #     screen_watching.clear()
+                    if data.get("screen_watching"):
+                        screen_watching.set()
+                    else:
+                        screen_watching.clear()
 
                     r.raise_for_status()
                     last_beat = time.monotonic()
@@ -300,8 +303,8 @@ def connect_server():
 
             shutdown.wait(env.POLL)
 
-    # screen_stop.set()
-    # screen_thread.join(timeout=2)
+    screen_stop.set()
+    screen_thread.join(timeout=2)
     stop_macro()
 
 
@@ -339,7 +342,7 @@ def execute_on_local():
             macro = data[kind][macro_name]
 
             try:
-                is_repeat = input(f"{datetime.datetime.now().strftime("%H:%M")} - 반복 실행 여부(y/n): ").strip().lower() == "y"
+                is_repeat = input(f"{datetime.datetime.now().strftime("%H:%M")} - 🔁 반복 실행 여부(y/n): ").strip().lower() == "y"
             except EOFError as e:
                 print("\n❌ 입력이 취소되었습니다. agent를 종료합니다.")
                 sys.exit(0)
@@ -467,7 +470,7 @@ if __name__ == '__main__':
     def handle_signal(_signum, _frame):
         shutdown.set()
         macro_stop.set()
-        # screen_stop.set()
+        screen_stop.set()
         rg.stop_restart()
 
     # 시그널 등록

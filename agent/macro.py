@@ -425,7 +425,8 @@ multi_macros = {
 
             {"name": "영웅 및 성 강화", 
              "goal": "1an",
-             "sequence": macros["영웅 및 성 강화"]["data"]},
+             "sequence": macros["영웅 및 성 강화"]["data"],
+             "ignore": {"condition": "wave", "type": "higher", "goal": 8000}},
 
             {"name": "퀘스트 30 오픈", 
              "goal": "130ao",
@@ -434,7 +435,8 @@ multi_macros = {
 
             {"name": "영웅 및 성 강화", 
              "goal": "1au",
-             "sequence": macros["영웅 및 성 강화"]["data"]},
+             "sequence": macros["영웅 및 성 강화"]["data"],
+             "ignore": {"condition": "wave", "type": "higher", "goal": 8500}},
 
             {"name": "퀘스트 30 레벨업",
              "goal": "300au",

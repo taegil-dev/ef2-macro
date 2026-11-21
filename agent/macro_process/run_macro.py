@@ -176,15 +176,16 @@ def run_macro(thread_var, macro, region):
     condition_time = copy.deepcopy(macro.get("time", None))
     condition_custom = copy.deepcopy(macro.get("custom", None))
     condition_empty = copy.deepcopy(macro.get("empty", None))
+    condition_rebirth = copy.deepcopy(macro.get("rebirth", None))
 
     # 전부 포함이 안된다면 일반 매크로
-    is_normal_macro = not any([condition_wave, condition_gold, condition_time, condition_custom, condition_empty])
+    is_normal_macro = not any([condition_wave, condition_gold, condition_time, condition_custom, condition_empty, condition_rebirth])
 
     wave = 0
     is_rebirth = False
     while not thread_var.shutdown.is_set() and not thread_var.macro_stop.is_set():
         # 매크로 전부 실행 완료
-        if not any([condition_wave, condition_gold, condition_time, condition_custom, condition_empty]):
+        if not any([condition_wave, condition_gold, condition_time, condition_custom, condition_empty, condition_rebirth]):
             break
 
         # 매크로 딜레이
