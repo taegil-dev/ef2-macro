@@ -1,11 +1,28 @@
 'use client';
 import { useEffect, useState } from 'react';
 
-const delay = 1000;
-
 export default function GameScreen({ supabase, deviceId, online }: { supabase: any; deviceId: string; online: boolean }) {
   const [src, setSrc] = useState<string | null>(null);
   const [status, setStatus] = useState('연결 중...');
+  const [delay, setDelay] = useState(60000);
+  const [delayChanged, setDelayChanged] = useState(false);
+  const [changeDelay, setChangeDelay] = useState(false);
+
+  const [screenStart, setScreenStart] = useState(false);
+
+  function handleDelayChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setDelay(Number(e.target.value));
+    setDelayChanged(true);
+
+    if (!changeDelay) {
+      setChangeDelay(true);
+      setTimeout(() => {
+        setChangeDelay(false);
+        setDelayChanged(false);
+        setScreenStart(prev => !prev); // Trigger screen refresh
+      }, 1000);
+    }
+  }
 
   useEffect(() => {
     let active = true;
@@ -46,10 +63,15 @@ export default function GameScreen({ supabase, deviceId, online }: { supabase: a
     }, delay);
 
     return () => { active = false; window.clearInterval(timer); };
-  }, [deviceId, online]);
+  }, [screenStart, deviceId, online]);
 
   return (
     <section className="game-screen">
+      <div className={`delay-info ${delayChanged ? 'delay-info-changed' : ''}`}>
+        <p style={{ margin: 0 }}>딜레이: {delay / 1000}초</p>
+      </div>
+      <input className="delay-slider" type="range" min="1000" max="60000" step="1000" value={delay} onChange={(e) => handleDelayChange(e)} />
+
       {online && src ? 
         <img 
           src={src} 

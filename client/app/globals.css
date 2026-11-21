@@ -538,6 +538,7 @@ footer span {
   margin-top: 14px;
 }
 .game-screen {
+  display: grid;
   width: 100%;
   max-width: 500px;
   max-height: 800px;
@@ -546,5 +547,44 @@ footer span {
   background: #141b28;
   border: 1px solid #273143;
   border-radius: 14px;
+}
+
+.game-screen * {
+  grid-area: 1 / 1;
+  position: relative;
+}
+
+.delay-info {
+  width: 90px;
+  height: 30px;
+  top: -2%;
+  left: -3%;
+  background: #1b2536;
+  color: #8d9cb3;
+  border-radius: 8px;
+  padding: 0px 10px;
+  font-size: 12px;
+  align-content: center;
+  z-index: 10;
+  transition: color 0.2s;
+}
+
+.delay-info-changed {
+  color: #c8d4fb;
+}
+
+.delay-slider {
+  width: 90px;
+  height: 30px;
+  top: -2%;
+  left: 20%;
+  margin: 0;
+  z-index: 10;
+  opacity: 0.3;
+  transition: opacity 0.2s;
+}
+
+.delay-slider:hover {
+  opacity: 0.7;
 }
 

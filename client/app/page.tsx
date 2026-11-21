@@ -72,7 +72,11 @@ export default function Page() {
     try {
       const d = await api("/api/dashboard/status");
       setDevice(d.device);
-      setCommands(d.commands);
+      if (!!device?.last_seen_at &&
+          Date.now() - new Date(device.last_seen_at).getTime() < 45000)
+        setCommands(d.commands);
+      else 
+        setCommands([]);
     } catch (e) {
       setMessage((e as Error).message);
     }
@@ -88,18 +92,7 @@ export default function Page() {
       setCommands([]);
       return;
     }
-
-    if(online) {
-      void refresh();
-    }
-    const timer = setInterval(() => {
-      if(online) {
-        void refresh();
-      }
-    }, 10000);
-
-    return () => clearInterval(timer);
-  }, [session, refresh, online]);
+  }, [session]);
 
   const send = async (type: string, payload: Record<string, number> = {}) => {
     setBusy(true);
@@ -137,8 +130,7 @@ export default function Page() {
         </header>
         <div className="content">
 
-          {/* <GameScreen supabase={supabase} deviceId={device?.id || ""} online={online} /> */}
-          <section className="game-screen">OFF</section>
+          <GameScreen supabase={supabase} deviceId={device?.id || ""} online={online} />
           
           <div className="columns">
             <section className="panel">
