@@ -1,14 +1,15 @@
+import copy
 from pathlib import Path
 import sys
 from typing import Any
 import datetime
 
+import env_data.env_data as env
 import image_match.image_match as im
 import macro_click.macro_click as mc
 import macro_process.arrow_target_macro as atm
 
-SEQUENCE_DELAY = 0.2
-MACRO_DELAY = 2
+
 BASE_DIR = getattr(sys, "frozen", False) and Path(sys.executable).resolve().parent or Path(__file__).resolve().parent.parent
 
 image_matcher = im.ImageMatcher()
@@ -108,7 +109,7 @@ def run_sequence(thread_var, sequences, image_region):
             restart = False
             for pos in sequence.get("sequence", []):
                 # 시퀀스 딜레이
-                thread_var.macro_stop.wait(SEQUENCE_DELAY)
+                thread_var.macro_stop.wait(env.SEQUENCE_DELAY)
 
                 if thread_var.shutdown.is_set() or thread_var.macro_stop.is_set():
                     break
@@ -170,11 +171,11 @@ def run_sequence(thread_var, sequences, image_region):
 
 def run_macro(thread_var, macro, region):
     # 서로 다른 조건들을 가진 시퀀스들을 전부 실행; 단, 먼저 조건이 충족된 시퀀스만 실행, 순자적 실행
-    condition_wave = macro.get("wave", None)
-    condition_gold = macro.get("gold", None)
-    condition_time = macro.get("time", None)
-    condition_custom = macro.get("custom", None)
-    condition_empty = macro.get("empty", None)
+    condition_wave = copy.deepcopy(macro.get("wave", None))
+    condition_gold = copy.deepcopy(macro.get("gold", None))
+    condition_time = copy.deepcopy(macro.get("time", None))
+    condition_custom = copy.deepcopy(macro.get("custom", None))
+    condition_empty = copy.deepcopy(macro.get("empty", None))
 
     # 전부 포함이 안된다면 일반 매크로
     is_normal_macro = not any([condition_wave, condition_gold, condition_time, condition_custom, condition_empty])
@@ -182,8 +183,12 @@ def run_macro(thread_var, macro, region):
     wave = 0
     is_rebirth = False
     while not thread_var.shutdown.is_set() and not thread_var.macro_stop.is_set():
+        # 매크로 전부 실행 완료
+        if not any([condition_wave, condition_gold, condition_time, condition_custom, condition_empty]):
+            break
+
         # 매크로 딜레이
-        thread_var.macro_stop.wait(MACRO_DELAY)
+        thread_var.macro_stop.wait(env.MACRO_DELAY)
         
         # 게임 재실행
         if thread_var.restart.is_set():
@@ -262,7 +267,7 @@ def run_macro(thread_var, macro, region):
                 # 실행한 시퀀스 제거
                 sequence = condition_time.pop(0)
                 if not ignore_condition(name, ignore, region):
-                    print(f'{datetime.datetime.now().strftime("%H:%M")} - 🔔 현재 시간 {current_time[2]}:{current_time[1]}:{current_time[0]} : 목표 시간 {goal}')
+                    print(f'{datetime.datetime.now().strftime("%H:%M")} - 🔔 현재 시간 {current_time[2] < 10 and "0" or ""}{current_time[2]}:{current_time[1] < 10 and "0" or ""}{current_time[1]}:{current_time[0] < 10 and "0" or ""}{current_time[0]} : 목표 시간 {goal}')
                     print(f'{datetime.datetime.now().strftime("%H:%M")} - ▶️ 시퀀스 {sequence["name"]} 실행')
                     is_rebirth = run_sequence(thread_var, sequence['sequence'], region)
 

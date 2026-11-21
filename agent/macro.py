@@ -161,11 +161,6 @@ _sequence = {
         _custom_delay(1), _pos["비서 완료 버튼"],
         _custom_delay(1), _pos["비서 완료 버튼"],
         _custom_delay(1), _pos["비서 완료 버튼"],
-        _custom_delay(1), _pos["비서 완료 버튼"],
-        _custom_delay(1), _pos["비서 완료 버튼"],
-        _custom_delay(1), _pos["비서 완료 버튼"],
-        _custom_delay(1), _pos["비서 완료 버튼"],
-        _custom_delay(1), _pos["비서 완료 버튼"],
 
         _pos["성 탭"],
         _pos["성 탭"],
@@ -329,6 +324,9 @@ _sequence = {
         _custom_delay(1),
     ],
     "테스트 시퀀스": [
+        _pos["성 탭"],
+
+        _custom_delay(1),
     ]
 }
 
@@ -380,7 +378,9 @@ macros = {
     "웨이브 9700": {"name": "9700 웨이브", "data": [
         {"name": "9700 영웅 프리셋 변경", "sequence": _sequence["9700 영웅 프리셋 변경 시퀀스"]},
     ]},
-    "테스트": {"name": "테스트", "data": []}
+    "테스트": {"name": "테스트", "data": [
+        {"name": "테스트", "sequence": _sequence["테스트 시퀀스"]}
+    ]}
 }
 
 multi_macros = {
@@ -405,8 +405,16 @@ multi_macros = {
              "ignore": {"condition": "gold", "type": "higher", "goal": "50ao"}},
 
             {"name": "비서", 
-             "goal": "00:50",
+             "goal": "01:00",
              "sequence": macros["비서"]["data"]},
+
+            {"name": "영입", 
+             "goal": "15:00",
+             "sequence": macros["영입"]["data"]},
+
+            {"name": "영입", 
+             "goal": "30:00",
+             "sequence": macros["영입"]["data"]},
         ],
 
         "gold": [
@@ -457,5 +465,9 @@ multi_macros = {
             {"name": "양궁 끝", "sequence": macros["양궁 끝"]["data"]},
         ]
     }},
-    "테스트": {"name": "테스트", "data": {}}
+    "테스트": {"name": "테스트", "data": {
+        "empty": [
+            {"name": "테스트", "sequence": macros["테스트"]["data"]},
+        ]
+    }}
 }

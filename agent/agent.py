@@ -15,9 +15,9 @@ from typing import Any
 from Lib.pathlib import Path
 import datetime
 import httpx
-from dotenv import load_dotenv # type: ignore
 from supabase import create_client
 
+import env_data.env_data as env
 import macro_click.macro_click as mc
 from window_capture.screen_uploader import start_screen_thread
 import image_match.image_match as im
@@ -27,18 +27,6 @@ from macro_editor.ef2 import pos as p
 
 
 BASE_DIR = getattr(sys, "frozen", False) and Path(sys.executable).resolve().parent or Path(__file__).resolve().parent
-ENV_PATH = BASE_DIR / ".env"
-
-load_dotenv(
-    dotenv_path=ENV_PATH,
-    override=True
-)
-
-API = os.environ['API_BASE_URL'].rstrip('/')
-DEVICE = os.environ['DEVICE_ID']
-TOKEN = os.environ['DEVICE_TOKEN']
-POLL = float(os.environ['POLL'])
-HEARTBEAT = float(os.environ['HEARTBEAT'])
 
 shutdown = threading.Event()
 macro_stop = threading.Event()
@@ -58,10 +46,9 @@ thread_var = SimpleNamespace(
     # screen_watching=screen_watching
 )
 
-
 supabase = create_client(
-    os.environ["SUPABASE_URL"],
-    os.environ["SUPABASE_ANON_KEY"]
+    env.SUPABASE_URL,
+    env.SUPABASE_ANON_KEY
 )
 
 logging.getLogger("httpx").setLevel(logging.WARNING)
@@ -97,8 +84,8 @@ def get_access_token():
 
     if session is None:
         auth = supabase.auth.sign_in_with_password({
-            "email": os.environ["SUPABASE_EMAIL"],
-            "password": os.environ["SUPABASE_PASSWORD"]
+            "email": env.SUPABASE_EMAIL,
+            "password": env.SUPABASE_PASSWORD
         })
         session = auth.session
 
@@ -111,7 +98,7 @@ def get_access_token():
 def post_repeat_command(kind: str, macro: dict[str, Any]):
     access_token = get_access_token()
     server_headers = {'Authorization': f'Bearer {access_token}'}
-    with httpx.Client(base_url=API+'/', headers=server_headers, timeout=10) as client:
+    with httpx.Client(base_url=env.CLIENT_URL+'/', headers=server_headers, timeout=10) as client:
         try:
             ack = client.post('api/dashboard/commands', 
                     json={"type": kind, "payload": {"name": macro["name"], "repeat": True}})
@@ -121,8 +108,8 @@ def post_repeat_command(kind: str, macro: dict[str, Any]):
 
 
 def post_command_result(command_id: str, msg: str):
-    client_headers = {'Authorization': f'Bearer {TOKEN}', 'X-Device-ID': DEVICE}
-    with httpx.Client(base_url=API+'/api/agent', headers=client_headers, timeout=10) as client:
+    client_headers = {'Authorization': f'Bearer {env.DEVICE_TOKEN}', 'X-Device-ID': env.DEVICE}
+    with httpx.Client(base_url=env.CLIENT_URL+'/api/agent', headers=client_headers, timeout=10) as client:
         try:
             result = {'status': 'done', 'error': msg}
             ack = client.post(f'commands/{command_id}/ack', json=result)
@@ -258,12 +245,13 @@ def execute(command: dict[str, Any], command_id: str):
 def connect_server():
     last_beat = 0.
 
-    headers = {'Authorization': f'Bearer {TOKEN}', 'X-Device-ID': DEVICE}
-    with httpx.Client(base_url=API+'/api/agent', headers=headers, timeout=10) as client:
+
+    headers = {'Authorization': f'Bearer {env.DEVICE_TOKEN}', 'X-Device-ID': env.DEVICE}
+    with httpx.Client(base_url=env.CLIENT_URL+'/api/agent', headers=headers, timeout=10) as client:
         while not shutdown.is_set():
             try:
                 # 주기적인 연결
-                if time.monotonic() - last_beat >= HEARTBEAT:
+                if time.monotonic() - last_beat >= env.HEARTBEAT:
                     r = client.post('heartbeat', json={'status': state, 'last_error': last_error})
                     if r.status_code == 404:
                         continue
@@ -310,7 +298,7 @@ def connect_server():
             except ValueError as e:
                 print(f'{datetime.datetime.now().strftime("%H:%M")} - ValueError: {e}')
 
-            shutdown.wait(POLL)
+            shutdown.wait(env.POLL)
 
     # screen_stop.set()
     # screen_thread.join(timeout=2)
@@ -318,45 +306,24 @@ def connect_server():
 
 
 def select_menu(multi_macro_names: list[str], macro_names: list[str]):
-    selected = 0
+    selected = ""
 
-    print("\033[s", end="", flush=True)
     while True:
-        print("\033[u\033[J", end="", flush=True)
+        print(f'\n\r{datetime.datetime.now().strftime("%H:%M")} - 🔗 실행할 매크로를 선택해주세요: ', end="", flush=True)
 
-        print(f'\n\r{datetime.datetime.now().strftime("%H:%M")} - 🔗 실행할 매크로를 선택해주세요', flush=True)
+        try:
+            selected = input().strip()
+        except EOFError as e:
+            print("\n❌ 입력이 취소되었습니다. agent를 종료합니다.")
+            sys.exit(0)
 
-        print("\n=== 멀티 매크로 ===", flush=True)
-        for i, option in enumerate(multi_macro_names):
-            if i % 3 == 0:
-                print("\n", end="", flush=True)
-            prefix = "💠" if i == selected else "  "
-            print(f"{prefix} {option}", end=" ", flush=True)
-
-        print("\n\n=== 단일 매크로 ===", flush=True)
-        for i, option in enumerate(macro_names):
-            if i % 3 == 0:
-                print("\n", end="", flush=True)
-            prefix = "💠" if i == selected - len(multi_macro_names) else "  "
-            print(f"{prefix} {option}", end=" ", flush=True)
-
-        print("\n\n← → 이동 | Enter 선택", end="", flush=True)
-
-        key = msvcrt.getch()
-
-        if key in (b"\x00", b"\xe0"):
-            key = msvcrt.getch()
-
-            if key == b"K":  # <
-                selected = (selected - 1) % len(multi_macro_names + macro_names)
-
-            elif key == b"M":  # >
-                selected = (selected + 1) % len(multi_macro_names + macro_names)
-
-        elif key == b"\r":  # Enter
-            kind = "multi_macros" if selected < len(multi_macro_names) else "macros"
-            macro = (multi_macro_names + macro_names)[selected]
-            return kind, macro
+        if selected in multi_macro_names:
+            return "multi_macros", selected
+        elif selected in macro_names:
+            return "macros", selected
+        else:
+            print(f'\n\r{datetime.datetime.now().strftime("%H:%M")} - ❌ 매크로를 찾을 수 없습니다: {selected}')
+            print(f'🔗 사용 가능한 매크로 목록: {", ".join(multi_macro_names + macro_names)}')
 
 
 def execute_on_local():
@@ -367,21 +334,35 @@ def execute_on_local():
     macro_names = [name for name, _ in data['macros'].items()]
 
     while not shutdown.is_set():
-        kind, macro_name = select_menu(multi_macro_names, macro_names)
-        macro = data[kind][macro_name]
+        if state == "idle":
+            kind, macro_name = select_menu(multi_macro_names, macro_names)
+            macro = data[kind][macro_name]
 
-        is_repeat = input("반복 실행 여부(y/n): ").strip().lower() == "y"
+            try:
+                is_repeat = input(f"{datetime.datetime.now().strftime("%H:%M")} - 반복 실행 여부(y/n): ").strip().lower() == "y"
+            except EOFError as e:
+                print("\n❌ 입력이 취소되었습니다. agent를 종료합니다.")
+                sys.exit(0)
 
-        macro_stop.clear()
-        last_error = ''
-        state = 'running'
-        t = threading.Thread(target=run_command, args=(None, macro, kind, is_repeat, data["region"]), daemon=True)
+            print(f'{datetime.datetime.now().strftime("%H:%M")} - ⚠️ 현재 매크로를 종료하려면 "q"를 누르세요.\n')
 
-        with macro_lock:
-            macro_thread = t
+            macro_stop.clear()
+            last_error = ''
+            state = 'running'
+            t = threading.Thread(target=run_command, args=(None, macro, kind, is_repeat, data["region"]), daemon=True)
 
-        t.start()
-        shutdown.wait(1)
+            with macro_lock:
+                macro_thread = t
+
+            t.start()
+
+        shutdown.wait(2)
+
+        if msvcrt.kbhit():
+            key = msvcrt.getwch()
+            if key.lower() == 'q':
+                print(f'\n\r{datetime.datetime.now().strftime("%H:%M")} - ⛔ 매크로 중지')
+                stop_macro()
 
     # screen_stop.set()
     # screen_thread.join(timeout=2)
@@ -389,24 +370,32 @@ def execute_on_local():
 
 
 def main():
-    if not API.startswith('https://') and not API.startswith('http://localhost'):
+    if not env.CLIENT_URL.startswith('https://') and not env.CLIENT_URL.startswith('http://localhost'):
         raise SystemExit('API_BASE_URL must use HTTPS (except localhost)')
 
-    # connect = input("\n🔗 서버와 연결하시겠습니까?(y/n)").strip().lower() == "y"
+    try:
+        connect = input("\n🔗 서버와 연결하시겠습니까?(y/n): ").strip().lower() == "y"
+    except EOFError as e:
+        print("\n❌ 입력이 취소되었습니다. agent를 종료합니다.")
+        sys.exit(0)
 
-    print(f'\n{datetime.datetime.now().strftime("%H:%M")} - ✅ 에이전트 정상 실행중 id: {DEVICE}')
+    print(f'\n{datetime.datetime.now().strftime("%H:%M")} - ✅ 에이전트 정상 실행중 id: {env.DEVICE}')
 
     # 서버 연결해서 실행
-    # if connect:
-    connect_server()
+    if connect:
+        connect_server()
     # 로컬로 실행
-    # else:
-    #     execute_on_local()
-
+    else:
+        execute_on_local()
 
 
 def apply_restart():
-    res = input("\n🔁 자동 재실행 기능을 사용하시겠습니까?(y/n): ").strip().lower() == "y"
+    try:
+        res = input("\n🔁 자동 재실행 기능을 사용하시겠습니까?(y/n): ").strip().lower() == "y"
+    except EOFError as e:
+        print("\n❌ 입력이 취소되었습니다. agent를 종료합니다.")
+        sys.exit(0)
+    
     if not res:
         return
     
@@ -430,9 +419,14 @@ def apply_restart():
         print(f"✅ 파일을 정상적으로 찾았습니다: {target_path}")
     else:
         print(f"❌ 파일을 찾을 수 없습니다. 파일을 추가하고 다시 시도해주세요.")
-        exit(1)
+        sys.exit(1)
 
-    restart_time = input("⏱️ 자동 재실행 시간 설정(기본 3600초)(숫지만 입력): ")
+    try:
+        restart_time = input("⏱️ 자동 재실행 시간 설정(기본 3600초)(숫지만 입력): ")
+    except EOFError as e:
+        print("\n❌ 입력이 취소되었습니다. agent를 종료합니다.")
+        sys.exit(0)
+
     try:
         restart_time = int(restart_time)
     except ValueError:
@@ -448,7 +442,12 @@ def apply_update():
         return
 
     print(f"\n🎉 새로운 버전이 있습니다: v{update_info[1]['version']} 🎉")
-    is_update = input("업데이트 하시겠습니까? (y/n): ").strip().lower() == "y"
+    try:
+        is_update = input("업데이트 하시겠습니까? (y/n): ").strip().lower() == "y"
+    except EOFError as e:
+        print("\n❌ 입력이 취소되었습니다. agent를 종료합니다.")
+        sys.exit(0)
+    
     if not is_update:
         return
 

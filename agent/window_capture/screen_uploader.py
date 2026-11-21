@@ -1,32 +1,17 @@
-import os
-import sys
 import threading
 import time
-
-from Lib.pathlib import Path
-from dotenv import load_dotenv
 import httpx # type: ignore
+
+import env_data.env_data as env
 from window_capture.screen_capture import capture_jpeg, find_game_child
 
-BASE_DIR = getattr(sys, "frozen", False) and Path(sys.executable).resolve().parent or Path(__file__).resolve().parent.parent
-ENV_PATH = BASE_DIR / ".env"
 
-load_dotenv(
-    dotenv_path=ENV_PATH,
-    override=True
-)
-
-API = os.environ['API_BASE_URL'].rstrip('/')
-DEVICE = os.environ['DEVICE_ID']
-TOKEN = os.environ['DEVICE_TOKEN']
-SCREEN_INTERVAL = float(os.environ['SCREEN_INTERVAL'])
 SCREEN_REGION = (0.335, 0.0, 0.658, 1.0)
-
 
 def screen_loop(shutdown: threading.Event, stop: threading.Event, screen_watching: threading.Event):
     last_error = None
-    headers={'x-device-id': DEVICE, 'x-device-token': TOKEN, 'content-type': 'image/jpeg'}
-    with httpx.Client(base_url=API+'/api/agent', headers=headers, timeout=15) as client:
+    headers={'x-device-id': env.DEVICE, 'x-device-token': env.DEVICE_TOKEN, 'content-type': 'image/jpeg'}
+    with httpx.Client(base_url=env.CLIENT_URL+'/api/agent', headers=headers, timeout=15) as client:
         while not shutdown.is_set() and not stop.is_set():
             if not screen_watching.is_set():
                 threading.Event().wait(1)
@@ -51,9 +36,9 @@ def screen_loop(shutdown: threading.Event, stop: threading.Event, screen_watchin
                 message = str(exc)
                 if message != last_error:
                     last_error = message
-                    print(f"=== 스크린샷 업로드 실패: {API} {message} ===")
+                    print(f"=== 스크린샷 업로드 실패: {env.CLIENT_URL} {message} ===")
 
-            stop.wait(max(0, SCREEN_INTERVAL - (time.monotonic() - started)))
+            stop.wait(max(0, env.SCREEN_INTERVAL - (time.monotonic() - started)))
 
 def start_screen_thread(shutdown: threading.Event):
     stop = threading.Event()

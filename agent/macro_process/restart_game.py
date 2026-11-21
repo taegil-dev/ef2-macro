@@ -1,7 +1,5 @@
 import os
-import sys
 import time
-from dotenv import load_dotenv
 import psutil
 import win32api
 import win32gui
@@ -9,21 +7,13 @@ import win32con
 import threading
 from pathlib import Path
 
+import env_data.env_data as env
 import macro_click.macro_click as mc
 
+
 PROCESS_KEYWORDS = ["play games"]
-BASE_DIR = getattr(sys, "frozen", False) and Path(sys.executable).resolve().parent or Path(__file__).resolve().parent.parent
-ENV_PATH = BASE_DIR / ".env"
-
-load_dotenv(
-    dotenv_path=ENV_PATH,
-    override=True
-)
-
-GAME_TITLE = os.environ["GAME_TITLE"]
-GAME_TARGET_CLASS = os.environ["GAME_TARGET_CLASS"]
-
 restart_stop = threading.Event()
+
 
 def alt_tab():
     win32api.keybd_event(
@@ -67,10 +57,10 @@ def restart_init():
 def find_game_child() -> int:
     matches = []
     def on_window(hwnd, _):
-        if not win32gui.IsWindowVisible(hwnd) or GAME_TITLE.lower() not in win32gui.GetWindowText(hwnd).lower():
+        if not win32gui.IsWindowVisible(hwnd) or env.GAME_TITLE.lower() not in win32gui.GetWindowText(hwnd).lower():
             return
         def on_child(child, _):
-            if win32gui.GetClassName(child) == GAME_TARGET_CLASS:
+            if win32gui.GetClassName(child) == env.GAME_TARGET_CLASS:
                 matches.append(child)
         win32gui.EnumChildWindows(hwnd, on_child, None)
     win32gui.EnumWindows(on_window, None)
