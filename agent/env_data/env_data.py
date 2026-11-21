@@ -20,8 +20,10 @@ SUPABASE_PASSWORD = os.environ["SUPABASE_PASSWORD"]
 CLIENT_URL = os.environ['API_BASE_URL'].rstrip('/')
 DEVICE = os.environ['DEVICE_ID']
 DEVICE_TOKEN = os.environ['DEVICE_TOKEN']
+
 POLL = float(os.environ['POLL'])
 HEARTBEAT = float(os.environ['HEARTBEAT'])
+SCREEN_INTERVAL = float(os.environ['SCREEN_INTERVAL'])
 
 GAME_TITLE = os.environ['GAME_TITLE']
 GAME_TARGET_CLASS = os.environ['GAME_TARGET_CLASS']
@@ -38,8 +40,10 @@ __all__ = [
     "CLIENT_URL",
     "DEVICE",
     "DEVICE_TOKEN",
+
     "POLL",
     "HEARTBEAT",
+    "SCREEN_INTERVAL",
 
     "GAME_TITLE",
     "GAME_TARGET_CLASS",

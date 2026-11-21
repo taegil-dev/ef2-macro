@@ -244,7 +244,7 @@ def execute(command: dict[str, Any], command_id: str):
 
 def connect_server():
     global screen_stop
-    
+
     last_beat = 0.
 
     screen_stop, screen_thread, screen_watching = start_screen_thread(shutdown)
